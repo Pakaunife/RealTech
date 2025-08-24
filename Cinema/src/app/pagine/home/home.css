@@ -1,0 +1,16 @@
+/* ===== CSS semplice per Home Cinema ===== */
+
+/* Contenitore generale della pagina home */
+.home-page {
+	padding: 2rem 1rem; /* spazio interno orizzontale e verticale */
+	max-width: 1200px; /* larghezza massima leggibile */
+	margin: 0 auto; /* centra il blocco nella pagina */
+	font-family: system-ui, Arial, sans-serif; /* font base leggibile */
+	color: #f5f5f5; /* colore testo chiaro su sfondo scuro */
+}
+
+/* Sfondo generale (puoi applicarla al <body> o a un wrapper) */
+body, .cinema-bg {
+	background: #111; /* sfondo scuro stile sala cinema */
+}
+

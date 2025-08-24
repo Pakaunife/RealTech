@@ -1,0 +1,44 @@
+.app-header {   /* stile header, fa in automatico larghezza e altezza in base a navbar,logo, navkinks */
+  background: #222;
+  color: #fff;
+  border-radius: 10px;
+  box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.3);
+}
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+}
+.logo {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+.nav-links {
+  display: flex;
+  gap: 1rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.nav-links a {
+  color: #fff;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1.3rem;
+  transform: translateY(0);
+  transition: transform .25s ease, color .25s;
+  margin-top: 18px; /* sposto home about e contact in basso  */
+  margin-left: 20px; 
+  margin-right: 15px;
+}
+.nav-links a:hover {
+  color: #90caf9;
+  transform: translateY(-2px);
+}
+.logo img {
+  width: 60px;      /* stessa misura */
+  height: 60px;
+  object-fit: cover; /* riempie il box ritagliando se necessario */
+  border-radius: 50%; /* stonda i lati */
+  display: block;
+}
