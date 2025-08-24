@@ -3,11 +3,11 @@ import { Header } from '../../header/header';
 import { Footer } from '../../footer/footer';
 
 @Component({
-  selector: 'app-about',
+  selector: 'app-contact',
   imports: [Header, Footer],
-  templateUrl: './about.html',
-  styleUrl: './about.css'
+  templateUrl: './contact.html',
+  styleUrl: './contact.css'
 })
-export class About {
+export class Contact {
 
 }
