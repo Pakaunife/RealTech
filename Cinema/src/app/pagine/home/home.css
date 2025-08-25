@@ -1,16 +1,108 @@
-/* ===== CSS semplice per Home Cinema ===== */
 
-/* Contenitore generale della pagina home */
+.package-card {
+  max-width: 500px;        /* Limita la larghezza massima */
+  width: 100%;             /* Occupa tutta la larghezza disponibile */
+  height: auto;            /* Altezza automatica */
+  background: #171c24;
+  color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px #0008;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Allinea il contenuto al centro */
+  justify-content: center;
+  padding: 2rem;           /* Spazio interno */
+  text-align: left;
+  margin: 0.5rem ;
+  
+  box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.3);
+}
+.package-card h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 0.7rem;
+  letter-spacing: 0.08em; /* Spaziatura maggiore per il titolo */
+  color: #ff3d00;
+}
+
+.package-price {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 1rem 0;
+}
+
+.btn-primary {
+  background: #ffffff;
+  color: #222;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: #90caf9;           
+}
+
+.offers-row {
+  display: flex;
+  gap: 1rem;           /* Distanza tra le card */
+  overflow-x: auto;    /* Scroll orizzontale se serve */
+  padding-bottom: 1rem;
+}
+
+.films-row {
+  display: flex;
+  gap: 2rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  margin-bottom: 6rem;
+}
+
+.film-card {
+  min-width: 300px;
+  max-width: 320px;
+  background: #171c24;
+  color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px #0008;
+  padding: 1.5rem 1rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: left;
+}
+
+.film-card img {
+  width: 100%;
+  height: 340px;
+  object-fit: contain; /* oppure cover */
+  border-radius: 12px;
+}
+
+.film-card h2 {
+  font-size: 1.2rem;
+  margin: 0.5rem 0 0.2rem 0;
+}
+
+.film-card p {
+  font-size: 1rem;
+  color: #ffffff;
+  margin: 0;
+}
+body, .home-page, .package-card, .film-card, h1, h2, h3, p, button {
+  font-family: 'Segoe UI', 'Arial', 'Helvetica', 'Verdana', 'Tahoma', sans-serif;
+}
 .home-page {
-	padding: 2rem 1rem; /* spazio interno orizzontale e verticale */
-	max-width: 1200px; /* larghezza massima leggibile */
-	margin: 0 auto; /* centra il blocco nella pagina */
-	font-family: system-ui, Arial, sans-serif; /* font base leggibile */
-	color: #f5f5f5; /* colore testo chiaro su sfondo scuro */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra tutti i contenuti orizzontalmente */
+  width: 100%;
 }
 
-/* Sfondo generale (puoi applicarla al <body> o a un wrapper) */
-body, .cinema-bg {
-	background: #111; /* sfondo scuro stile sala cinema */
+.offers-row,
+.films-row {
+  justify-content: center; /* Centra le card all'interno della riga */
 }
-
