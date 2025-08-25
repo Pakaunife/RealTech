@@ -26,5 +26,6 @@ export class Home {
       img: '/dangerousanimals.jpg',
       info: '2D'
     }
+    
   ];
 }

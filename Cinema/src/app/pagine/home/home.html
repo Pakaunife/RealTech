@@ -1,6 +1,6 @@
 <app-header></app-header>
 <div class="home-page">
-  <h1>FILM IN EVIDENZA</h1>
+  <div class="package-TitoloParagrafo">FILM IN EVIDENZA</div>
   <div class="films-row">
     <div class="film-card" *ngFor="let film of filmInEvidenza">
       <img [src]="film.img" [alt]="film.titolo" />
@@ -9,23 +9,23 @@
     </div>
   </div>
 
-  <h1>OFFERTE SPECIALI</h1>
+  <div class="package-TitoloParagrafo">OFFERTE SPECIALI</div>
   <div class="offers-row">
     <div class="package-card">
       <h2>Abbonamento 10 ingressi</h2>
-      <p>Risparmia e vieni al cinema quando vuoi! Valido per tutti i film.</p>
+      <div class="package-paragrafo">Risparmia e vieni al cinema quando vuoi! Valido per tutti i film.</div>
       <div class="package-price">€60</div>
       <button class="btn-primary">Acquista ora</button>
     </div>
     <div class="package-card">
       <h2>Pacchetto Family</h2>
-      <p>4 biglietti + popcorn e bibite a prezzo speciale.</p>
+      <div class="package-paragrafo">4 biglietti + popcorn e bibite a prezzo speciale.</div>
       <div class="package-price">€45</div>
       <button class="btn-primary">Acquista ora</button>
     </div>
     <div class="package-card">
       <h2>Oferta studenti imperdibile</h2>
-      <p>Se sei studente UNIFE puoi ottenere uno sconto del 20% su tutti i biglietti.</p>
+      <div class="package-paragrafo">Se sei studente UNIFE puoi ottenere uno sconto del 20% su tutti i biglietti.</div>
       <div class="package-price">€7</div>
       <button class="btn-primary">Acquista ora</button>
     </div>
