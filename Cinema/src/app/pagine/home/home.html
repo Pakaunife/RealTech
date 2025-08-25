@@ -3,9 +3,11 @@
   <div class="package-TitoloParagrafo">FILM IN EVIDENZA</div>
   <div class="films-row">
     <div class="film-card" *ngFor="let film of filmInEvidenza">
-      <img [src]="film.img" [alt]="film.titolo" />
-      <h2>{{ film.titolo }}</h2>
-      <p>{{ film.info }}</p>
+      <div class="film-info">
+        <img [src]="film.img" [alt]="film.titolo" />
+        <h2>{{ film.titolo }}</h2>
+        <p>{{ film.info }}</p>
+      </div>
     </div>
   </div>
 

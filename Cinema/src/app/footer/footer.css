@@ -1,10 +1,10 @@
-.footer-modern {
+.footer{
   margin-top: 10rem;
   color: #fff;
   padding: 2.5rem 0 1rem 0;
-  background: linear-gradient(180deg, #171c24 15%, #3b4e6b 60%, #ff7850 100%);
+  background: linear-gradient(180deg, #171c24 15%, #2d3e57 60%, #fa5827 100%);
   border-top: 1px solid rgba(236, 6, 6, 0.1);
-  box-shadow: 0 8px 32px rgba(255, 89, 52, 0.928);
+  box-shadow: 0 8px 32px rgba(255, 89, 52, 0.928);  /* aggiunta linea figa rgb aranacione */
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   
@@ -18,7 +18,7 @@
   margin: 0 auto;
 }
 
-.footer-col ul {
+.footer-col ul {  /* leziona tutti gli elementi <ul> (liste non ordinate) che si trovano dentro un elemento con classe footer-col. */
   list-style: none;
   padding: 0;
   margin: 0 0 1.5rem 0;
