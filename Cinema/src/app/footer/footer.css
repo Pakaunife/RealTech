@@ -7,7 +7,6 @@
   box-shadow: 0 8px 32px rgba(255, 89, 52, 0.928);  /* aggiunta linea figa rgb aranacione */
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
-  
 }
 
 .footer-content {
@@ -28,6 +27,7 @@
   margin-bottom: 0.7rem;
   font-size: 1rem;
   color: #fff;
+  margin-top: 0.5rem;
 }
 
 .footer-col li strong {
@@ -47,4 +47,23 @@
   padding-left: 2rem;
   color: #b0b0b0;
   font-size: 0.95rem;
+}
+.footer-col a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: flex-start;   /* Allinea in alto */
+  justify-content: flex-start;
+  min-width: 160px;
+}
+
+.logo-img {
+  margin-top: 0.5rem;
+  display: block;
+  margin: 0 auto;
+  max-width: 90px;
+  height: auto;
 }
