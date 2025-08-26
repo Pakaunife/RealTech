@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "Cinema": {
+    "Frontend": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -22,10 +22,9 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              },"src/assets"
-
+              }
             ],
-            "styles": [ "node_modules/bootstrap/dist/css/bootstrap.min.css",
+            "styles": [
               "src/styles.css"
             ]
           },
@@ -57,10 +56,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "Cinema:build:production"
+              "buildTarget": "Frontend:build:production"
             },
             "development": {
-              "buildTarget": "Cinema:build:development"
+              "buildTarget": "Frontend:build:development"
             }
           },
           "defaultConfiguration": "development"
