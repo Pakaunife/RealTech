@@ -1,0 +1,40 @@
+.sicurezza-title {
+  font-weight: 800;
+  color: #ff3d00;
+  margin: 2.5rem 0 2rem 0;
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+.sicurezza-content {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+.sicurezza-content h2 {
+  font-size: 1.1rem;
+  color: #fff;
+  margin-bottom: 1.2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.sicurezza-content p {
+  font-size: 1.05rem;
+  color: #fff;
+  margin-bottom: 1.2rem;
+  line-height: 1.6;
+}
+
+.sicurezza-content ul {
+  margin-left: 1.5rem;
+  margin-bottom: 1.2rem;
+}
+
+.sicurezza-content li {
+  font-size: 1.05rem;
+  color: #fff;
+  margin-bottom: 0.7rem;
+  line-height: 1.5;
+}
