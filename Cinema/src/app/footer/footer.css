@@ -17,7 +17,7 @@
   margin: 0 auto;
 }
 
-.footer-col ul {  /* leziona tutti gli elementi <ul> (liste non ordinate) che si trovano dentro un elemento con classe footer-col. */
+.footer-col ul {  /* seleziona tutti gli elementi <ul> (liste non ordinate) che si trovano dentro un elemento con classe footer-col. */
   list-style: none;
   padding: 0;
   margin: 0 0 1.5rem 0;
@@ -64,6 +64,6 @@
   margin-top: 0.5rem;
   display: block;
   margin: 0 auto;
-  max-width: 90px;
+  max-width: 150px;
   height: auto;
 }
