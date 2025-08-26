@@ -251,3 +251,11 @@ nav .logo.space{
 .content .space{
   margin: 10px 0;
 }
+
+.cinema-logo {
+  
+  display: block;
+  margin: 0 auto;
+  filter: drop-shadow(0 0 16px #fff) drop-shadow(0 0 16px #ffd700);
+  /* Effetto glow bianco e giallo */
+}
