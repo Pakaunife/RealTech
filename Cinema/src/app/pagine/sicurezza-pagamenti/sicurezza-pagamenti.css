@@ -1,9 +1,16 @@
 .sicurezza-title {
+  margin-top: 4rem;
+  font-size: 4rem;
   font-weight: 800;
-  color: #ff3d00;
+  color: #ffffff;
   margin: 2.5rem 0 2rem 0;
   text-align: center;
   letter-spacing: 0.04em;
+  text-shadow:
+    0 0 8px #b6b6b6,
+    0 0 16px #ffffff,
+    0 0 32px #ff3d00,
+    0 0 48px #ff3d00;
 }
 
 .sicurezza-content {

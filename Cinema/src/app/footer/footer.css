@@ -1,8 +1,9 @@
 .footer{
-  margin-top: 10rem;
+  /* margin-top: 10rem; */
   color: #fff;
   padding: 2.5rem 0 1rem 0;
-  background: linear-gradient(180deg, #171c24 15%, #2d3e57 60%, #fa5827 100%);
+  background: linear-gradient(21deg, #181e27 25%, #75390efd 50%,#323d4e 65%,#0b223f 75%, #0a183d 90%);
+ border: none;
   border-top: 1px solid rgba(236, 6, 6, 0.1);
   box-shadow: 0 8px 32px rgba(255, 89, 52, 0.928);  /* aggiunta linea figa rgb aranacione */
   border-top-left-radius: 20px;
