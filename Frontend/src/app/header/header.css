@@ -6,6 +6,15 @@
   box-sizing: border-box;
   font-family: 'Montserrat', sans-serif;
 }
+
+.app-header {
+  position: fixed;      /* resta visibile durante lo scroll */
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;        /* sopra al contenuto */
+  background: #171c24;  /* assicurati che abbia uno sfondo */
+}
 body{
   background: #f2f2f2;
 }
@@ -257,5 +266,4 @@ nav .logo.space{
   display: block;
   margin: 0 auto;
   filter: drop-shadow(0 0 16px #fff) drop-shadow(0 0 16px #ffd700);
-  /* Effetto glow bianco e giallo */
 }
