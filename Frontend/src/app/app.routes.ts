@@ -4,6 +4,8 @@ import { Contact } from './pagine/contact/contact';
 import { Policy} from './pagine/policy/policy';
 import { Cookie } from './pagine/cookie/cookie';
 import { SicurezzaPagamenti } from './pagine/sicurezza-pagamenti/sicurezza-pagamenti';
+import { LavoraConNoi } from './pagine/lavora-con-noi/lavora-con-noi';
+import { ChiSiamo } from './pagine/chi-siamo/chi-siamo';
 export const routes = [
   { path: '', component: Home },
   { path: 'home', component: Home },
@@ -11,5 +13,7 @@ export const routes = [
   { path: 'contact', component: Contact },
   { path: 'policy', component: Policy },
   { path: 'cookie', component: Cookie },
-  { path: 'sicurezza-pagamenti', component: SicurezzaPagamenti }
+  { path: 'sicurezza-pagamenti', component: SicurezzaPagamenti },
+  { path: 'lavora-con-noi', component: LavoraConNoi },
+  { path: 'chi-siamo', component: ChiSiamo }
 ];
