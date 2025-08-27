@@ -13,17 +13,17 @@ export class Home {
   filmInEvidenza = [
     {
       titolo: 'DEMON SLAYER: Kimetsu no Yaiba',
-      img: '/demonslayer.jpg',
+      img: '/assets/demonslayer.jpg',
       info: '2D'
     },
     {
       titolo: 'Troppo Cattivi 2',
-      img: '/troppocattivi2.jpg',
+      img: '/assets/troppocattivi2.jpg',
       info: '3D'
     },
     {
       titolo: 'Dangerous Animals',
-      img: '/dangerousanimals.jpg',
+      img: '/assets/dangerousanimals.jpg',
       info: '2D'
     }
     

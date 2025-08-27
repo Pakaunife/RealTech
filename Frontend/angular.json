@@ -22,7 +22,12 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              },"src/assets"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "assets"
+              }
             ],
             "styles": [ "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/styles.css"
