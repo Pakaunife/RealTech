@@ -23,6 +23,9 @@
   padding: 0;
   margin: 0 0 1.5rem 0;
 }
+footer .footer-col li a:hover{
+  color: #ff3d00;
+}
 
 .footer-col li {
   margin-bottom: 0.7rem;
