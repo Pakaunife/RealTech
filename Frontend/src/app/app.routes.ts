@@ -6,6 +6,8 @@ import { Cookie } from './pagine/cookie/cookie';
 import { SicurezzaPagamenti } from './pagine/sicurezza-pagamenti/sicurezza-pagamenti';
 import { LavoraConNoi } from './pagine/lavora-con-noi/lavora-con-noi';
 import { ChiSiamo } from './pagine/chi-siamo/chi-siamo';
+import { Registrazione } from './pagine/registrazione/registrazione';
+
 export const routes = [
   { path: '', component: Home },
   { path: 'home', component: Home },
@@ -15,5 +17,6 @@ export const routes = [
   { path: 'cookie', component: Cookie },
   { path: 'sicurezza-pagamenti', component: SicurezzaPagamenti },
   { path: 'lavora-con-noi', component: LavoraConNoi },
-  { path: 'chi-siamo', component: ChiSiamo }
+  { path: 'chi-siamo', component: ChiSiamo },
+  { path: 'registrazione', component: Registrazione }
 ];

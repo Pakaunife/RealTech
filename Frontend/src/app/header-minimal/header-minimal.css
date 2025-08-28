@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700&display=swap');
+* {
+  font-family: 'Montserrat', sans-serif;
+}
+.minimal-header {
+  position: fixed;  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 0; 
+  width: 100%;
+  height: 70px;
+  background: #171c24;
+  box-sizing: border-box;
+}
+.minimal-header .logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  font-size: 30px;
+  color: #fff;
+}
+.logo
+{
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -1px;
+  justify-content: center; 
+  cursor: pointer;
+}
+
+.logo a {
+  text-decoration: none;
+  outline: none;
+  box-shadow: none;
+  color: inherit;
+}
+.cinema-logo {
+  height: 69px;
+  width: auto;
+  margin-right: 10px;
+  cursor: pointer;
+  filter: drop-shadow(0 0 16px #fff) drop-shadow(0 0 16px #ffd700);
+}
+.app-header-minimal {
+  position: fixed;     
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;      
+  background: #171c24; 
+}
