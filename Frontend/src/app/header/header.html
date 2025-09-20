@@ -2,19 +2,33 @@
   <nav>
       <div class="menu-icon">
 <span class="fa-solid fa-bars"></span></div>
-<div class="logo">
-<img src="/assets/logo3.jpg" alt="Logo Star Cinema" class="cinema-logo" /> Star Cinema</div>
+  <a class= "logo" routerLink="/home">
+    <img src="/assets/logo3.jpg" alt="Logo Star Cinema" class="cinema-logo" /> Star Cinema
+  </a>
 <div class="nav-items">
 <li><a href="/">Home</a></li>
-<li><a href="#">Sign in</a></li>
+<li class="signin" (click)="$event.stopPropagation()">
+    <a class="nav-link" href="javascript:void(0)"
+       (click)="toggleSignInMenu($event)"
+       aria-haspopup="true"
+       [attr.aria-expanded]="showSignInMenu">
+      Sign in
+    </a>
+    <div class="signin-menu" [class.open]="showSignInMenu" (click)="$event.stopPropagation()">
+      <a routerLink="/accesso">Accedi</a>
+      <a routerLink="/registrazione">Registrati</a> 
+    </div>
+  </li>
 <li><a href="/about">About</a></li>
 <li><a href="/contact">Contact</a></li>
 <li><a href="#">Feedback</a></li>
 </div>
 <div class="search-icon">
-<span class="fa-solid fa-search"></span></div>
+<span class="fa-solid fa-search"></span>
+</div>
 <div class="cancel-icon">
-<span class="fa-solid fa-times"></span></div>
+<span class="fa-solid fa-times"></span>
+</div>
 <form action="#">
         <input type="search" class="search-data" placeholder="Cerca Film..." required>
         <button type="submit"><i class="bi bi-search"></i></button> 
