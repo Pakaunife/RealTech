@@ -12,8 +12,8 @@ import { CommonModule } from '@angular/common';
 export class Home {
   filmInEvidenza = [
     {
-      titolo: 'DEMON SLAYER: Kimetsu no Yaiba',
-      img: '/assets/demonslayer.jpg',
+      titolo: 'Oppenheimer',
+      img: '/assets/oppenheimer.jpg',
       info: '2D'
     },
     {
