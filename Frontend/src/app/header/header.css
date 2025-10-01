@@ -38,7 +38,7 @@ button .bi-search {
   cursor: pointer;
   display: block;
   margin: 0 auto;
-  filter: drop-shadow(0 0 16px #fff) drop-shadow(0 0 16px #ffd700);
+  /*filter: drop-shadow(0 0 16px #fff) drop-shadow(0 0 16px #ffd700); */
 }
 nav{
   background: #171c24;

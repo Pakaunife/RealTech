@@ -1,0 +1,13 @@
+<app-header></app-header>
+<div class="catalogo">
+  <h1>Catalogo Prodotti</h1>
+  <ul>
+    <li *ngFor="let prodotto of prodotti">
+      {{ prodotto.nome }} - {{ prodotto.categoria }} - {{ prodotto.marchio }}
+    </li>
+  </ul>
+</div>
+
+
+
+<app-footer></app-footer>

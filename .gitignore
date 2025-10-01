@@ -1,1 +1,57 @@
+<<<<<<< HEAD
 /Backend/.env
+=======
+﻿# -------- Logs --------
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# -------- Env --------
+.env
+.env.*
+!.env.example
+
+# -------- Editor / IDE --------
+.vscode/
+.idea/
+*.swp
+*.code-workspace
+
+# -------- Angular Frontend --------
+Frontend/node_modules/
+Frontend/dist/
+Frontend/.angular/
+Frontend/coverage/
+Frontend/*.tsbuildinfo
+Frontend/**/.tsbuildinfo
+Frontend/**/vite/deps/
+Frontend/**/vite/*.log
+
+# -------- Backend Node --------
+backend/node_modules/
+backend/dist/
+backend/logs/
+backend/*.log
+
+# -------- General build/cache --------
+node_modules/
+dist/
+.cache/
+tmp/
+temp/
+*.tsbuildinfo
+
+# -------- Test / coverage --------
+coverage/
+*.lcov
+
+# -------- System files --------
+.DS_Store
+Thumbs.db
+
+# -------- Runtime / pid --------
+pids/
+*.pid
+*.pid.lock
+>>>>>>> 52d47d26a6beeb1ab3e58c30293bc0f69bcf7d9f
