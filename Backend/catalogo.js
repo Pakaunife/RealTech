@@ -1,19 +1,10 @@
 const express = require('express');
-const { Pool } = require('pg');
+const pool = require('../connection/DBconnect');
 const cors = require('cors');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-// Connessione a PostgreSQL
-const pool = new Pool({
-  user: 'postgres',       // il tuo utente postgres
-  host: 'localhost',
-  database: 'Real_Teck',  // nome db
-  password: '0703',   // la tua password postgres
-  port: 5432,
-});
 
 // --- API Catalogo ---
 // Tutti i prodotti
