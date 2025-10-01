@@ -2,22 +2,21 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
-
 const router = express.Router();
 const pool = new Pool({
-  connectionString: "postgres://postgres:919301@localhost:5432/RealTech"
+  connectionString: process.env.DATABASE_URL
 });
 
 // Registrazione
 router.post('/register', async (req, res) => {
-  const { nome, email, password } = req.body;
-  if (!nome || !email || !password) return res.status(400).json({ message: 'Tutti i campi sono obbligatori' });
+  let {nome, cognome, email, password} = req.body;
+  if (!nome || !cognome || !email || !password) return res.status(400).json({ message: 'Tutti i campi sono obbligatori' });
     email = email.toLowerCase();
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const result = await pool.query(
-      'INSERT INTO utenti (nome, email, password) VALUES ($1, $2, $3) RETURNING id, nome, email',
-      [nome, email, hashedPassword]
+      'INSERT INTO utenti (nome, cognome, email, password) VALUES ($1, $2, $3, $4) RETURNING id, nome, email',
+      [nome, cognome, email, hashedPassword]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -31,7 +30,8 @@ router.post('/register', async (req, res) => {
 
 // Login
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+  const  password  = req.body.password;
+  let email = req.body.email;
   if (!email || !password) return res.status(400).json({ message: 'Email e password obbligatorie' });
     email = email.toLowerCase();
   try {
@@ -43,7 +43,7 @@ router.post('/login', async (req, res) => {
     if (!valid) return res.status(401).json({ message: 'Credenziali non valide' });
 
     // Genera JWT
-    const token = jwt.sign({ id: user.id, email: user.email }, 'segreto_super_sicuro', { expiresIn: '2h' });
+    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '2h' });
     res.json({ token, user: { id: user.id, nome: user.nome, email: user.email } });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -55,7 +55,7 @@ function authenticateToken(req, res, next) {
   const token = authHeader && authHeader.split(' ')[1];
   if (!token) return res.sendStatus(401);
 
-  jwt.verify(token, 'segreto_super_sicuro', (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) return res.sendStatus(403);
     req.user = user;
     next();
