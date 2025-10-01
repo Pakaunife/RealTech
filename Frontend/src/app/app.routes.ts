@@ -8,6 +8,7 @@ import { LavoraConNoi } from './pagine/lavora-con-noi/lavora-con-noi';
 import { ChiSiamo } from './pagine/chi-siamo/chi-siamo';
 import { Registrazione } from './pagine/registrazione/registrazione';
 import { Film } from './film/film';
+import { Catalogo } from './pagine/catalogo/catalogo';
 
 export const routes = [
   { path: '', component: Home },
@@ -20,5 +21,6 @@ export const routes = [
   { path: 'lavora-con-noi', component: LavoraConNoi },
   { path: 'chi-siamo', component: ChiSiamo },
   { path: 'registrazione', component: Registrazione },
-  { path: 'film', component: Film }
+  { path: 'film', component: Film },
+  { path: 'catalogo', component: Catalogo }
 ];
