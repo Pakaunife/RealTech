@@ -15,20 +15,27 @@ export class Catalogo {
   prodotti: any[] = [];
   prodottoSelezionato: any = null;
   
-  // Gestione stati
+  // Gestione stati, ariabili booleane per gestire quale sezione mostrare nella pagina.
   mostraCategorie: boolean = true;
   mostraProdotti: boolean = false;
   mostraDettaglio: boolean = false;
   categoriaSelezionata: string = '';
-  
+  caricamento: boolean = true;
   constructor(private http: HttpClient) {
     this.caricaCategorie();
   }
   
   caricaCategorie() {
+    this.caricamento = true; //bug fix per caricamento footer flash
     this.http.get<any[]>('http://localhost:3000/api/catalogo/prodotti').subscribe(
-      dati => this.categorie = dati,
-      err => console.error('Errore caricamento categorie:', err)
+      dati => {
+        this.categorie = dati;
+        this.caricamento = false;
+      },
+      err => {
+        console.error('Errore caricamento categorie:', err);
+        this.caricamento = false;
+      }
     );
   }
   
@@ -39,11 +46,18 @@ export class Catalogo {
     this.mostraDettaglio = false;
     this.caricaProdottiCategoria(nomeCategoria);
   }
-  
-  caricaProdottiCategoria(categoria: string) {
+
+  caricaProdottiCategoria(categoria: string) {  
+    this.caricamento = true; //bug fix per caricamento footer flash
     this.http.get<any[]>(`http://localhost:3000/api/catalogo/prodotti/categoria/${categoria}`).subscribe(
-      dati => this.prodotti = dati,
-      err => console.error('Errore caricamento prodotti:', err)
+      dati => {
+        this.prodotti = dati;
+        this.caricamento = false;
+      },
+      err => {
+        console.error('Errore caricamento prodotti:', err);
+        this.caricamento = false;
+      }
     );
   }
   
