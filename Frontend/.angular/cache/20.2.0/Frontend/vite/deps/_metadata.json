@@ -1,50 +1,56 @@
 {
-  "hash": "9c7db7d5",
-  "configHash": "108f2129",
+  "hash": "e2a82f3d",
+  "configHash": "da01433f",
   "lockfileHash": "78c2cb1e",
-  "browserHash": "1cb68a77",
+  "browserHash": "d91b5252",
   "optimized": {
     "@angular/common": {
       "src": "../../../../../../node_modules/@angular/common/fesm2022/common.mjs",
       "file": "@angular_common.js",
-      "fileHash": "6122ffeb",
+      "fileHash": "9b448be8",
       "needsInterop": false
     },
     "@angular/common/http": {
       "src": "../../../../../../node_modules/@angular/common/fesm2022/http.mjs",
       "file": "@angular_common_http.js",
-      "fileHash": "7863c93d",
+      "fileHash": "22e7414a",
       "needsInterop": false
     },
     "@angular/core": {
       "src": "../../../../../../node_modules/@angular/core/fesm2022/core.mjs",
       "file": "@angular_core.js",
-      "fileHash": "e39ca00d",
+      "fileHash": "1ade3056",
       "needsInterop": false
     },
     "@angular/platform-browser": {
       "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
       "file": "@angular_platform-browser.js",
-      "fileHash": "230f8607",
+      "fileHash": "1ff673a7",
       "needsInterop": false
     },
     "@angular/router": {
       "src": "../../../../../../node_modules/@angular/router/fesm2022/router.mjs",
       "file": "@angular_router.js",
-      "fileHash": "e0af0774",
+      "fileHash": "b66d98a6",
       "needsInterop": false
     },
     "rxjs": {
       "src": "../../../../../../node_modules/rxjs/dist/esm5/index.js",
       "file": "rxjs.js",
-      "fileHash": "5a6641a4",
+      "fileHash": "cf831f46",
       "needsInterop": false
     },
     "zone.js": {
       "src": "../../../../../../node_modules/zone.js/fesm2015/zone.js",
       "file": "zone__js.js",
-      "fileHash": "35af43ad",
+      "fileHash": "73aa080a",
       "needsInterop": true
+    },
+    "@angular/forms": {
+      "src": "../../../../../../node_modules/@angular/forms/fesm2022/forms.mjs",
+      "file": "@angular_forms.js",
+      "fileHash": "373ea9cb",
+      "needsInterop": false
     }
   },
   "chunks": {

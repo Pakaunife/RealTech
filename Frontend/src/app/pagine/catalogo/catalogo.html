@@ -20,9 +20,18 @@
       </div>
     </div>
     
+    <!-- Filtro per marca -->
+    <div class="filtro-marca" *ngIf="marcheDisponibili.length > 1" >
+      <label for="marcaSelect" >Filtra per marca:</label>
+      <select id="marcaSelect" [(ngModel)]="marcaSelezionata" >
+        <option value="">Tutte le marche</option>
+        <option *ngFor="let marca of marcheDisponibili" [value]="marca">{{ marca }}</option>
+      </select>
+    </div>
+    
     <!-- Prodotti in orizzontale -->
     <div class="prodotti-grid">
-      <div class="categoria-card_prodotto" *ngFor="let prodotto of prodotti"
+      <div class="categoria-card_prodotto" *ngFor="let prodotto of prodottiFiltrati"
            (click)="selezionaProdotto(prodotto)">
         <img [src]="'assets/prodotti/' + (prodotto.immagine)" 
              [alt]="prodotto.nome"

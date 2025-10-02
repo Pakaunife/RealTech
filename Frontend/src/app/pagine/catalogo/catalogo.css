@@ -95,3 +95,27 @@
   max-width: 600px;
   text-align: center;
 }
+
+.filtro-marca {
+  /* Layout e posizionamento */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin: 25px 0;
+  padding: 15px 20px;
+  color: #ffffff;
+}
+
+.filtro-marca select {
+  /* Stile select simile all'immagine */
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-family: 'Poppins', sans-serif;
+  min-width: 120px;
+  cursor: pointer;
+  /* Transizioni */
+  transition: all 0.2s ease;
+  background: linear-gradient(135deg, #9f9f9f 0%, #383432 100%);
+}
+

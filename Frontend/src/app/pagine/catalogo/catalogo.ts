@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { Header } from '../../header/header';
 import { Footer } from '../../footer/footer';
 import { CommonModule } from '@angular/common'; 
+import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-catalogo',
-  imports: [CommonModule, Header, Footer],
+  imports: [CommonModule, Header, Footer, FormsModule],
   templateUrl: './catalogo.html',
   styleUrls: ['./catalogo.css']
 })
@@ -20,6 +21,8 @@ export class Catalogo {
   mostraProdotti: boolean = false;
   mostraDettaglio: boolean = false;
   categoriaSelezionata: string = '';
+  marcaSelezionata: string = '';
+  marcheDisponibili: string[] = [];
   caricamento: boolean = true;
   constructor(private http: HttpClient) {
     this.caricaCategorie();
@@ -52,6 +55,9 @@ export class Catalogo {
     this.http.get<any[]>(`http://localhost:3000/api/catalogo/prodotti/categoria/${categoria}`).subscribe(
       dati => {
         this.prodotti = dati;
+        // Estrai marche disponibili dai prodotti
+        this.marcheDisponibili = Array.from(new Set(dati.map(p => p.marchio).filter(m => !!m)));
+        this.marcaSelezionata = ''; // Reset filtro marca
         this.caricamento = false;
       },
       err => {
@@ -82,5 +88,14 @@ export class Catalogo {
     this.prodotti = [];
     this.prodottoSelezionato = null;
     this.categoriaSelezionata = '';
+    this.marcaSelezionata = '';
+    this.marcheDisponibili = [];
+  }
+  
+  get prodottiFiltrati() {
+    if (!this.marcaSelezionata) {
+      return this.prodotti;
+    }
+    return this.prodotti.filter(p => p.marchio === this.marcaSelezionata);
   }
 }
