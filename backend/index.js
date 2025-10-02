@@ -9,9 +9,12 @@ app.use(express.json()); // Per leggere JSON dal frontend
 // Importa le rotte di autenticazione
 const RegisterRoute= require('./routes/register');
 const LoginRoute= require('./routes/login');
+const catalogoRoutes = require('./routes/catalogo');
 
+app.use('/api', catalogoRoutes);
 app.use('/api/auth', LoginRoute);
 app.use('/api/auth', RegisterRoute);
+
 
 // Avvio server
 app.listen(3000, () => console.log('Backend attivo su http://localhost:3000'));

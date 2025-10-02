@@ -2,22 +2,13 @@ const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
 
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-// Connessione a PostgreSQL
-const pool = new Pool({
-  user: 'postgres',       // il tuo utente postgres
-  host: 'localhost',
-  database: 'Real_Teck',  // nome db
-  password: '0703',   // la tua password postgres
-  port: 5432,
-});
+const pool = require('../connection/DBconnect');
 
 // --- API Catalogo ---
+const router = express.Router();
+
 // Tutti i prodotti
-app.get('/api/prodotti', async (req, res) => {
+router.get('/prodotti', async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT 
@@ -36,8 +27,4 @@ app.get('/api/prodotti', async (req, res) => {
   }
 });
 
-// --- Avvio server ---
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Server backend avviato su http://localhost:${PORT}`);
-});
+module.exports = router;
