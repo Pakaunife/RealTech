@@ -1,13 +1,52 @@
 <app-header></app-header>
 <div class="catalogo">
-  <h1>Catalogo Prodotti</h1>
-  <ul>
-    <li *ngFor="let prodotto of prodotti">
-      {{ prodotto.nome }} - {{ prodotto.categoria }} - {{ prodotto.marchio }}
-    </li>
-  </ul>
+  <h1>{{ mostraCategorie ? 'Categorie Prodotti' : (mostraDettaglio ? prodottoSelezionato?.nome : categoriaSelezionata) }}</h1>
+  <!-- Vista Categorie -->
+  <div *ngIf="mostraCategorie" class="categorie-grid">
+    <div class="categoria-card" *ngFor="let categoria of categorie" 
+         (click)="selezionaCategoria(categoria.nome)">
+      <h3>{{ categoria.nome }}</h3>
+      <p>Esplora la categoria</p>
+    </div>
+  </div>
+  <!-- Vista Prodotti -->
+  <div *ngIf="mostraProdotti">
+    <!-- Pulsante Torna Indietro -->
+    <div class="categorie-grid">
+      <div class="categoria-card"
+           (click)="tornaAlleCategorie()">
+        <h3>← Torna alle Categorie</h3>
+        <p>Clicca per tornare indietro</p>
+      </div>
+    </div>
+    
+    <!-- Prodotti in orizzontale -->
+    <div class="prodotti-grid">
+      <div class="categoria-card_prodotto" *ngFor="let prodotto of prodotti"
+           (click)="selezionaProdotto(prodotto)">
+        <img [src]="'assets/prodotti/' + (prodotto.immagine)" 
+             [alt]="prodotto.nome"
+             class="prodotto-immagine">
+        <h3>{{ prodotto.nome }}</h3>
+        <p>{{ prodotto.marchio || 'Marchio non specificato' }}</p>
+        <p style="font-weight: bold;">€{{ prodotto.prezzo }}</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Vista Dettaglio -->
+  <div *ngIf="mostraDettaglio" class="categorie-grid">
+    <div class="categoria-card" 
+         (click)="tornaProdotti()">
+      <h3>← Torna ai Prodotti</h3>
+      <p>Clicca per tornare alla lista</p>
+    </div>
+    
+    <div class="dettaglio-card">
+      <p><strong>Marchio:</strong> {{ prodottoSelezionato?.marchio || 'Non specificato' }}</p>
+      <p><strong>Prezzo:</strong> €{{ prodottoSelezionato?.prezzo }}</p>
+      <p><strong>Descrizione:</strong> {{ prodottoSelezionato?.descrizione || 'Descrizione non disponibile' }}</p>
+    </div>
+  </div>
 </div>
-
-
-
 <app-footer></app-footer>
