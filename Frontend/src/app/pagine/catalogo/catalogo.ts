@@ -26,7 +26,7 @@ export class Catalogo {
   }
   
   caricaCategorie() {
-    this.http.get<any[]>('http://localhost:3000/api/prodotti').subscribe(
+    this.http.get<any[]>('http://localhost:3000/api/catalogo/prodotti').subscribe(
       dati => this.categorie = dati,
       err => console.error('Errore caricamento categorie:', err)
     );
@@ -41,7 +41,7 @@ export class Catalogo {
   }
   
   caricaProdottiCategoria(categoria: string) {
-    this.http.get<any[]>(`http://localhost:3000/api/prodotti/categoria/${categoria}`).subscribe(
+    this.http.get<any[]>(`http://localhost:3000/api/catalogo/prodotti/categoria/${categoria}`).subscribe(
       dati => this.prodotti = dati,
       err => console.error('Errore caricamento prodotti:', err)
     );

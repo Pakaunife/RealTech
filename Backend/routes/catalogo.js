@@ -1,14 +1,5 @@
 const express = require('express');
 const pool = require('../connection/DBconnect');
-const cors = require('cors');
-
-<<<<<<<< HEAD:Backend/routes/catalogo.js
-const pool = require('../connection/DBconnect');
-========
-const app = express();
-app.use(cors());
-app.use(express.json());
->>>>>>>> main:Backend/catalogo.js
 
 // --- API Catalogo ---
 const router = express.Router();
