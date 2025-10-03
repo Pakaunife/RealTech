@@ -7,6 +7,7 @@ const LoginRoutes = require('./routes/login');
 const ProductsRoutes = require('./routes/products');
 const SuggestedRoutes = require('./routes/suggested');
 const CatalogoRoutes = require('./routes/catalogo');
+const CarrelloRoutes = require('./routes/carrello');
 
 const app = express();
 const PORT = process.env.PORT;
@@ -23,6 +24,7 @@ app.use('/api/auth', LoginRoutes);
 app.use('/api/products', ProductsRoutes);
 app.use('/api/products', SuggestedRoutes);
 app.use('/api/catalogo', CatalogoRoutes);
+app.use('/api/carrello', CarrelloRoutes);
 
 app.use((err, _req, res, _next) => {
   const status = err.status || 500;
