@@ -31,14 +31,22 @@
     
     <!-- Prodotti in orizzontale -->
     <div class="prodotti-grid">
-      <div class="categoria-card_prodotto" *ngFor="let prodotto of prodottiFiltrati"
-           (click)="selezionaProdotto(prodotto)">
-        <img [src]="'assets/prodotti/' + (prodotto.immagine)" 
-             [alt]="prodotto.nome"
-             class="prodotto-immagine">
-        <h3>{{ prodotto.nome }}</h3>
-        <p>{{ prodotto.marchio || 'Marchio non specificato' }}</p>
-        <p style="font-weight: bold;">€{{ prodotto.prezzo }}</p>
+      <div class="categoria-card_prodotto" *ngFor="let prodotto of prodottiFiltrati">
+        <div (click)="selezionaProdotto(prodotto)">
+          <img [src]="'assets/prodotti/' + (prodotto.immagine)" 
+               [alt]="prodotto.nome"
+               class="prodotto-immagine">
+          <h3>{{ prodotto.nome }}</h3>
+          <p>{{ prodotto.marchio || 'Marchio non specificato' }}</p>
+          <p style="font-weight: bold;">€{{ prodotto.prezzo }}</p>
+          <p>Disponibili: {{ prodotto.quantita_disponibile }}</p>
+        </div>
+        
+        <!-- PULSANTE CARRELLO -->
+        <button (click)="aggiungiAlCarrello(prodotto)" 
+                [disabled]="prodotto.quantita_disponibile <= 0">
+          {{ prodotto.quantita_disponibile > 0 ? 'Aggiungi al carrello' : 'Non disponibile' }}
+        </button>
       </div>
     </div>
   </div>
@@ -52,9 +60,20 @@
     </div>
     
     <div class="dettaglio-card">
+      <img [src]="'assets/prodotti/' + (prodottoSelezionato?.immagine)" 
+           [alt]="prodottoSelezionato?.nome"
+           class="prodotto-immagine-dettaglio">
+      <h2>{{ prodottoSelezionato?.nome }}</h2>
       <p><strong>Marchio:</strong> {{ prodottoSelezionato?.marchio || 'Non specificato' }}</p>
       <p><strong>Prezzo:</strong> €{{ prodottoSelezionato?.prezzo }}</p>
       <p><strong>Descrizione:</strong> {{ prodottoSelezionato?.descrizione || 'Descrizione non disponibile' }}</p>
+      <p><strong>Disponibilità:</strong> {{ prodottoSelezionato?.quantita_disponibile }} pezzi</p>
+      
+      <!-- PULSANTE CARRELLO NEL DETTAGLIO -->
+      <button (click)="aggiungiAlCarrello(prodottoSelezionato)" 
+              [disabled]="prodottoSelezionato?.quantita_disponibile <= 0">
+        {{ prodottoSelezionato?.quantita_disponibile > 0 ? 'Aggiungi al carrello' : 'Non disponibile' }}
+      </button>
     </div>
   </div>
 </div>

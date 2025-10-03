@@ -28,7 +28,9 @@ router.get('/prodotti/categoria/:nome', async (req, res) => {   //Riceve il nome
         p.prezzo,
         p.descrizione,
         p.immagine,
-        m.nome AS marchio
+        p.quantita_disponibile,
+        m.nome AS marchio,
+        c.nome AS categoria
       FROM prodotto p
       LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
       LEFT JOIN marchio m ON p.id_marchio = m.id_marchio

@@ -4,6 +4,7 @@ import { Footer } from '../../footer/footer';
 import { CommonModule } from '@angular/common'; 
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { CarrelloService } from '../../services/carrello.service';
 
 @Component({
   selector: 'app-catalogo',
@@ -24,7 +25,7 @@ export class Catalogo {
   marcaSelezionata: string = '';
   marcheDisponibili: string[] = [];
   caricamento: boolean = true;
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private carrelloService: CarrelloService) {
     this.caricaCategorie();
   }
   
@@ -97,5 +98,23 @@ export class Catalogo {
       return this.prodotti;
     }
     return this.prodotti.filter(p => p.marchio === this.marcaSelezionata);
+  }
+
+  aggiungiAlCarrello(prodotto: any): void {
+    // Controlla disponibilità prima di aggiungere
+    if (prodotto.quantita_disponibile <= 0) {
+      alert('Prodotto non disponibile!');
+      return;
+    }
+    
+    this.carrelloService.aggiungiAlCarrello(prodotto.id_prodotto, 1).subscribe({
+      next: () => {
+        alert('Prodotto aggiunto al carrello!');
+      },
+      error: (err) => {
+        console.error('Errore:', err);
+        alert('Errore nell\'aggiungere il prodotto al carrello');
+      }
+    });
   }
 }
