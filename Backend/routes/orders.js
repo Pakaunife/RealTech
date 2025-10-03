@@ -1,0 +1,68 @@
+const express = require('express');
+const pool = require('../connection/DBconnect');
+const authenticateToken = require('./auth');
+const router = express.Router();
+
+// Crea un nuovo ordine (con indirizzo e prodotti)
+router.post('/', authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+  const { indirizzo_consegna, prodotti, totale } = req.body;
+  try {
+    const pagamentoOk = true;
+    if (!pagamentoOk) {
+      return res.status(400).json({ message: 'Pagamento fallito' });
+    }
+    // Crea ordine
+    const ordineRes = await pool.query(
+      'INSERT INTO ordini (user_id, indirizzo_consegna, totale, stato) VALUES ($1, $2, $3, $4) RETURNING id',
+      [userId, indirizzo_consegna, totale, 'confermato']
+    );
+    const ordineId = ordineRes.rows[0].id;
+    // Inserisci prodotti nell’ordine
+    for (const p of prodotti) {
+      await pool.query(
+        'INSERT INTO ordine_prodotti (ordine_id, prodotto_id, quantita) VALUES ($1, $2, $3)',
+        [ordineId, p.prodotto_id, p.quantita]
+      );
+    }
+    res.json({ message: 'Ordine confermato', ordine_id: ordineId });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Ottieni lo storico degli ordini dell'utente loggato
+router.get('/storico', authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const result = await pool.query(
+      `SELECT * FROM ordini WHERE user_id = $1 ORDER BY data_ordine DESC`,
+      [userId]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Ottieni lo stato di un ordine specifico
+router.get('/:id/stato', authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+  const ordineId = req.params.id;
+  try {
+    const result = await pool.query(
+      `SELECT stato FROM ordini WHERE id = $1 AND user_id = $2`,
+      [ordineId, userId]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Ordine non trovato' });
+    }
+    res.json({ stato: result.rows[0].stato });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
+
+module.exports = router;
