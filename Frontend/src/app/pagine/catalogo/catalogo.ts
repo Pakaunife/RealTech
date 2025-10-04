@@ -2,22 +2,119 @@ import { Component } from '@angular/core';
 import { Header } from '../../header/header';
 import { Footer } from '../../footer/footer';
 import { CommonModule } from '@angular/common'; 
+import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { CarrelloService } from '../../services/carrello.service';
 
 @Component({
   selector: 'app-catalogo',
-  imports: [CommonModule, Header, Footer],
+  imports: [CommonModule, Header, Footer, FormsModule],
   templateUrl: './catalogo.html',
   styleUrls: ['./catalogo.css']
 })
 export class Catalogo {
-  // Logica del componente (se necessaria)
+  categorie: any[] = [];
   prodotti: any[] = [];
-
-  constructor(private http: HttpClient) {
-    this.http.get<any[]>('http://localhost:3000/api/prodotti').subscribe(
-      dati => this.prodotti = dati,
-      err => console.error('Errore caricamento prodotti:', err)
+  prodottoSelezionato: any = null;
+  
+  // Gestione stati, ariabili booleane per gestire quale sezione mostrare nella pagina.
+  mostraCategorie: boolean = true;
+  mostraProdotti: boolean = false;
+  mostraDettaglio: boolean = false;
+  categoriaSelezionata: string = '';
+  marcaSelezionata: string = '';
+  marcheDisponibili: string[] = [];
+  caricamento: boolean = true;
+  constructor(private http: HttpClient, private carrelloService: CarrelloService) {
+    this.caricaCategorie();
+  }
+  
+  caricaCategorie() {
+    this.caricamento = true; //bug fix per caricamento footer flash
+    this.http.get<any[]>('http://localhost:3000/api/catalogo/prodotti').subscribe(
+      dati => {
+        this.categorie = dati;
+        this.caricamento = false;
+      },
+      err => {
+        console.error('Errore caricamento categorie:', err);
+        this.caricamento = false;
+      }
     );
+  }
+  
+  selezionaCategoria(nomeCategoria: string) {
+    this.categoriaSelezionata = nomeCategoria;
+    this.mostraCategorie = false;
+    this.mostraProdotti = true;
+    this.mostraDettaglio = false;
+    this.caricaProdottiCategoria(nomeCategoria);
+  }
+
+  caricaProdottiCategoria(categoria: string) {  
+    this.caricamento = true; //bug fix per caricamento footer flash
+    this.http.get<any[]>(`http://localhost:3000/api/catalogo/prodotti/categoria/${categoria}`).subscribe(
+      dati => {
+        this.prodotti = dati;
+        // Estrai marche disponibili dai prodotti
+        this.marcheDisponibili = Array.from(new Set(dati.map(p => p.marchio).filter(m => !!m)));
+        this.marcaSelezionata = ''; // Reset filtro marca
+        this.caricamento = false;
+      },
+      err => {
+        console.error('Errore caricamento prodotti:', err);
+        this.caricamento = false;
+      }
+    );
+  }
+  
+  selezionaProdotto(prodotto: any) {
+    this.prodottoSelezionato = prodotto;
+    this.mostraCategorie = false;
+    this.mostraProdotti = false;
+    this.mostraDettaglio = true;
+  }
+  
+  tornaProdotti() {
+    this.mostraCategorie = false;
+    this.mostraProdotti = true;
+    this.mostraDettaglio = false;
+    this.prodottoSelezionato = null;
+  }
+  
+  tornaAlleCategorie() {
+    this.mostraCategorie = true;
+    this.mostraProdotti = false;
+    this.mostraDettaglio = false;
+    this.prodotti = [];
+    this.prodottoSelezionato = null;
+    this.categoriaSelezionata = '';
+    this.marcaSelezionata = '';
+    this.marcheDisponibili = [];
+  }
+  
+  get prodottiFiltrati() {
+    if (!this.marcaSelezionata) {
+      return this.prodotti;
+    }
+    return this.prodotti.filter(p => p.marchio === this.marcaSelezionata);
+  }
+
+  aggiungiAlCarrello(prodotto: any): void {
+    // Controlla disponibilità prima di aggiungere
+    if (prodotto.quantita_disponibile <= 0) {
+      alert('Prodotto non disponibile!');
+      return;
+    }
+    
+    this.carrelloService.aggiungiAlCarrello(prodotto.id_prodotto, 1).subscribe({
+      next: () => {
+        alert('Prodotto aggiunto al carrello!');
+      },
+      error: (err) => {
+        console.error('Errore:', err);
+        alert('Errore nell\'aggiungere il prodotto al carrello');
+      }
+    });
   }
 }
