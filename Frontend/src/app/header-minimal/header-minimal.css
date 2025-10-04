@@ -36,12 +36,11 @@
   box-shadow: none;
   color: inherit;
 }
-.cinema-logo {
+.Real-logo {
   height: 69px;
   width: auto;
   margin-right: 10px;
   cursor: pointer;
-  filter: drop-shadow(0 0 16px #fff) drop-shadow(0 0 16px #ffd700);
 }
 .app-header-minimal {
   position: fixed;     
