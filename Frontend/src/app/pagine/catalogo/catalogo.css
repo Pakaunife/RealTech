@@ -1,29 +1,121 @@
 .catalogo {
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
+  padding: 20px;
   font-family: Arial, sans-serif;
 }
 
 .catalogo h1 {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+  color: #ffffff;
+  font-size: 2.5rem;
+  text-decoration: none;
 }
 
-.catalogo ul {
-  list-style-type: none;
-  padding: 0;
+.categorie-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px 0;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-.catalogo li {
-  background-color: #f5f5f5;
-  margin-bottom: 10px;
-  padding: 10px 15px;
-  border-radius: 5px;
-  transition: background-color 0.3s;
+.categoria-card {
+  background: linear-gradient(135deg, #ff3d00 0%, #764ba2 100%);
+  color: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 
-.catalogo li:hover {
-  background-color: #e0e0e0;
+.categoria-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
 }
 
+.categoria-card h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.categoria-card p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 1rem;
+}
+
+.categoria-card_prodotto {
+  color: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  transition: all 0.3s ease;
+  min-width: 250px;
+}
+
+.categoria-card_prodotto:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+}
+
+/* Layout orizzontale per i prodotti */
+.prodotti-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  padding: 20px;
+  overflow-x: auto;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Stile per le immagini dei prodotti */
+.prodotto-immagine {
+  width: 100%;
+  max-width: 200px;
+  height: 200px;
+  object-fit: contain;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.dettaglio-card {
+  color: #ffffff;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  margin: 20px auto;
+  max-width: 600px;
+  text-align: center;
+}
+
+.filtro-marca {
+  /* Layout e posizionamento */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin: 25px 0;
+  padding: 15px 20px;
+  color: #ffffff;
+}
+
+.filtro-marca select {
+  /* Stile select simile all'immagine */
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-family: 'Poppins', sans-serif;
+  min-width: 120px;
+  cursor: pointer;
+  /* Transizioni */
+  transition: all 0.2s ease;
+  background: linear-gradient(135deg, #9f9f9f 0%, #383432 100%);
+}
 

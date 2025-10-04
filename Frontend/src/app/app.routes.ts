@@ -9,6 +9,7 @@ import { ChiSiamo } from './pagine/chi-siamo/chi-siamo';
 import { Registrazione } from './pagine/registrazione/registrazione';
 import { Film } from './film/film';
 import { Catalogo } from './pagine/catalogo/catalogo';
+import { Carrello } from './pagine/carrello/carrello';
 
 export const routes = [
   { path: '', component: Home },
@@ -22,5 +23,6 @@ export const routes = [
   { path: 'chi-siamo', component: ChiSiamo },
   { path: 'registrazione', component: Registrazione },
   { path: 'film', component: Film },
-  { path: 'catalogo', component: Catalogo }
+  { path: 'catalogo', component: Catalogo },
+  { path: 'carrello', component: Carrello }
 ];
