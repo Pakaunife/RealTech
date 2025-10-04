@@ -2,24 +2,36 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap, map } from 'rxjs/operators';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CarrelloService {
   private baseUrl = 'http://localhost:3000/api/carrello';
-  private idUtente = 1; // Per ora fisso, dopo collegheremo autenticazione
   
   private carrelloSubject = new BehaviorSubject<any[]>([]);
   public carrello$ = this.carrelloSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private authService: AuthService) {
     this.caricaCarrello();
   }
 
+  //qui prende id utente dal token, Il token è firmato dal backend con una chiave segreta
+  private getIdUtente(): number | null {
+    const user = this.authService.getUser();  //chiama getUser di authService
+    return user ? user.id : null;
+  }
+
+  // qua permette solo utenti autenticati possono gestire il carrello
   aggiungiAlCarrello(idProdotto: number, quantita: number): Observable<any> {
+    const idUtente = this.getIdUtente(); //prende id utente da sopra 
+    if (!idUtente) {
+      throw new Error('Utente non autenticato. Effettua il login per aggiungere prodotti al carrello.');
+    }
+    
     return this.http.post(`${this.baseUrl}/aggiungi`, {
-      id_utente: this.idUtente,
+      id_utente: idUtente,
       id_prodotto: idProdotto,
       quantita: quantita
     }).pipe(
@@ -28,14 +40,24 @@ export class CarrelloService {
   }
 
   rimuoviDalCarrello(idProdotto: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/rimuovi/${this.idUtente}/${idProdotto}`).pipe(
+    const idUtente = this.getIdUtente();
+    if (!idUtente) {
+      throw new Error('Utente non autenticato. Effettua il login per gestire il carrello.');
+    }
+    
+    return this.http.delete(`${this.baseUrl}/rimuovi/${idUtente}/${idProdotto}`).pipe(
       tap(() => this.caricaCarrello())
     );
   }
 
   aggiornaQuantita(idProdotto: number, quantita: number): Observable<any> {
+    const idUtente = this.getIdUtente();
+    if (!idUtente) {
+      throw new Error('Utente non autenticato. Effettua il login per gestire il carrello.');
+    }
+    
     return this.http.put(`${this.baseUrl}/aggiorna`, {
-      id_utente: this.idUtente,
+      id_utente: idUtente,
       id_prodotto: idProdotto,
       quantita: quantita
     }).pipe(
@@ -43,8 +65,16 @@ export class CarrelloService {
     );
   }
 
+  //se non sei loggato → carrello vuoto, se sei loggato → carrello personale
   private caricaCarrello(): void {
-    this.http.get<any[]>(`${this.baseUrl}/${this.idUtente}`).subscribe(
+    const idUtente = this.getIdUtente();
+    if (!idUtente) {
+      // Se l'utente non è loggato, svuota il carrello
+      this.carrelloSubject.next([]);
+      return;
+    }
+    
+    this.http.get<any[]>(`${this.baseUrl}/${idUtente}`).subscribe(
       carrello => this.carrelloSubject.next(carrello),
       err => console.error('Errore caricamento carrello:', err)
     );
@@ -58,5 +88,15 @@ export class CarrelloService {
     return this.carrello$.pipe(
       map(carrello => carrello.reduce((total, item) => total + (item.prezzo * item.quantita), 0))
     );
+  }
+
+  // Metodo per ricaricare il carrello dopo il login
+  ricaricaCarrello(): void {
+    this.caricaCarrello();
+  }
+
+  // Metodo per svuotare il carrello al logout
+  svuotaCarrello(): void {
+    this.carrelloSubject.next([]);
   }
 }

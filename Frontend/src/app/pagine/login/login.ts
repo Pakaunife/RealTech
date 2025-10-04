@@ -4,6 +4,7 @@ import { Footer } from '../../footer/footer';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { CarrelloService } from '../../services/carrello.service';
 
 @Component({
   selector: 'app-login',
@@ -13,8 +14,14 @@ import { Router } from '@angular/router';
 })
 export class Login {
   loginForm: FormGroup;
-
-  constructor(private fb: FormBuilder, private http: HttpClient, private router: Router) {
+  
+ // Dopo il login, ricarica il carrello con i dati dell'utente loggato
+  constructor(
+    private fb: FormBuilder, 
+    private http: HttpClient, 
+    private router: Router,
+    private carrelloService: CarrelloService
+  ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
@@ -27,6 +34,9 @@ export class Login {
         .subscribe({
           next: (res: any) => {
            localStorage.setItem('token', res.token);
+            
+            // Ricarica il carrello con i dati dell'utente loggato
+            this.carrelloService.ricaricaCarrello();
             
             this.router.navigate(['/home']);
           },

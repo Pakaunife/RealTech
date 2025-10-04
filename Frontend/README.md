@@ -1,8 +1,185 @@
-# Frontend
+# RealTech - E-commerce Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.2.0.
+Progetto e-commerce sviluppato con Angular 20.2.0 che implementa un sistema di carrello personalizzato per ogni utente autenticato.
 
-## Development server
+## 🚀 Funzionalità Implementate
+
+### 🔐 Sistema di Autenticazione
+- Login utenti con JWT Token
+- Autenticazione sicura tramite token firmato dal backend
+- Gestione automatica della sessione utente
+
+### 🛒 Carrello Personalizzato per Utente
+- **Carrello specifico per ogni utente** basato sull'ID estratto dal JWT token
+- **Sicurezza**: Solo utenti autenticati possono gestire il carrello
+- **Persistenza**: I prodotti rimangono salvati anche dopo logout/login
+- **Sincronizzazione automatica**: Il carrello si aggiorna in tempo reale
+
+## 🔧 Modifiche Tecniche Implementate
+
+### 🛒 CarrelloService (`carrello.service.ts`)
+
+#### **Cambiamento Principale:**
+- ❌ **PRIMA**: `private idUtente = 1;` (ID fisso per tutti gli utenti)
+- ✅ **DOPO**: ID dinamico estratto dal JWT token dell'utente loggato
+
+#### **Modifiche Dettagliate:**
+
+**1. Dependency Injection AuthService:**
+```typescript
+// AGGIUNTO:
+import { AuthService } from './auth.service';
+constructor(private http: HttpClient, private authService: AuthService)
+```
+
+**2. Metodo di Estrazione ID Utente:**
+```typescript
+// AGGIUNTO:
+private getIdUtente(): number | null {
+  const user = this.authService.getUser();  // Decodifica JWT token
+  return user ? user.id : null;             // Estrae ID o null
+}
+```
+
+**3. Controlli di Sicurezza in tutti i metodi:**
+```typescript
+// AGGIUNTO a aggiungiAlCarrello(), rimuoviDalCarrello(), aggiornaQuantita():
+const idUtente = this.getIdUtente();
+if (!idUtente) {
+  throw new Error('Utente non autenticato. Effettua il login...');
+}
+```
+
+**4. Gestione Carrello Vuoto per Non Autenticati:**
+```typescript
+// MODIFICATO caricaCarrello():
+if (!idUtente) {
+  this.carrelloSubject.next([]);  // Svuota carrello se non loggato
+  return;
+}
+```
+
+**5. Nuovi Metodi di Utilità:**
+```typescript
+// AGGIUNTI:
+ricaricaCarrello(): void {
+  this.caricaCarrello();  // Ricarica dopo login
+}
+
+svuotaCarrello(): void {
+  this.carrelloSubject.next([]);  // Svuota al logout
+}
+```
+
+#### **Impatto delle Modifiche:**
+- 🔒 **Sicurezza**: Ogni operazione verifica l'autenticazione
+- 🎯 **Personalizzazione**: Ogni utente vede solo i suoi prodotti
+- 🔄 **Sincronizzazione**: Carrello aggiornato automaticamente
+- ⚡ **Performance**: Caricamento solo quando necessario
+
+### 🔐 AuthService (`auth.service.ts`)
+
+#### **Miglioramenti Implementati:**
+
+**1. Gestione Errori Token:**
+```typescript
+// MODIFICATO getUser():
+try {
+  return jwtDecode(token);
+} catch (error) {
+  localStorage.removeItem('token');  // Rimuove token corrotto
+  return null;
+}
+```
+
+**2. Metodo di Utilità:**
+```typescript
+// AGGIUNTO:
+getUserId(): number | null {
+  const user = this.getUser();
+  return user ? user.id : null;
+}
+```
+
+#### **Benefici:**
+- 🛡️ **Robustezza**: Gestisce token corrotti automaticamente
+- 🔧 **Utilità**: Accesso diretto all'ID utente
+- 🚿 **Pulizia**: Rimozione automatica dati invalidi
+
+### 🚪 Login Component (`login.ts`)
+
+#### **Integrazione Carrello:**
+
+**1. Importazione CarrelloService:**
+```typescript
+// AGGIUNTO:
+import { CarrelloService } from '../../services/carrello.service';
+```
+
+**2. Dependency Injection:**
+```typescript
+// MODIFICATO constructor:
+constructor(
+  private fb: FormBuilder, 
+  private http: HttpClient, 
+  private router: Router,
+  private carrelloService: CarrelloService  // AGGIUNTO
+)
+```
+
+**3. Ricaricamento Carrello Post-Login:**
+```typescript
+// AGGIUNTO nel onSubmit():
+next: (res: any) => {
+  localStorage.setItem('token', res.token);
+  this.carrelloService.ricaricaCarrello();  // NUOVO
+  this.router.navigate(['/home']);
+}
+```
+
+#### **Risultato:**
+- 🔄 **Sincronizzazione Immediata**: Carrello aggiornato appena loggato
+- 🎯 **UX Fluida**: Nessuna ricarica pagina necessaria
+- ⚡ **Reattività**: Transizione istantanea stati utente
+- Sincronizzazione stato utente-carrello
+
+## 🔄 Flusso di Funzionamento
+
+1. **Utente non loggato**: 
+   - Carrello vuoto
+   - Impossibile aggiungere prodotti (errore di autenticazione)
+
+2. **Login utente**:
+   - Token JWT salvato in localStorage
+   - Carrello ricaricato automaticamente con prodotti dell'utente
+   - ID utente estratto dal token per tutte le operazioni
+
+3. **Operazioni carrello**:
+   - Ogni richiesta usa l'ID utente dal token
+   - Backend riceve l'ID corretto per associare prodotti all'utente giusto
+   - Sincronizzazione automatica dopo ogni modifica
+
+4. **Logout**:
+   - Token rimosso
+   - Carrello svuotato per sicurezza
+
+## 🛡️ Sicurezza
+
+- **JWT Token**: Firmato dal backend con chiave segreta
+- **Impossibile falsificare**: Modifiche al token lo rendono invalido
+- **Controlli lato client**: Verifica autenticazione prima di ogni operazione
+- **Validazione backend**: Ogni richiesta viene validata dal server
+
+## 🎯 Risultato
+
+- **Multi-utente**: Ogni utente ha il proprio carrello privato
+- **Sicuro**: Solo utenti autenticati possono gestire il carrello  
+- **Persistente**: I dati rimangono salvati tra le sessioni
+- **User Experience**: Transizioni fluide tra stati autenticato/non autenticato
+
+---
+
+## 💻 Development Server
 
 To start a local development server, run:
 
