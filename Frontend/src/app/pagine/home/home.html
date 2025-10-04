@@ -11,6 +11,12 @@
     </div>
   </div>
 
+  <div *ngIf="user;" class="alert alert-success mt-3">
+  Benvenuto/a, {{ user.nome}}!
+  <button class="btn btn-link" (click)="logout()">Logout</button>
+</div>
+
+
   <div class="package-TitoloParagrafo">OFFERTE SPECIALI</div>
   <div class="offers-row">
     <div class="package-card">

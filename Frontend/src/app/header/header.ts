@@ -1,6 +1,7 @@
 import { Component, HostListener } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -9,6 +10,14 @@ import { CommonModule } from '@angular/common';
   styleUrl: './header.css'
 })
 export class Header {
+  user: any;
+  constructor(public auth: AuthService) {
+    this.user = this.auth.getUser();
+  }
+   logout() {
+    this.auth.logout();
+    window.location.reload();
+  }
  showSignInMenu = false;
 
   toggleSignInMenu(event: MouseEvent) {

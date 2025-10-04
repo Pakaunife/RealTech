@@ -9,6 +9,9 @@ import { ChiSiamo } from './pagine/chi-siamo/chi-siamo';
 import { Registrazione } from './pagine/registrazione/registrazione';
 import { Film } from './film/film';
 import { Catalogo } from './pagine/catalogo/catalogo';
+import { Login } from './pagine/login/login';
+import { AuthGuard } from './services/auth.guard';
+import { Profilo } from './pagine/profilo/profilo';
 
 export const routes = [
   { path: '', component: Home },
@@ -22,5 +25,7 @@ export const routes = [
   { path: 'chi-siamo', component: ChiSiamo },
   { path: 'registrazione', component: Registrazione },
   { path: 'film', component: Film },
-  { path: 'catalogo', component: Catalogo }
+  { path: 'catalogo', component: Catalogo },
+  { path: 'login', component: Login },
+  { path: 'profilo', component: Profilo, canActivate: [AuthGuard] }
 ];

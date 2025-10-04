@@ -3,11 +3,11 @@
       <div class="menu-icon">
 <span class="fa-solid fa-bars"></span></div>
   <a class= "logo" routerLink="/home">
-    <img src="/assets/LOGO_TECH3.png" alt="Logo Star Cinema" class="cinema-logo" /> Real Tech
+    <img src="/assets/LOGO_TECH3.png" alt="Logo Real Tech" class="cinema-logo" /> Real Tech
   </a>
 <div class="nav-items">
-<li><a href="/">Home</a></li>
-<li class="signin" (click)="$event.stopPropagation()">
+<li><a href="/home">Home</a></li>
+<li class="signin" *ngIf = "!user" (click)="$event.stopPropagation()">
     <a class="nav-link" href="javascript:void(0)"
        (click)="toggleSignInMenu($event)"
        aria-haspopup="true"
@@ -15,10 +15,13 @@
       Sign in
     </a>
     <div class="signin-menu" [class.open]="showSignInMenu" (click)="$event.stopPropagation()">
-      <a routerLink="/accesso">Accedi</a>
+      <a routerLink="/login">Accedi</a>
       <a routerLink="/registrazione">Registrati</a> 
     </div>
   </li>
+
+<li *ngIf="user"><a routerLink="/profilo">Profilo</a></li>
+<li *ngIf="user"><a href="#" (click)="logout()">Logout</a></li>
 <li><a href="/about">About</a></li>
 <li><a href="/film">Film</a></li>
 <li><a routerLink="/catalogo">Catalogo</a></li>

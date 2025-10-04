@@ -3,6 +3,7 @@ import { Header } from '../../header/header';
 import { Footer } from '../../footer/footer';
 import { CommonModule } from '@angular/common'; 
 import { RouterModule } from '@angular/router'; 
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -12,6 +13,7 @@ import { RouterModule } from '@angular/router';
 })
 export class Home {
 
+    user: any;
   filmInEvidenza = [
     {
       titolo: 'periferiche',
@@ -30,4 +32,12 @@ export class Home {
     }
     
   ];
+  constructor(public auth: AuthService) {
+    this.user = this.auth.getUser();
+  }
+
+  logout() {
+    this.auth.logout();
+    window.location.reload(); 
+  }
 }

@@ -1,4 +1,4 @@
-q1  ,bzrequire('dotenv').config();
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 
@@ -8,7 +8,7 @@ const ProductsRoutes = require('./routes/products');
 const SuggestedRoutes = require('./routes/suggested');
 const WishListRoutes = require('./routes/wishlist');
 const OrdersRoutes = require('./routes/orders');
-const AddressesRoutes = require('./routes/addresses');
+const AddressesRoutes = require('./routes/indirizzi');
 
 const app = express();
 const PORT = process.env.PORT;
@@ -26,7 +26,7 @@ app.use('/api/products', ProductsRoutes);
 app.use('/api/products', SuggestedRoutes);
 app.use('/api/wishlist', WishListRoutes);
 app.use('/api/orders', OrdersRoutes);
-app.use('/api/addresses', AddressesRoutes);
+app.use('/api/indirizzi', AddressesRoutes);
 
 app.use((err, _req, res, _next) => {
   const status = err.status || 500;
