@@ -9,13 +9,10 @@ import { ChiSiamo } from './pagine/chi-siamo/chi-siamo';
 import { Registrazione } from './pagine/registrazione/registrazione';
 import { Film } from './film/film';
 import { Catalogo } from './pagine/catalogo/catalogo';
-<<<<<<< HEAD
 import { Login } from './pagine/login/login';
 import { AuthGuard } from './services/auth.guard';
 import { Profilo } from './pagine/profilo/profilo';
-=======
 import { Carrello } from './pagine/carrello/carrello';
->>>>>>> e884afa2a7eb6525b6c8dc3241b461412ab92231
 
 export const routes = [
   { path: '', component: Home },
@@ -30,10 +27,7 @@ export const routes = [
   { path: 'registrazione', component: Registrazione },
   { path: 'film', component: Film },
   { path: 'catalogo', component: Catalogo },
-<<<<<<< HEAD
   { path: 'login', component: Login },
-  { path: 'profilo', component: Profilo, canActivate: [AuthGuard] }
-=======
+  { path: 'profilo', component: Profilo, canActivate: [AuthGuard] },
   { path: 'carrello', component: Carrello }
->>>>>>> e884afa2a7eb6525b6c8dc3241b461412ab92231
 ];
