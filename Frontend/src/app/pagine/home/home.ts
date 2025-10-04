@@ -14,6 +14,7 @@ import { AuthService } from '../../services/auth.service';
 export class Home {
 
     user: any;
+    showWelcome = false;
   filmInEvidenza = [
     {
       titolo: 'periferiche',
@@ -35,9 +36,19 @@ export class Home {
   constructor(public auth: AuthService) {
     this.user = this.auth.getUser();
   }
+  
+  ngOnInit() {
+    if (this.user) {
+      this.showWelcome = true;
+      setTimeout(() => {
+        this.showWelcome = false;
+      }, 3000); // 3 secondi
+    }
+  }
 
   logout() {
     this.auth.logout();
     window.location.reload(); 
   }
 }
+
