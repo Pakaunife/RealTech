@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { Header } from '../../header/header';
-import { Footer } from '../../footer/footer';
 import { CommonModule } from '@angular/common'; 
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -8,7 +6,7 @@ import { CarrelloService } from '../../services/carrello.service';
 
 @Component({
   selector: 'app-catalogo',
-  imports: [CommonModule, Header, Footer, FormsModule],
+  imports: [CommonModule,FormsModule],
   templateUrl: './catalogo.html',
   styleUrls: ['./catalogo.css']
 })

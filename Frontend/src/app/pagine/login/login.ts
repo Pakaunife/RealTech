@@ -1,14 +1,13 @@
 import { Component } from '@angular/core';
 import { HeaderMinimal} from '../../header-minimal/header-minimal';
-import { Footer } from '../../footer/footer';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { CarrelloService } from '../../services/carrello.service';
-
+import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-login',
-  imports: [HeaderMinimal, Footer, ReactiveFormsModule],
+  imports: [HeaderMinimal, ReactiveFormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
@@ -20,7 +19,8 @@ export class Login {
     private fb: FormBuilder, 
     private http: HttpClient, 
     private router: Router,
-    private carrelloService: CarrelloService
+    private carrelloService: CarrelloService,
+    private auth: AuthService
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -33,7 +33,7 @@ export class Login {
       this.http.post<any>('http://localhost:3000/api/auth/login', this.loginForm.value)
         .subscribe({
           next: (res: any) => {
-           localStorage.setItem('token', res.token);
+           this.auth.login(res.token);
             
             // Ricarica il carrello con i dati dell'utente loggato
             this.carrelloService.ricaricaCarrello();

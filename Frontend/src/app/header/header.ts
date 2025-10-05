@@ -14,9 +14,11 @@ export class Header {
   constructor(public auth: AuthService) {
     this.user = this.auth.getUser();
   }
+  ngOnInit() {
+    this.auth.user$.subscribe(user => this.user = user);
+  }
    logout() {
     this.auth.logout();
-    window.location.reload();
   }
  showSignInMenu = false;
 

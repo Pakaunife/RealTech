@@ -1,13 +1,11 @@
 import { Component } from '@angular/core';
-import { Header } from '../../header/header';
-import { Footer } from '../../footer/footer';
 import { CommonModule } from '@angular/common'; 
 import { RouterModule } from '@angular/router'; 
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-home',
-  imports: [Header, Footer, CommonModule, RouterModule],
+  imports: [ CommonModule, RouterModule],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })

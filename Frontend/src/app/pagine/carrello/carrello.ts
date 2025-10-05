@@ -1,13 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Header } from '../../header/header';
-import { Footer } from '../../footer/footer';
 import { CarrelloService } from '../../services/carrello.service';
 import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-carrello',
-  imports: [CommonModule, Header, Footer],
+  imports: [CommonModule],
   templateUrl: './carrello.html',
   styleUrl: './carrello.css'
 })

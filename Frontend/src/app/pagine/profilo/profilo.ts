@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Header} from '../../header/header';
-import { Footer } from '../../footer/footer';
+
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 @Component({
   selector: 'app-profilo',
-  imports: [Header, Footer],
+  imports: [],
   templateUrl: './profilo.html',
   styleUrl: './profilo.css'
 })

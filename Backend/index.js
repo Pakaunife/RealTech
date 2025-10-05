@@ -12,6 +12,7 @@ const AddressesRoutes = require('./routes/indirizzi');
 const ProfileRoutes = require('./routes/profile');
 const CatalogoRoutes = require('./routes/catalogo');
 const CarrelloRoutes = require('./routes/carrello');
+const AdminRoutes = require('./routes/admin');
 const app = express();
 const PORT = process.env.PORT;
 
@@ -32,6 +33,7 @@ app.use('/api/indirizzi', AddressesRoutes);
 app.use('/api/profile', ProfileRoutes);
 app.use('/api/catalogo', CatalogoRoutes);
 app.use('/api/carrello', CarrelloRoutes);
+app.use('/api/admin', AdminRoutes);
 
 app.use((err, _req, res, _next) => {
   const status = err.status || 500;

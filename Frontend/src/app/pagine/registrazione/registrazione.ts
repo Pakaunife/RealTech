@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
 import { HeaderMinimal} from '../../header-minimal/header-minimal';
-import { Footer } from '../../footer/footer';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-registrazione',
-  imports: [HeaderMinimal, Footer, ReactiveFormsModule],
+  imports: [HeaderMinimal, ReactiveFormsModule],
   templateUrl: './registrazione.html',
   styleUrl: './registrazione.css'
 })

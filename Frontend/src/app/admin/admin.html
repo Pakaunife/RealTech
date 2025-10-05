@@ -1,0 +1,29 @@
+
+<app-header-minimal></app-header-minimal>
+<table>
+  <tr>
+    <th>Nome</th>
+    <th>Cognome</th>
+    <th>Email</th>
+    <th>Admin</th>
+    <th>Bloccato</th>
+    <th>Ordini</th>
+    <th>Azioni</th>
+  </tr>
+  <tr *ngFor="let user of users">
+    <td>{{ user.nome }}</td>
+    <td>{{ user.cognome }}</td>
+    <td>{{ user.email }}</td>
+    <td>{{ user.is_admin ? 'Sì' : 'No' }}</td>
+    <td>{{ user.is_blocked ? 'Sì' : 'No' }}</td>
+    <td>{{ user.orders_count }}</td>
+    <td>
+      <button (click)="toggleBlock(user)">
+        {{ user.is_blocked ? 'Sblocca' : 'Blocca' }}
+      </button>
+      <button (click)="toggleAdmin(user)">
+        {{ user.is_admin ? 'Rimuovi Admin' : 'Rendi Admin' }}
+      </button>
+    </td>
+  </tr>
+</table>
