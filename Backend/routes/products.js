@@ -2,6 +2,8 @@ const express = require('express');
 const pool = require('../connection/DBconnect');
 const authenticateToken = require('./auth');
 const router = express.Router();
+const path = require('path');
+const fs = require('fs');
 
 // Imposta prodotto in vetrina o promo
 router.put('/:id/vetrina', authenticateToken, async (req, res) => {
@@ -37,7 +39,7 @@ router.get('/promo', async (_req, res) => {
   }
 });
 
-router.get('/load', async (_req, res) => {
+router.get('/load',authenticateToken, async (_req, res) => {
   try {
     const result = await pool.query('SELECT * FROM prodotto');
     res.json(result.rows);
@@ -84,7 +86,7 @@ router.post('/insert', authenticateToken, async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const result = await pool.query(
       `UPDATE prodotto
@@ -114,10 +116,33 @@ router.put('/:id', async (req, res) => {
         req.params.id
       ]
     );
+     if (req.body.immagine && req.body.immagineVecchia && req.body.immagine !== req.body.immagineVecchia) {
+      const oldImagePath = path.join(__dirname, '../assets/prodotti/', req.body.immagineVecchia);
+      fs.unlink(oldImagePath, (err) => {
+        if (err && err.code !== 'ENOENT') {
+          console.error('Errore eliminazione vecchia immagine:', err);
+        }
+         });
+        }
     if (result.rowCount === 0) {
       return res.status(404).json({ message: 'Prodotto non trovato' });
     }
     res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.get('/', authenticateToken,async (req, res) => {
+  try {
+    const { nome } = req.query;
+    if (!nome) return res.status(400).json({ message: 'Nome prodotto mancante' });
+
+    const result = await pool.query(
+      `SELECT * FROM prodotto WHERE LOWER(nome) = LOWER($1)`,
+      [nome]
+    );
+    res.json(result.rows);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

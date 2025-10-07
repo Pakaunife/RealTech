@@ -1,23 +1,33 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
+
 import { App } from './app';
 import { Header } from './header/header';
 import { Footer } from './footer/footer';
-import { RouterOutlet } from '@angular/router';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TokenInterceptor } from './services/token.interceptor';
+import { routes } from './app.routes'; // Se hai le route definite
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    // Qui metti i tuoi componenti se non sono standalone
+  ],
   imports: [
     BrowserModule,
-    RouterOutlet,
+    HttpClientModule, // <-- Aggiungi questo
+    RouterModule.forRoot(routes), // <-- Aggiungi questo se hai le route
     Header,
-    Footer
+    Footer,
+    App
   ],
-  bootstrap: [App],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
-  ]
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptor,
+      multi: true
+    }
+  ],
+  bootstrap: [App]
 })
 export class AppModule {}

@@ -13,10 +13,19 @@ const ProfileRoutes = require('./routes/profile');
 const CatalogoRoutes = require('./routes/catalogo');
 const CarrelloRoutes = require('./routes/carrello');
 const AdminRoutes = require('./routes/admin');
+const immagineRoutes = require('./routes/immagine');
 const app = express();
 const PORT = process.env.PORT;
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:4200',
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Authorization'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  optionsSuccessStatus: 200  
+}));
+
 app.use(express.json());
 
 app.get('/', (_req, res) => {
@@ -34,6 +43,7 @@ app.use('/api/profile', ProfileRoutes);
 app.use('/api/catalogo', CatalogoRoutes);
 app.use('/api/carrello', CarrelloRoutes);
 app.use('/api/admin', AdminRoutes);
+app.use('/api/immagine', immagineRoutes);
 
 app.use((err, _req, res, _next) => {
   const status = err.status || 500;

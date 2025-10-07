@@ -19,6 +19,10 @@ export class Admin implements OnInit {
   mostraFormProdotto = false;
   brandDisponibili: any[] = [];
   prodottoQuery: string = '';
+  selectedFile: File | null = null;
+  immagineVecchia: string = '';
+  categoriaSelezionata: string = '';
+  brandSelezionato: string = '';
 
   constructor(private http: HttpClient) {}
 
@@ -33,13 +37,23 @@ export class Admin implements OnInit {
 }
 
 get prodottiFiltrati() {
-  if (!this.prodottoQuery?.trim()) return this.prodotti;
-  const q = this.prodottoQuery.trim().toLowerCase();
-  return this.prodotti.filter(p =>
-    p.nome.toLowerCase().includes(q) ||
-    (p.descrizione && p.descrizione.toLowerCase().includes(q))
-  );
+  let prodotti = this.prodotti;
+  if (this.categoriaSelezionata) {
+    prodotti = prodotti.filter(p => String(p.id_categoria) === String(this.categoriaSelezionata));
+  }
+  if (this.brandSelezionato) {
+    prodotti = prodotti.filter(p => String(p.id_marchio) === String(this.brandSelezionato));
+  }
+  if (this.prodottoQuery?.trim()) {
+    const q = this.prodottoQuery.trim().toLowerCase();
+    prodotti = prodotti.filter(p =>
+      p.nome.toLowerCase().includes(q) ||
+      (p.descrizione && p.descrizione.toLowerCase().includes(q))
+    );
+  }
+  return prodotti;
 }
+
 
 
 apriFormProdotto() {
@@ -56,6 +70,16 @@ apriFormProdotto() {
     bloccato: false
   };
   this.mostraFormProdotto = true;
+}
+
+chiudiFormProdotto() {
+  this.mostraFormProdotto = false;
+  this.prodottoForm = {};
+  this.selectedFile = null;
+}
+
+onFileSelected(event: any) {
+  this.selectedFile = event.target.files[0];
 }
 
   ngOnInit() {
@@ -114,10 +138,64 @@ bloccaProdotto(prodotto: any) {
 }
 
 salvaProdotto() {
+  
+  if (this.prodottoForm.id) {
+    this.immagineVecchia = this.prodottoForm.immagine;
+    this.uploadAndInviaProdotto();
+    return;
+  }
+
+    this.http.get<any[]>(`http://localhost:3000/api/products?nome=${encodeURIComponent(this.prodottoForm.nome)}`)
+    .subscribe({
+      next: prodottiEsistenti => {
+        if (prodottiEsistenti && prodottiEsistenti.length > 0) {
+          const prodotto = prodottiEsistenti[0];
+          this.modificaProdotto(prodotto);
+          alert('Prodotto già presente. Puoi modificarlo.');
+          return;
+        }
+        this.uploadAndInviaProdotto();
+      },
+      error: err => {
+        alert('Errore durante la verifica del prodotto: ' + (err.error?.message || err.message));
+      }
+    });
+  } 
+      
+      
+    
+  uploadAndInviaProdotto() {
+  if (this.selectedFile) {
+    // Se è stata selezionata una nuova immagine, caricala prima
+    const formData = new FormData();
+    formData.append('immagine', this.selectedFile);
+
+    this.http.post<{ filename: string }>('http://localhost:3000/api/immagine/upload', 
+      formData,{ headers: { 'x-file-name': this.selectedFile.name } })
+      .subscribe({
+        next: res => {
+          this.prodottoForm.immagine = res.filename;
+          this.inviaProdotto();
+        },
+        error: err => alert('Errore upload immagine: ' + (err.error?.message || err.message))
+      });
+  } else {
+    // Nessuna nuova immagine, aggiorna solo i dati
+    this.inviaProdotto();
+  }
+}
+
+
+
+
+
+inviaProdotto() {
 
   if (this.prodottoForm.id) {
     // MODIFICA
-    this.http.put(`http://localhost:3000/api/products/${this.prodottoForm.id}`, this.prodottoForm)
+    this.http.put(`http://localhost:3000/api/products/${this.prodottoForm.id}`,{ ...this.prodottoForm,
+      immagineVecchia: this.immagineVecchia
+    })
       .subscribe({
         next: () => {
           this.mostraFormProdotto = false;
