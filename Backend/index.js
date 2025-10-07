@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 
 const RegisterRoutes = require('./routes/register');
 const LoginRoutes = require('./routes/login');
@@ -18,6 +19,9 @@ const PORT = process.env.PORT;
 
 app.use(cors());
 app.use(express.json());
+
+// Servire file statici per le immagini dei prodotti
+app.use('/api/images', express.static(path.join(__dirname, 'uploads')));
 
 app.get('/', (_req, res) => {
   res.json({ status: 'ok' });

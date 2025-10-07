@@ -36,7 +36,14 @@ router.get('/prodotti/categoria/:nome', async (req, res) => {   //Riceve il nome
       LEFT JOIN marchio m ON p.id_marchio = m.id_marchio
       WHERE c.nome = $1
     `, [nomeCategoria]);
-    res.json(result.rows);
+    
+    // Aggiungi URL completo dell'immagine a ogni prodotto
+    const prodottiConUrl = result.rows.map(prodotto => ({
+      ...prodotto,
+      immagine_url: prodotto.immagine ? `http://localhost:3000/api/images/prodotti/${prodotto.immagine}` : 'http://localhost:3000/api/images/prodotti/default.jpg'
+    }));
+    
+    res.json(prodottiConUrl);
   } catch (err) {
     res.status(500).json({ error: 'Errore DB' });
   }

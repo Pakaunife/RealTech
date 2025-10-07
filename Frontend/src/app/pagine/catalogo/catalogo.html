@@ -33,7 +33,7 @@
     <div class="prodotti-grid">
       <div class="categoria-card_prodotto" *ngFor="let prodotto of prodottiFiltrati">
         <div (click)="selezionaProdotto(prodotto)">
-          <img [src]="'assets/prodotti/' + (prodotto.immagine)" 
+          <img [src]="prodotto.immagine_url || 'http://localhost:3000/api/images/prodotti/default.jpg'" 
                [alt]="prodotto.nome"
                class="prodotto-immagine">
           <h3>{{ prodotto.nome }}</h3>
@@ -60,7 +60,7 @@
     </div>
     
     <div class="dettaglio-card">
-      <img [src]="'assets/prodotti/' + (prodottoSelezionato?.immagine)" 
+      <img [src]="prodottoSelezionato?.immagine_url || 'http://localhost:3000/api/images/prodotti/default.jpg'" 
            [alt]="prodottoSelezionato?.nome"
            class="prodotto-immagine-dettaglio">
       <h2>{{ prodottoSelezionato?.nome }}</h2>

@@ -231,6 +231,100 @@ ng e2e
 
 Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
 
+---
+
+## 🖼️ Gestione Immagini Prodotti (Ultimo Aggiornamento)
+
+### 🔄 Migrazione da Frontend a Backend
+
+È stata implementata una nuova architettura per la gestione delle immagini dei prodotti, spostandole dal frontend al backend per una gestione centralizzata e più efficiente.
+
+#### **Cambiamenti Architetturali:**
+
+### 🗂️ Backend (`Backend/`)
+
+**1. Struttura File Aggiunta:**
+```
+Backend/
+├── uploads/
+│   └── prodotti/
+│       ├── default.jpg
+│       ├── rtx4090.jpg
+│       └── [altre immagini prodotti]
+```
+
+**2. Server Express (`index.js`):**
+```javascript
+// AGGIUNTO: Middleware per servire file statici
+const path = require('path');
+app.use('/api/images', express.static(path.join(__dirname, 'uploads')));
+```
+
+**3. API Catalogo (`routes/catalogo.js`):**
+```javascript
+// MODIFICATO: Aggiunta URL completo immagine nel response
+const prodottiConUrl = result.rows.map(prodotto => ({
+  ...prodotto,
+  immagine_url: prodotto.immagine 
+    ? `http://localhost:3000/api/images/prodotti/${prodotto.immagine}` 
+    : 'http://localhost:3000/api/images/prodotti/default.jpg'
+}));
+```
+
+**4. API Carrello (`routes/carrello.js`):**
+```javascript
+// MODIFICATO: URL immagini anche per prodotti nel carrello
+const carrelloConUrl = rows.map(item => ({
+  ...item,
+  immagine_url: item.immagine 
+    ? `http://localhost:3000/api/images/prodotti/${item.immagine}` 
+    : 'http://localhost:3000/api/images/prodotti/default.jpg'
+}));
+```
+
+### 🎨 Frontend (`Frontend/`)
+
+**1. Template Catalogo (`catalogo.html`):**
+```html
+<!-- PRIMA: -->
+<img [src]="'assets/prodotti/' + (prodotto.immagine)" [alt]="prodotto.nome">
+
+<!-- DOPO: -->
+<img [src]="prodotto.immagine_url || 'http://localhost:3000/api/images/prodotti/default.jpg'" 
+     [alt]="prodotto.nome">
+```
+
+**2. Template Carrello (`carrello.html`):**
+```html
+<!-- PRIMA: -->
+<img [src]="'assets/prodotti/' + item.immagine" [alt]="item.nome">
+
+<!-- DOPO: -->
+<img [src]="item.immagine_url || 'http://localhost:3000/api/images/prodotti/default.jpg'" 
+     [alt]="item.nome">
+```
+
+#### **Vantaggi dell'Implementazione:**
+
+- 🎯 **Centralizzazione**: Tutte le immagini gestite dal backend
+- 📦 **Build Ottimizzato**: Frontend più leggero (no immagini in assets)
+- 🔄 **Gestione Dinamica**: Possibilità di aggiungere/modificare immagini senza rebuild
+- 🛡️ **Controllo Accessi**: Possibilità futura di implementare autenticazione per immagini
+- 🌐 **Scalabilità**: Facile integrazione con CDN o storage cloud
+- 🔧 **Manutenzione**: Aggiornamenti immagini senza rideploy frontend
+
+#### **Endpoint Immagini:**
+- **URL Base**: `http://localhost:3000/api/images/prodotti/`
+- **Esempio**: `http://localhost:3000/api/images/prodotti/rtx4090.jpg`
+- **Fallback**: `default.jpg` per immagini mancanti
+
+#### **Compatibilità:**
+- ✅ **Retrocompatibilità**: Gestione automatica immagini mancanti
+- ✅ **Fallback Graceful**: Immagine default se file non trovato
+- ✅ **API Consistente**: Stesso formato response per tutti gli endpoint
+
+---
+
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

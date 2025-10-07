@@ -44,7 +44,13 @@ router.get('/:id_utente', async (req, res) => {
       WHERE c.id_utente = $1
     `, [req.params.id_utente]);
     
-    res.json(rows);
+    // Aggiungi URL completo dell'immagine a ogni prodotto del carrello
+    const carrelloConUrl = rows.map(item => ({
+      ...item,
+      immagine_url: item.immagine ? `http://localhost:3000/api/images/prodotti/${item.immagine}` : 'http://localhost:3000/api/images/prodotti/default.jpg'
+    }));
+    
+    res.json(carrelloConUrl);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Errore del server' });
