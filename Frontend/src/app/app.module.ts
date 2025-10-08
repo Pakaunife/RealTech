@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+/*import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { App } from './app';
 import { Header } from './header/header';
@@ -20,4 +20,4 @@ import { TokenInterceptor } from './services/token.interceptor';
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
   ]
 })
-export class AppModule {}
+export class AppModule {}*/
