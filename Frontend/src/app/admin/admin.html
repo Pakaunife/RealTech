@@ -1,29 +1,140 @@
-
 <app-header-minimal></app-header-minimal>
-<table>
-  <tr>
-    <th>Nome</th>
-    <th>Cognome</th>
-    <th>Email</th>
-    <th>Admin</th>
-    <th>Bloccato</th>
-    <th>Ordini</th>
-    <th>Azioni</th>
-  </tr>
-  <tr *ngFor="let user of users">
-    <td>{{ user.nome }}</td>
-    <td>{{ user.cognome }}</td>
-    <td>{{ user.email }}</td>
-    <td>{{ user.is_admin ? 'Sì' : 'No' }}</td>
-    <td>{{ user.is_blocked ? 'Sì' : 'No' }}</td>
-    <td>{{ user.orders_count }}</td>
-    <td>
-      <button (click)="toggleBlock(user)">
-        {{ user.is_blocked ? 'Sblocca' : 'Blocca' }}
-      </button>
-      <button (click)="toggleAdmin(user)">
-        {{ user.is_admin ? 'Rimuovi Admin' : 'Rendi Admin' }}
-      </button>
-    </td>
-  </tr>
-</table>
+
+
+<section class="admin-section">
+    <div class="admin-table-container">
+      <h2>Gestione Utenti</h2>
+      <input
+        type="text"
+        [(ngModel)]="queryUtente"
+        placeholder="Cerca per nome, cognome o email..."
+        class="admin-user-search"
+      />
+
+      <div *ngIf="utentiFiltrati.length > 0 && queryUtente.trim()">
+        
+      <table class="admin-user-mini-table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Cognome</th>
+            <th>Email</th>
+            <th>Azioni</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of utentiFiltrati">
+            <td>{{ user.nome }}</td>
+            <td>{{ user.cognome }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+              <button (click)="toggleBlock(user)">
+                {{ user.is_blocked ? 'Sblocca' : 'Blocca' }}
+              </button>
+              <button (click)="toggleAdmin(user)">
+                {{ user.is_admin ? 'Rimuovi Admin' : 'Rendi Admin' }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div *ngIf="queryUtente.trim() && utentiFiltrati.length === 0">
+  Nessun utente trovato.
+</div>
+  </div>
+</section>
+
+<section class="admin-section">
+  <div class="admin-table-container">
+    <h2>Gestione Prodotti</h2>
+    <button *ngIf="!mostraFormProdotto" (click)="apriFormProdotto()">
+    Aggiungi Prodotto
+  </button>
+  <button *ngIf="mostraFormProdotto" (click)="chiudiFormProdotto()">
+    Chiudi Form
+  </button>
+    <!-- Form inserimento/modifica prodotto -->
+    <form *ngIf="mostraFormProdotto" (ngSubmit)="salvaProdotto()" class="admin-prodotto-form">
+      <input [(ngModel)]="prodottoForm.nome" name="nome" placeholder="Nome" required>
+      <input [(ngModel)]="prodottoForm.descrizione" name="descrizione" placeholder="Descrizione" required>
+      <input [(ngModel)]="prodottoForm.prezzo" name="prezzo" placeholder="Prezzo" type="number" required>
+      <input [(ngModel)]="prodottoForm.quantita_disponibile" name="quantita_disponibile" placeholder="Disponibilità" type="number" required>
+      <select [(ngModel)]="prodottoForm.id_categoria" name="id_categoria" required>
+        <option value="" disabled >Categoria</option>
+        <option *ngFor="let cat of categorie" [value]="cat.id_categoria">{{ cat.nome }}</option>
+      </select>
+      <label class="immagine-form">
+    Scegli immagine
+    <input type="file" (change)="onFileSelected($event)" accept="image/*" hidden>
+  </label>
+  <div *ngIf="selectedFile">
+    Immagine selezionata: {{ selectedFile.name }}
+  </div>
+    
+      <select [(ngModel)]="prodottoForm.id_marchio" name="id_marchio" required>
+        <option value="" disabled>Brand</option>
+        <option *ngFor="let brand of brandDisponibili" [value]="brand.id_marchio">{{ brand.nome }}</option>
+      </select>
+      <label>
+        <input type="checkbox" [(ngModel)]="prodottoForm.in_vetrina" name="in_vetrina">
+        In vetrina
+      </label>
+      <label>
+        <input type="checkbox" [(ngModel)]="prodottoForm.promo" name="promo">
+        Promo
+      </label>
+      <label>
+        <input type="checkbox" [(ngModel)]="prodottoForm.bloccato" name="bloccato">
+        Bloccato
+      </label>
+      <button type="submit">{{ prodottoForm.id ? 'Salva Modifica' : 'Aggiungi Prodotto' }}</button>
+    </form>
+
+    <!-- Tabella prodotti -->
+    <select [(ngModel)]="brandSelezionato" class="admin-user-search">
+    <option value="">Tutti i brand</option>
+    <option *ngFor="let brand of brandDisponibili" [value]="brand.id_marchio">{{ brand.nome }}</option>
+  </select>
+    <select [(ngModel)]="categoriaSelezionata" class="admin-user-search">
+    <option value="">Tutte le categorie</option>
+    <option *ngFor="let cat of categorie" [value]="cat.id_categoria">{{ cat.nome }}</option>
+  </select>
+    <input
+    type="text"
+    [(ngModel)]="prodottoQuery"
+    placeholder="Cerca prodotto per nome o descrizione..."
+    class="admin-user-search"
+  />
+    <table class="admin-user-mini-table" *ngIf="prodotti.length > 0">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Prezzo</th>
+          <th>Disponibilità</th>
+          <th>Categoria</th>
+          <th>Brand</th>
+          <th>Vetrina</th>
+          <th>Promo</th>
+          <th>Bloccato</th>
+          <th>Azioni</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let prodotto of prodottiFiltrati">
+          <td>{{ prodotto.nome }}</td>
+          <td>{{ prodotto.prezzo }}</td>
+          <td>{{ prodotto.quantita_disponibile }}</td>
+          <td>{{ prodotto.categoria_nome }}</td>
+          <td>{{ prodotto.brand_nome }}</td>
+          <td>{{ prodotto.in_vetrina ? 'Sì' : 'No' }}</td>
+          <td>{{ prodotto.promo ? 'Sì' : 'No' }}</td>
+          <td>{{ prodotto.bloccato ? 'Sì' : 'No' }}</td>
+          <td>
+            <button (click)="modificaProdotto(prodotto)">Modifica</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
