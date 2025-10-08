@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/prodotti', async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT nome
+      SELECT nome, id_categoria
       FROM categoria;
 
     `);
@@ -44,6 +44,18 @@ router.get('/prodotti/categoria/:nome', async (req, res) => {   //Riceve il nome
     }));
     
     res.json(prodottiConUrl);
+  } catch (err) {
+    res.status(500).json({ error: 'Errore DB' });
+  }
+});
+router.get('/brand', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT nome, id_marchio
+      FROM marchio
+      ORDER BY nome
+    `);
+    res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: 'Errore DB' });
   }

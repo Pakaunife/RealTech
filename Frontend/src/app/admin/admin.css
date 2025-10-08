@@ -1,4 +1,176 @@
-table
-{
-    color: white;
+.admin-section {
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 2px solid #222;
+}
+
+.admin-table-container {
+ width: 90%;
+  margin: 2rem auto 1.5rem auto;
+  background: rgba(20, 20, 20, 0.7);
+  border-radius: 10px;
+  padding: 1.5rem 2rem;
+  color: #fff;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+}
+.admin-user-mini-table {
+  width: 100%;
+  margin-top: 1.5rem;
+  background: rgba(20, 20, 20, 0.7);
+  border-radius: 8px;
+  color: #fff;
+  border-collapse: collapse;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+
+.admin-user-mini-table th, .admin-user-mini-table td {
+  padding: 0.7rem 1.2rem;
+  text-align: center;
+}
+
+.admin-user-mini-table th {
+  background: rgba(30, 30, 30, 0.85);
+  font-weight: 600;
+}
+
+.admin-user-mini-table tr {
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.admin-user-mini-table tr:last-child {
+  border-bottom: none;
+}
+
+.admin-user-mini-table button {
+  margin: 0 0.2rem;
+  background: #ff6600;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.admin-user-mini-table button:hover {
+  background: #ff3300;
+}
+
+
+.admin-catalogo-panel {
+  width: 90%;
+  margin: 2rem auto 1.5rem auto;
+  background: rgba(20, 20, 20, 0.7);
+  border-radius: 10px;
+  padding: 1.5rem 2rem;
+  color: #fff;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+}
+
+.admin-catalogo-panel h2 {
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  letter-spacing: 0.03em;
+}
+
+.admin-catalogo-links {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.admin-catalogo-links a {
+  background: #ff6600;
+  color: #fff;
+  padding: 0.5rem 1.2rem;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.admin-catalogo-links a:hover {
+  background: #ff3300;
+}
+.admin-user-search {
+  width: 60%;
+  margin: 1rem auto 1.5rem auto;
+  display: block;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+select.admin-user-search option {
+  color: #222 !important;
+  background: #fff !important;
+}
+
+.admin-user-search::placeholder {
+  color: #ccc;
+}
+
+.admin-user-empty {
+  color: #ff6600;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.admin-user-result {
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  padding: 0.7rem 1.2rem;
+  margin: 0.5rem 0;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  width: fit-content;
+}
+.admin-user-result button {
+  margin-left: 0.7rem;
+  background: #ff6600;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.admin-user-result button:hover {
+  background: #ff3300;
+}
+.admin-prodotto-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  background: rgba(20,20,20,0.7);
+  padding: 1rem;
+  border-radius: 8px;
+}
+.admin-prodotto-form input,
+.admin-prodotto-form select {
+  flex: 1 1 180px;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: none;
+  margin-bottom: 0.5rem;
+}
+.admin-prodotto-form label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.immagine-form {
+  display: inline-block;
+  background: #ff6600;
+  color: #fff;
+  padding: 0.5rem 1.2rem;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+  transition: background 0.2s;
+}
+.immagine-form:hover {
+  background: #ff3300;
 }
