@@ -12,7 +12,7 @@
 
 .carrello-vuoto {
   text-align: center;
-  padding: 50px;
+  padding: 20px;
   color: white;
 }
 
@@ -76,7 +76,6 @@
 }
 
 .btn-checkout {
-  background: #28a745;
   color: white;
   border: none;
   padding: 15px 30px;
@@ -86,6 +85,3 @@
   margin-top: 15px;
 }
 
-.btn-checkout:hover {
-  background: #218838;
-}
