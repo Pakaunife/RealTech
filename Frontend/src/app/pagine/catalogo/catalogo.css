@@ -23,7 +23,7 @@
 }
 
 .categoria-card {
-  background: linear-gradient(135deg, #ff3d00 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ff3d00 0%, #ff6f00 100%);
   color: white;
   padding: 30px;
   border-radius: 15px;
@@ -52,25 +52,27 @@
 
 .categoria-card_prodotto {
   color: white;
+  background: rgba(0, 0, 0, 0.2); /* Sfondo nero più trasparente (30%) */
   padding: 30px;
   border-radius: 15px;
   text-align: center;
   transition: all 0.3s ease;
   min-width: 250px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Aggiunta ombra per profondità */
 }
 
 .categoria-card_prodotto:hover {
+  background: rgba(0, 0, 0, 0.5); /* Sfondo leggermente più scuro al hover (50%) */
   transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3); /* Ombra più intensa */
 }
 
-/* Layout orizzontale per i prodotti */
+/* Layout verticale per i prodotti in due colonne */
 .prodotti-grid {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Due colonne di uguale larghezza */
   gap: 20px;
   padding: 20px;
-  overflow-x: auto;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -109,13 +111,48 @@
 
 .filtro-marca select {
   /* Stile select simile all'immagine */
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-family: 'Poppins', sans-serif;
-  min-width: 120px;
-  cursor: pointer;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-family: Arial, sans-serif; /* Font coerente con il resto */
+  font-size: 1.2rem; /* Font più grande anche per il select */
+  font-weight: 600; /* Peso leggermente aumentato */
+  min-width: 160px; /* Larghezza leggermente aumentata */
+  color: #ffffff; /* Colore testo bianco */
   /* Transizioni */
-  transition: all 0.2s ease;
-  background: linear-gradient(135deg, #9f9f9f 0%, #383432 100%);
+  background: linear-gradient(135deg, #ff3d00 0%, #ffd2b0 100%);
 }
+
+.filtro-marca label {
+  font-family: Arial, sans-serif;
+  font-size: 1.2rem; /* Dimensione più grande per la scritta */
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* Stile per le opzioni del dropdown */
+.filtro-marca select option {
+  background-color: #2a2a2a; /* Sfondo scuro per le opzioni */
+  color: #ffffff; /* Testo bianco */
+  font-size: 1.1rem; /* Font più grande per le opzioni */
+  font-weight: 500; /* Peso leggermente aumentato */
+  padding: 10px; /* Padding aumentato per più spazio */
+}
+
+/* Stile per il pulsante "Aggiungi al carrello" */
+button {
+  background: linear-gradient(135deg, #ff3d00 0%, #ff6f00 100%); /* Sfondo arancione gradiente */
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 15px;
+
+}
+
+
+
 

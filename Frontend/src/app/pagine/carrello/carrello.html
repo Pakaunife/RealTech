@@ -1,26 +1,26 @@
 
 
 <div class="carrello">
-  <h2>Il tuo carrello</h2>
+  <h2 class="carrello-text">Il tuo carrello</h2>
   
   <div *ngIf="(carrello$ | async)?.length === 0" class="carrello-vuoto">
-    <p>Il carrello è vuoto</p>
+    <p class="carrello-text">Il carrello è vuoto</p>
     <a href="/catalogo">Continua gli acquisti</a>
   </div>
   
-  <div *ngFor="let item of carrello$ | async" class="carrello-item">  // item.nome preso da carrello$ che sta in carrello.ts
+  <div *ngFor="let item of carrello$ | async" class="carrello-item">  <!-- item.nome preso da carrello$ che sta in carrello.ts -->
     <img [src]="item.immagine_url || 'http://localhost:3000/api/images/prodotti/default.jpg'" [alt]="item.nome" width="100">
     <div class="item-details">
-      <h4>{{ item.nome }}</h4>
-      <p>Prezzo: €{{ item.prezzo }}</p>
+      <h4 class="carrello-text">{{ item.nome }}</h4>
+      <p class="carrello-text">Prezzo: €{{ item.prezzo }}</p>
       <div class="quantity-control">
-        <label>Quantità: </label>
+        <label class="carrello-label">Quantità: </label>
         <input type="number" 
                [value]="item.quantita" 
                min="1" 
                (change)="aggiornaQuantita(item.id_prodotto, $event)">
       </div>
-      <p><strong>Subtotale: €{{ item.prezzo * item.quantita }}</strong></p>
+      <p class="carrello-text"><strong>Subtotale: €{{ item.prezzo * item.quantita }}</strong></p>
       <button (click)="rimuoviProdotto(item.id_prodotto)" class="btn-remove">
         Rimuovi
       </button>
@@ -28,7 +28,7 @@
   </div>
   
   <div *ngIf="(carrello$ | async) && (carrello$ | async)!.length > 0" class="totale">
-    <h3>Totale: €{{ totale }}</h3>
+    <h3 class="carrello-text">Totale: €{{ totale }}</h3>
     <button class="btn-checkout">Procedi al checkout</button>
   </div>
 </div>
