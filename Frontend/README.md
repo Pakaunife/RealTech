@@ -2,6 +2,29 @@
 
 Progetto e-commerce sviluppato con Angular 20.2.0 che implementa un sistema di carrello personalizzato per ogni utente autenticato.
 
+## 🎨 **Aggiornamenti UI/UX - 8 Ottobre 2025**
+
+### ✨ **Ottimizzazioni CSS e Layout**
+- **Footer Sticky**: Risolto problema footer non in fondo alla pagina
+- **Consolidamento CSS**: Unificate classi duplicate in `.carrello-text` e `.carrello-label`
+- **Carrello Design**: Migliorato layout, centratura e visibilità testi
+- **Immagini Prodotti**: Ingrandite nel carrello (140px → 180px)
+- **Pulsanti Uniformi**: Gradiente arancione coerente su tutti i CTA
+
+### 🖼️ **Sistema Immagini Categorie Dinamiche**
+- **Backend**: Query categorie include campo `immagine` + URL dinamici
+- **Frontend**: CSS dinamico per background-image tramite Angular binding
+- **Infrastruttura**: Cartella `/Backend/uploads/categorie/` per immagini personalizzate
+- **Fallback**: Sistema di immagini di default per categorie senza immagine
+
+### 🎯 **Miglioramenti Catalogo**
+- **Layout Prodotti**: Grid 2 colonne per migliore visualizzazione
+- **Sfondo Trasparente**: Blocchi prodotti con `rgba(0,0,0,0.3)`
+- **Filtri Avanzati**: Styling migliorato per selezione marche
+- **Hover Effects**: Animazioni fluide e ombre dinamiche
+
+---
+
 ## 🚀 Funzionalità Implementate
 
 ### 🔐 Sistema di Autenticazione

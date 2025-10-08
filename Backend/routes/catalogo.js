@@ -8,11 +8,18 @@ const router = express.Router();
 router.get('/prodotti', async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT nome
+      SELECT nome, immagine
       FROM categoria;
 
     `);
-    res.json(result.rows);
+    
+    // Aggiungi URL completo dell'immagine a ogni categoria
+    const categorieConUrl = result.rows.map(categoria => ({
+      ...categoria,
+      immagine_url: categoria.immagine ? `http://localhost:3000/api/images/categorie/${categoria.immagine}` : null
+    }));
+    
+    res.json(categorieConUrl);
   } catch (err) {
     res.status(500).json({ error: 'Errore DB' });
   }

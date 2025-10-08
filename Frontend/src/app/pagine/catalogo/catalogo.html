@@ -1,10 +1,11 @@
 
 <div class="catalogo">
-  <h1>{{ mostraCategorie ? 'Categorie Prodotti' : (mostraDettaglio ? prodottoSelezionato?.nome : categoriaSelezionata) }}</h1>
+  <h1 [class.vista-prodotti]="mostraProdotti || mostraDettaglio">{{ mostraCategorie ? 'Categorie Prodotti' : (mostraDettaglio ? prodottoSelezionato?.nome : categoriaSelezionata) }}</h1>
   <!-- Vista Categorie -->
   <div *ngIf="mostraCategorie" class="categorie-grid">
     <div class="categoria-card" *ngFor="let categoria of categorie" 
-         (click)="selezionaCategoria(categoria.nome)">
+         (click)="selezionaCategoria(categoria.nome)"
+         [style.background-image]="categoria.immagine_url ? 'url(' + categoria.immagine_url + ')' : 'url(/assets/default-category.jpg)'">
       <h3>{{ categoria.nome }}</h3>
       <p>Esplora la categoria</p>
     </div>

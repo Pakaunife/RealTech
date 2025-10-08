@@ -3,14 +3,20 @@
   margin: 0 auto;
   padding: 20px;
   font-family: Arial, sans-serif;
+  color: #ffffff;
 }
 
 .catalogo h1 {
   text-align: center;
   margin-bottom: 150px;
   color: #ffffff;
-  font-size: 2.5rem;
+  font-size: 3rem;
   text-decoration: none;
+}
+
+/* Riduce lo spazio quando si è nella vista prodotti */
+.catalogo h1.vista-prodotti {
+  margin-bottom: 50px;
 }
 
 .categorie-grid {
@@ -23,14 +29,35 @@
 }
 
 .categoria-card {
-  background: linear-gradient(135deg, #ff3d00 0%, #ff6f00 100%);
-  color: white;
+  color: #ffffff;
   padding: 30px;
   border-radius: 15px;
   text-align: center;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
   cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.categoria-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 15px;
+  z-index: 1;
+}
+
+.categoria-card h3,
+.categoria-card p {
+  position: relative;
+  z-index: 2;
+  
 }
 
 .categoria-card:hover {
@@ -40,7 +67,7 @@
 
 .categoria-card h3 {
   margin: 0 0 10px 0;
-  font-size: 1.5rem;
+  font-size: 1.7rem;
   font-weight: bold;
 }
 

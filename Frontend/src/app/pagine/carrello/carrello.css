@@ -32,7 +32,7 @@
   display: inline-block;
   margin-top: 20px;
   padding: 10px 20px;
-  background: #007bff;
+  background: linear-gradient(135deg, #ff3d00 0%, #ff6f00 100%);
   color: white;
   text-decoration: none;
   border-radius: 5px;
