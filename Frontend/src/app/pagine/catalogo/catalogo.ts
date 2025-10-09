@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule, NgIf, NgFor } from '@angular/common'; 
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { ActivatedRoute } from '@angular/router';
 import { CarrelloService } from '../../services/carrello.service';
 
 @Component({
@@ -11,6 +12,7 @@ import { CarrelloService } from '../../services/carrello.service';
   styleUrls: ['./catalogo.css']
 })
 export class Catalogo {
+  arrivoDaHome: boolean = false;
   categorie: any[] = [];
   prodotti: any[] = [];
   prodottoSelezionato: any = null;
@@ -23,8 +25,36 @@ export class Catalogo {
   marcaSelezionata: string = '';
   marcheDisponibili: string[] = [];
   caricamento: boolean = true;
-  constructor(private http: HttpClient, private carrelloService: CarrelloService) {
-    this.caricaCategorie();
+  constructor(private http: HttpClient, private carrelloService: CarrelloService, private route: ActivatedRoute) {
+    this.route.queryParams.subscribe(params => {
+      if (params['prodottoId']) {
+        this.arrivoDaHome = true;
+        this.caricaProdottoDettaglio(params['prodottoId']);
+      } else {
+        this.arrivoDaHome = false;
+        this.caricaCategorie();
+      }
+    });
+  }
+  caricaProdottoDettaglio(id: number) {
+    this.http.get<any[]>(`http://localhost:3000/api/catalogo/popular?limit=1000`).subscribe(
+      prodotti => {
+        const prodotto = prodotti.find(p => p.id_prodotto == id);
+        if (prodotto) {
+          // L'URL dell'immagine è già costruito nell'endpoint catalogo
+          this.prodottoSelezionato = prodotto;
+          this.mostraCategorie = false;
+          this.mostraProdotti = false;
+          this.mostraDettaglio = true;
+        } else {
+          this.caricaCategorie();
+        }
+      },
+      err => {
+        console.error('Errore caricamento prodotto:', err);
+        this.caricaCategorie();
+      }
+    );
   }
   
   caricaCategorie() {

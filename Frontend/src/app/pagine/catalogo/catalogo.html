@@ -10,27 +10,30 @@
       <p>Esplora la categoria</p>
     </div>
   </div>
+  <!-- Vista Dettaglio -->
+  <div *ngIf="mostraDettaglio" class="categorie-grid">
+    <div *ngIf="!arrivoDaHome" class="categoria-card" (click)="tornaProdotti()">
+      <h3>← Torna ai Prodotti</h3>
+      <p>Clicca per tornare alla lista</p>
+    </div>
+    <div class="dettaglio-card">
+      <img [src]="prodottoSelezionato?.immagine_url || 'http://localhost:3000/api/images/prodotti/default.jpg'" 
+           [alt]="prodottoSelezionato?.nome"
+           class="prodotto-immagine-dettaglio">
+      <h2 *ngIf="!arrivoDaHome">{{ prodottoSelezionato?.nome }}</h2>
+      <p><strong>Marchio:</strong> {{ prodottoSelezionato?.marchio || 'Non specificato' }}</p>
+      <p><strong>Prezzo:</strong> €{{ prodottoSelezionato?.prezzo }}</p>
+      <p><strong>Descrizione:</strong> {{ prodottoSelezionato?.descrizione || 'Descrizione non disponibile' }}</p>
+      <p *ngIf="!arrivoDaHome"><strong>Disponibilità:</strong> {{ prodottoSelezionato?.quantita_disponibile }} pezzi</p>
+      <!-- PULSANTE CARRELLO NEL DETTAGLIO -->
+      <button (click)="aggiungiAlCarrello(prodottoSelezionato)" 
+              [disabled]="prodottoSelezionato?.quantita_disponibile <= 0">
+        {{ prodottoSelezionato?.quantita_disponibile > 0 ? 'Aggiungi al carrello' : 'Non disponibile' }}
+      </button>
+    </div>
+  </div>
   <!-- Vista Prodotti -->
   <div *ngIf="mostraProdotti">
-    <!-- Pulsante Torna Indietro -->
-    <div class="categorie-grid">
-      <div class="categoria-card"
-           (click)="tornaAlleCategorie()">
-        <h3>← Torna alle Categorie</h3>
-        <p>Clicca per tornare indietro</p>
-      </div>
-    </div>
-    
-    <!-- Filtro per marca -->
-    <div class="filtro-marca" *ngIf="marcheDisponibili.length > 1" >
-      <label for="marcaSelect" >Filtra per marca:</label>
-      <select id="marcaSelect" [(ngModel)]="marcaSelezionata" >
-        <option value="">Tutte le marche</option>
-        <option *ngFor="let marca of marcheDisponibili" [value]="marca">{{ marca }}</option>
-      </select>
-    </div>
-    
-    <!-- Prodotti in orizzontale -->
     <div class="prodotti-grid">
       <div class="categoria-card_prodotto" *ngFor="let prodotto of prodottiFiltrati">
         <div (click)="selezionaProdotto(prodotto)">
@@ -42,39 +45,12 @@
           <p style="font-weight: bold;">€{{ prodotto.prezzo }}</p>
           <p>Disponibili: {{ prodotto.quantita_disponibile }}</p>
         </div>
-        
         <!-- PULSANTE CARRELLO -->
         <button (click)="aggiungiAlCarrello(prodotto)" 
                 [disabled]="prodotto.quantita_disponibile <= 0">
           {{ prodotto.quantita_disponibile > 0 ? 'Aggiungi al carrello' : 'Non disponibile' }}
         </button>
       </div>
-    </div>
-  </div>
-  
-  <!-- Vista Dettaglio -->
-  <div *ngIf="mostraDettaglio" class="categorie-grid">
-    <div class="categoria-card" 
-         (click)="tornaProdotti()">
-      <h3>← Torna ai Prodotti</h3>
-      <p>Clicca per tornare alla lista</p>
-    </div>
-    
-    <div class="dettaglio-card">
-      <img [src]="prodottoSelezionato?.immagine_url || 'http://localhost:3000/api/images/prodotti/default.jpg'" 
-           [alt]="prodottoSelezionato?.nome"
-           class="prodotto-immagine-dettaglio">
-      <h2>{{ prodottoSelezionato?.nome }}</h2>
-      <p><strong>Marchio:</strong> {{ prodottoSelezionato?.marchio || 'Non specificato' }}</p>
-      <p><strong>Prezzo:</strong> €{{ prodottoSelezionato?.prezzo }}</p>
-      <p><strong>Descrizione:</strong> {{ prodottoSelezionato?.descrizione || 'Descrizione non disponibile' }}</p>
-      <p><strong>Disponibilità:</strong> {{ prodottoSelezionato?.quantita_disponibile }} pezzi</p>
-      
-      <!-- PULSANTE CARRELLO NEL DETTAGLIO -->
-      <button (click)="aggiungiAlCarrello(prodottoSelezionato)" 
-              [disabled]="prodottoSelezionato?.quantita_disponibile <= 0">
-        {{ prodottoSelezionato?.quantita_disponibile > 0 ? 'Aggiungi al carrello' : 'Non disponibile' }}
-      </button>
     </div>
   </div>
 </div>

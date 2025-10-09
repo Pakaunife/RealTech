@@ -2,6 +2,188 @@
 
 Progetto e-commerce sviluppato con Angular 20.2.0 che implementa un sistema di carrello personalizzato per ogni utente autenticato.
 
+## 🔥 **Aggiornamenti 9 Ottobre 2025 - Sistema Prodotti Più Visualizzati**
+
+### 🏠 **Homepage - Prodotti Trending**
+- **Query Database**: Nuova API `/api/catalogo/popular` per prodotti più visualizzati
+- **Servizio Catalogo**: Creato `CatalogoService` per gestire endpoint catalogo
+- **UI Dinamica**: Homepage mostra i primi 3 prodotti più visti dal database
+- **Fallback**: Sistema di prodotti fittizi in caso di errore DB
+- **CSS Ottimizzato**: Immagini ridimensionate (220px altezza) con `object-fit: contain`
+
+### 🎯 **Navigazione Prodotti**
+- **Click-to-Detail**: Prodotti homepage cliccabili per dettaglio
+- **URL Parametrizzato**: Navigazione via `?prodottoId=X` per link diretti
+- **UX Intelligente**: 
+  - Da home → Dettaglio pulito (no pulsante "Torna ai Prodotti")
+  - Da catalogo → Dettaglio completo (con navigazione standard)
+
+### 🔧 **Backend API Enhancement**
+```sql
+-- Nuova query prodotti più visualizzati
+SELECT p.*, c.nome AS categoria, m.nome AS marchio, 
+       COUNT(v.id) as total_views
+FROM prodotto p
+LEFT JOIN visualizzazioni v ON p.id_prodotto = v.prodotto_id
+GROUP BY p.id_prodotto
+ORDER BY total_views DESC NULLS LAST
+LIMIT 3
+```
+
+### 🖼️ **Sistema Immagini Migliorato**
+- **URL Dinamici**: `http://localhost:3000/api/images/prodotti/{immagine}`
+- **Fallback Automatico**: Immagine default se prodotto senza foto
+- **Costruzione Automatica**: URL immagini generati server-side
+
+### 🎨 **UX Dettaglio Prodotto**
+- **Modalità Pulita**: Da home nasconde elementi ridondanti
+- **Informazioni Smart**: Disponibilità e titolo secondario nascosti quando appropriato
+- **Marchio Corretto**: Risolto problema "Non specificato" usando endpoint catalogo
+
+---
+
+## 💻 **Implementazione Tecnica Dettagliata**
+
+### 🛠️ **1. Backend - Nuova API `/api/catalogo/popular`**
+
+**File**: `Backend/routes/catalogo.js`
+```javascript
+router.get('/popular', async (req, res) => {
+  const { limit = 3 } = req.query; 
+  
+  const result = await pool.query(`
+    SELECT 
+      p.id_prodotto, p.nome, p.prezzo, p.descrizione, p.immagine,
+      p.quantita_disponibile, m.nome AS marchio, c.nome AS categoria,
+      COALESCE(v.total_views, 0) as total_views
+    FROM prodotto p
+    LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
+    LEFT JOIN marchio m ON p.id_marchio = m.id_marchio
+    LEFT JOIN (
+      SELECT prodotto_id, COUNT(*) as total_views
+      FROM visualizzazioni 
+      GROUP BY prodotto_id
+    ) v ON p.id_prodotto = v.prodotto_id
+    WHERE p.quantita_disponibile > 0 AND p.bloccato = false
+    ORDER BY total_views DESC NULLS LAST, p.nome
+    LIMIT $1
+  `, [limit]);
+  
+  // Costruisce URL immagini automaticamente
+  const prodotti = result.rows.map(prodotto => ({
+    ...prodotto,
+    immagine_url: prodotto.immagine ? 
+      `http://localhost:3000/api/images/prodotti/${prodotto.immagine}` : 
+      'http://localhost:3000/api/images/prodotti/default.jpg'
+  }));
+  
+  res.json(prodotti);
+});
+```
+
+### 🎯 **2. Frontend - Servizio Catalogo**
+
+**File**: `Frontend/src/app/services/catalogo.service.ts`
+```typescript
+@Injectable({ providedIn: 'root' })
+export class CatalogoService {
+  private apiUrl = 'http://localhost:3000/api/catalogo';
+
+  constructor(private http: HttpClient) {}
+
+  // Ottieni prodotti più visualizzati (per la home)
+  getProdottiPopular(limit: number = 6): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/popular?limit=${limit}`);
+  }
+
+  // Altri metodi catalogo...
+  getCategorie(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/prodotti`);
+  }
+}
+```
+
+### 🏠 **3. Homepage - Integrazione Dinamica**
+
+**File**: `Frontend/src/app/pagine/home/home.ts`
+```typescript
+export class Home implements OnInit {
+  prodottiInEvidenza: any[] = [];
+  loading = true;
+  error = '';
+
+  constructor(
+    public auth: AuthService,
+    private catalogoService: CatalogoService
+  ) {}
+  
+  ngOnInit() {
+    this.loadProdottiPopular();
+  }
+
+  loadProdottiPopular() {
+    this.loading = true;
+    this.catalogoService.getProdottiPopular(3).subscribe({
+      next: (prodotti) => {
+        this.prodottiInEvidenza = prodotti;
+        this.loading = false;
+      },
+      error: (err) => {
+        // Fallback a dati fittizi
+        this.prodottiInEvidenza = [...prodottiFallback];
+        this.loading = false;
+      }
+    });
+  }
+}
+```
+
+**File**: `Frontend/src/app/pagine/home/home.html`
+```html
+<div class="films-row" *ngIf="!loading && !error">
+  <div class="film-card" *ngFor="let prodotto of prodottiInEvidenza | slice:0:3">
+    <div class="film-info">
+      <img [src]="prodotto.immagine_url" [alt]="prodotto.nome" class="prodotto-img" />
+      <h2>{{ prodotto.nome }}</h2>
+      <p>{{ prodotto.categoria || 'Categoria' }}</p>
+    </div>
+  </div>
+</div>
+```
+
+### 🎯 **4. Navigazione Intelligente al Dettaglio**
+
+**File**: `Frontend/src/app/pagine/catalogo/catalogo.ts`
+```typescript
+export class Catalogo {
+  arrivoDaHome: boolean = false;
+  
+  constructor(private route: ActivatedRoute, ...) {
+    this.route.queryParams.subscribe(params => {
+      if (params['prodottoId']) {
+        this.arrivoDaHome = true; // Flag per UX differenziata
+        this.caricaProdottoDettaglio(params['prodottoId']);
+      } else {
+        this.arrivoDaHome = false;
+        this.caricaCategorie();
+      }
+    });
+  }
+
+  caricaProdottoDettaglio(id: number) {
+    // Usa endpoint catalogo per dati completi (marchio incluso)
+    this.http.get<any[]>(`http://localhost:3000/api/catalogo/popular?limit=1000`)
+      .subscribe(prodotti => {
+        const prodotto = prodotti.find(p => p.id_prodotto == id);
+        if (prodotto) {
+          this.prodottoSelezionato = prodotto;
+          this.mostraDettaglio = true;
+        }
+      });
+  }
+}
+
+```
 ## 🎨 **Aggiornamenti UI/UX - 8 Ottobre 2025**
 
 ### ✨ **Ottimizzazioni CSS e Layout**
