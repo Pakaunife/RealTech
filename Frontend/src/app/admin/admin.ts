@@ -165,15 +165,20 @@ salvaProdotto() {
       
     
   uploadAndInviaProdotto() {
+    console.log('uploadAndInviaProdotto chiamato');
+  console.log('selectedFile:', this.selectedFile); 
   if (this.selectedFile) {
+     console.log('Tentativo upload file:', this.selectedFile.name);
     // Se è stata selezionata una nuova immagine, caricala prima
     const formData = new FormData();
     formData.append('immagine', this.selectedFile);
 
+    console.log('Invio richiesta upload a backend...');
     this.http.post<{ filename: string }>('http://localhost:3000/api/immagine/upload', 
       formData,{ headers: { 'x-file-name': this.selectedFile.name } })
       .subscribe({
         next: res => {
+          console.log('Risposta upload:', res);
           this.prodottoForm.immagine = res.filename;
           this.inviaProdotto();
         },
