@@ -1,45 +1,36 @@
-import { Injectable } from '@angular/core';
-import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { catchError, throwError } from 'rxjs';
 
-@Injectable()
-export class TokenInterceptor implements HttpInterceptor {
-  constructor(private router: Router) {}
-
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const token = localStorage.getItem('token');
-    
-    console.log('Interceptor chiamato. Token:', token);
-    
-    let clonedReq = req;
-    if (token) {
-      clonedReq = req.clone({
-        setHeaders: { Authorization: `Bearer ${token}` }
-      });
-    }
-
-    return next.handle(clonedReq).pipe(
-      tap(response => {
-        console.log('Risposta ricevuta:', response);
-      }),
-      catchError((error: HttpErrorResponse) => {
-        console.log('=== ERRORE COMPLETO ===');
-        console.log('Status:', error.status);
-        console.log('Message:', error.message);
-        console.log('Error object:', error);
-        console.log('======================');
-        
-        if (error.status === 401) {
-          console.log('401 intercettato, logout...');
-          localStorage.clear();
-          sessionStorage.clear();
-          this.router.navigate(['/login']);
-        }
-        
-        return throwError(() => error);
-      })
-    );
+export const TokenInterceptor: HttpInterceptorFn = (req, next) => {
+  const router = inject(Router);
+  const token = localStorage.getItem('token');
+  
+  if (!token && !req.url.includes('/api/auth/login') && !req.url.includes('/api/auth/register')) {
+    console.log('Token mancante, redirect...');
+    localStorage.clear();
+    sessionStorage.clear();
+    router.navigate(['/login']);
+    return throwError(() => new Error('No token'));
   }
-}
+  
+  let clonedReq = req;
+  if (token) {
+    clonedReq = req.clone({
+      setHeaders: { Authorization: `Bearer ${token}` }
+    });
+  }
+
+  return next(clonedReq).pipe(
+    catchError((error: HttpErrorResponse) => {
+      if (error.status === 401) {
+        console.log('401 intercettato, logout...');
+        localStorage.clear();
+        sessionStorage.clear();
+        router.navigate(['/login']);
+      }
+      return throwError(() => error);
+    })
+  );
+};

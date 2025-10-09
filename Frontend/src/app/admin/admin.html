@@ -64,18 +64,17 @@
         <option value="" disabled >Categoria</option>
         <option *ngFor="let cat of categorie" [value]="cat.id_categoria">{{ cat.nome }}</option>
       </select>
-      <label class="immagine-form">
+      <select [(ngModel)]="prodottoForm.id_marchio" name="id_marchio" required>
+        <option value="" disabled>Brand</option>
+        <option *ngFor="let brand of brandDisponibili" [value]="brand.id_marchio">{{ brand.nome }}</option>
+      </select>
+        <label class="immagine-form">
     Scegli immagine
     <input type="file" (change)="onFileSelected($event)" accept="image/*" hidden>
   </label>
   <div *ngIf="selectedFile">
     Immagine selezionata: {{ selectedFile.name }}
   </div>
-    
-      <select [(ngModel)]="prodottoForm.id_marchio" name="id_marchio" required>
-        <option value="" disabled>Brand</option>
-        <option *ngFor="let brand of brandDisponibili" [value]="brand.id_marchio">{{ brand.nome }}</option>
-      </select>
       <label>
         <input type="checkbox" [(ngModel)]="prodottoForm.in_vetrina" name="in_vetrina">
         In vetrina

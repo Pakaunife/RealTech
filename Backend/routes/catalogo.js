@@ -48,6 +48,7 @@ router.get('/prodotti/categoria/:nome', async (req, res) => {   //Riceve il nome
     res.status(500).json({ error: 'Errore DB' });
   }
 });
+
 router.get('/brand', async (req, res) => {
   try {
     const result = await pool.query(`

@@ -7,10 +7,11 @@ const path = require('path');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'assets/prodotti/');
+    console.log('Multer destination chiamato');
+    cb(null, 'uploads/prodotti/');
   },
   filename: function (req, file, cb) {
-    // Usa timestamp + nome originale per evitare conflitti
+    console.log('Multer filename chiamato per:', file.originalname);
     cb(null, file.originalname);
   }
 });
@@ -18,18 +19,24 @@ const upload = multer({ storage: storage });
 
 
 router.post('/upload', (req, res) => {
+  console.log('=== UPLOAD RICHIESTA ===');
+  console.log('Headers ricevuti:', req.headers);
+  console.log('Body ricevuto:', req.body);
   // Usa multer solo se il file NON esiste già
   const fileName = req.headers['x-file-name'];
   if (!fileName) {
+    console.log('ERRORE: Nome file mancante');
     return res.status(400).json({ message: 'Nome file mancante nell\'header x-file-name' });
   }
-  const filePath = path.join('src/assets/prodotti/', fileName);
+  const filePath = path.join('uploads/prodotti/', fileName);
+  console.log('Percorso file completo:', filePath);
+  console.log('File esiste già?', fs.existsSync(filePath));
 
   // Se il file esiste già, restituisci il nome senza caricare
   if (fs.existsSync(filePath)) {
     return res.json({ filename: fileName, message: 'File già presente, non caricato.' });
   }
-
+    console.log('File non esiste, procedo con upload...');
   // Altrimenti usa multer per caricare
   upload.single('immagine')(req, res, function (err) {
     if (err) {
