@@ -215,7 +215,7 @@ export class Catalogo {
 - Gestione automatica della sessione utente
 
 ### 🛒 Carrello Personalizzato per Utente
-- **Carrello specifico per ogni utente** basato sull'ID estratto dal JWT token
+- **Carrello specifico per ogni utente** basato sull'ID estratto dal JWT token dell'utente loggato
 - **Sicurezza**: Solo utenti autenticati possono gestire il carrello
 - **Persistenza**: I prodotti rimangono salvati anche dopo logout/login
 - **Sincronizzazione automatica**: Il carrello si aggiorna in tempo reale
@@ -530,6 +530,92 @@ const carrelloConUrl = rows.map(item => ({
 
 ---
 
-## Additional Resources
+## 🐞 Bug Risolto: Catalogo non si resettava dopo visualizzazione prodotto popolare
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+### Problema
+Quando si cliccava su un prodotto nei "PRODOTTI PIÙ VISUALIZZATI" dalla home, il parametro `prodottoId` rimaneva nell'URL. Se poi si cliccava su "Catalogo" nell'header, la pagina continuava a mostrare il dettaglio del prodotto invece della lista del catalogo.
+
+### Soluzione Implementata
+- **Componente Catalogo (`catalogo.ts`):**
+  - Aggiunto metodo `resetStato()` che pulisce tutte le variabili di stato e riporta la vista alla lista delle categorie.
+  - Modificato il costruttore: quando non ci sono parametri di query, viene chiamato `resetStato()` per assicurare che la pagina sia pulita.
+  - Ora la navigazione diretta al catalogo mostra sempre la lista delle categorie/prodotti.
+- **Header (`header.html` e `header.ts`):**
+  - Modificato il link "Catalogo" nell'header per chiamare il metodo `pulisciParametriCatalogo()`.
+
+---
+
+## 🛒 Funzioni e Collegamenti Implementati per Acquisti/Checkout
+
+### Backend
+- **Route principale:** `Backend/routes/acquisti.js`
+  - `/api/acquisti/checkout`  
+    Riceve i dati di pagamento e processa l'acquisto (inserisce in tabella `acquisti`, aggiorna quantità prodotti, svuota carrello).
+  - `/api/acquisti/storico/:id_utente`  
+    Restituisce lo storico degli acquisti di un utente.
+  - `/api/acquisti/dettaglio/:id_acquisto`  
+    Restituisce i dettagli di un singolo acquisto.
+
+- **Collegamento in `index.js`:**
+  ```js
+  const AcquistiRoutes = require('./routes/acquisti');
+  app.use('/api/acquisti', AcquistiRoutes);
+  ```
+
+### Frontend
+
+- **Servizio Acquisti:**  
+  `src/app/services/acquisti.service.ts`
+  - `processaCheckout(datiPagamento: DatiCheckout)`  
+    Invia i dati di pagamento al backend e riceve conferma acquisto.
+  - `getStoricoAcquisti()`  
+    Ottiene la lista degli acquisti dell'utente.
+  - `getDettaglioAcquisto(idAcquisto)`  
+    Ottiene i dettagli di un singolo acquisto.
+
+- **Pagina Checkout:**  
+  `src/app/pagine/checkout/checkout.ts`  
+  - Mostra riepilogo carrello, form pagamento, gestisce invio dati e navigazione.
+  - Funzioni principali:
+    - `processaAcquisto()`  
+      Valida il form, invia i dati al servizio acquisti, aggiorna il carrello e reindirizza.
+    - `tornaAlCarrello()`  
+      Torna alla pagina carrello.
+    - `formatNumeroCarla()`  
+      Formatta il numero della carta.
+
+- **Template Checkout:**  
+  `src/app/pagine/checkout/checkout.html`  
+  - Collega i dati del carrello e del form ai metodi del componente.
+
+- **Collegamento dal Carrello:**  
+  - Pulsante "Procedi al checkout" in `carrello.html` chiama `procediAlCheckout()` che naviga alla pagina `/checkout`.
+
+- **Routing:**  
+  `src/app/app.routes.ts`
+  ```typescript
+  { path: 'checkout', component: Checkout, canActivate: [AuthGuard] }
+  ```
+
+- **Semplificazione CSS:**  
+  - Il file `checkout.css` ora usa selettori semplici e poche classi, facilitando la manutenzione.
+
+---
+
+## Modifiche Quantità Prodotti Disponibili
+
+### Descrizione
+Quando un utente effettua un acquisto, la quantità dei prodotti disponibili viene aggiornata nel backend per riflettere l'acquisto effettuato.
+
+### Dettagli Implementativi
+- **Modifica quantità prodotti disponibili:**
+    - La quantità disponibile viene aggiornata direttamente nel backend, all'interno della route `/api/acquisti/checkout` nel file `Backend/routes/acquisti.js`.
+    - Per ogni prodotto acquistato, viene eseguita la query:
+      ```js
+      await client.query(`
+        UPDATE prodotto 
+        SET quantita_disponibile = quantita_disponibile - $1 
+        WHERE id_prodotto = $2
+      `, [item.quantita, item.id_prodotto]);
+      ```
+    - Questo garantisce che la quantità dei prodotti sia sempre aggiornata dopo ogni acquisto.

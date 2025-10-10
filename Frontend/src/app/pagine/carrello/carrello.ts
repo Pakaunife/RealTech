@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { CarrelloService } from '../../services/carrello.service';
 import { Observable } from 'rxjs';
 
@@ -13,7 +14,7 @@ export class Carrello implements OnInit {
   carrello$: Observable<any[]>;  //carrello$ ha i dati del carrello
   totale: number = 0;
 
-  constructor(private carrelloService: CarrelloService) {
+  constructor(private carrelloService: CarrelloService, private router: Router) {
     this.carrello$ = this.carrelloService.ottieniCarrello();
   }
 
@@ -40,5 +41,9 @@ export class Carrello implements OnInit {
         error: (err) => console.error('Errore:', err)
       });
     }
+  }
+
+  procediAlCheckout(): void {
+    this.router.navigate(['/checkout']);
   }
 }

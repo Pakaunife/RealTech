@@ -99,4 +99,9 @@ export class CarrelloService {
   svuotaCarrello(): void {
     this.carrelloSubject.next([]);
   }
+
+  // Metodo per aggiornare il carrello dopo un acquisto (ricarica dal backend)
+  aggiornaDopoAcquisto(): void {
+    this.caricaCarrello();
+  }
 }

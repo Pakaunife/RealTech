@@ -1,5 +1,5 @@
 import { Component, HostListener } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 
@@ -11,7 +11,7 @@ import { AuthService } from '../services/auth.service';
 })
 export class Header {
   user: any;
-  constructor(public auth: AuthService) {
+  constructor(public auth: AuthService, private router: Router) {
     this.user = this.auth.getUser();
   }
   ngOnInit() {
@@ -35,6 +35,11 @@ export class Header {
   @HostListener('document:keydown.escape')
   onEsc() {
     this.showSignInMenu = false;
+  }
+
+  pulisciParametriCatalogo() {
+    // Naviga al catalogo senza parametri per resettare lo stato
+    this.router.navigate(['/catalogo']);
   }
 
 }

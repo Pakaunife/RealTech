@@ -1,0 +1,179 @@
+.checkout-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  min-height: 100vh;
+  color: white;
+}
+
+/* Header */
+.checkout-container > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #ff6b35;
+}
+
+h2 {
+  color: #ff6b35;
+  margin: 0;
+  font-size: 2rem;
+}
+
+/* Pulsanti generici */
+button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 1rem;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+/* Sezioni principali */
+.order-summary, .payment-form {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  border: 1px solid rgba(255, 107, 53, 0.3);
+}
+
+h3 {
+  color: #ff6b35;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 107, 53, 0.3);
+  padding-bottom: 10px;
+}
+
+/* Items ordine, prodotto in questo caso*/
+.prodotto-order {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.prodotto-order:last-child {
+  border-bottom: none;
+}
+
+.prodotto-order img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 5px;
+  margin-right: 15px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.prodotto-order h4 {
+  margin: 0 0 5px 0;
+  color: white;
+  font-size: 1.1rem;
+}
+
+.prodotto-order p {
+  margin: 2px 0;
+  color: #ccc;
+}
+
+.prodotto-order strong { /* rende il testo in grassetto sul subtotale e cambia colore */
+  color: #ff6b35;
+}
+
+/* Totale */
+.total-section {
+  text-align: right;
+  padding: 20px 0;
+  border-top: 2px solid #ff6b35; /* linea sopra il totale */    
+  margin-top: 20px;
+}
+
+.total-section h3 {
+  color: #ff6b35;
+  font-size: 1.5rem;
+  margin: 0;
+  border: none;
+  padding: 0;
+}
+
+/* posizioni menù */
+.form-group {
+  margin-bottom: 20px;
+  flex: 1;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+  flex: 1;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  color: #ff6b35;
+  font-weight: bold;
+}
+
+input, select { /* applichiamo ai pulsatti input(dove metti testo) e sulle caselle di selezione (menua tendina) uno stile */
+  width: 100%;
+  padding: 12px;
+  border: 1px solid rgba(255, 107, 53, 0.3);
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+  box-sizing: border-box;
+}
+
+/* Azioni */
+.checkout-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+/* Stili generici pulsanti annulla e completa acquisto */
+.checkout-actions button {
+  padding: 15px 30px;
+  flex: 1;
+}
+
+/* Stili specifici pulsanti */
+.checkout-actions button:first-child {
+  background: rgb(34, 34, 34);
+  border: 2px solid #ff6b35;
+  color: #ff6b35;
+  font-weight: bold;
+}
+
+.checkout-actions button:last-child { /* last-child prende ultimo pulsate che in questo caso è completa acquisto */
+  background: linear-gradient(45deg, #ff6b35, #ff8c42);
+  color: black;
+  font-weight: bold;
+  text-transform: uppercase; /* Tutto maiuscolo */
+}
+/* da un effetto quando passi sopra al pulsante completa acquisto se non è disabilitato */
+.checkout-actions button:last-child:hover:not(:disabled) {
+  background: linear-gradient(45deg, #ff8c42, #ff6b35);
+  box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+}
+
+/* pulsante non si attiva finchè dati non sono validi */
+.checkout-actions button:disabled { 
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+

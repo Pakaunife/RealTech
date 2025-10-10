@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule, NgIf, NgFor } from '@angular/common'; 
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CarrelloService } from '../../services/carrello.service';
 
 @Component({
@@ -25,12 +25,14 @@ export class Catalogo {
   marcaSelezionata: string = '';
   marcheDisponibili: string[] = [];
   caricamento: boolean = true;
-  constructor(private http: HttpClient, private carrelloService: CarrelloService, private route: ActivatedRoute) {
+  constructor(private http: HttpClient, private carrelloService: CarrelloService, private route: ActivatedRoute, private router: Router) {
     this.route.queryParams.subscribe(params => {
       if (params['prodottoId']) {
         this.arrivoDaHome = true;
         this.caricaProdottoDettaglio(params['prodottoId']);
       } else {
+        // Reset completo dello stato quando non ci sono parametri
+        this.resetStato();
         this.arrivoDaHome = false;
         this.caricaCategorie();
       }
@@ -119,6 +121,18 @@ export class Catalogo {
     this.categoriaSelezionata = '';
     this.marcaSelezionata = '';
     this.marcheDisponibili = [];
+  }
+
+  resetStato() {
+    this.mostraCategorie = true;
+    this.mostraProdotti = false;
+    this.mostraDettaglio = false;
+    this.prodotti = [];
+    this.prodottoSelezionato = null;
+    this.categoriaSelezionata = '';
+    this.marcaSelezionata = '';
+    this.marcheDisponibili = [];
+    this.arrivoDaHome = false;
   }
   
   get prodottiFiltrati() {

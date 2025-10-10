@@ -1,0 +1,96 @@
+<div class="checkout-container">
+  <div>
+    <h2>Checkout - Finalizza Acquisto</h2>
+    <button (click)="tornaAlCarrello()">← Torna al Carrello</button>
+  </div>
+
+  <!-- Riepilogo Ordine -->
+  <div class="order-summary">
+    <h3>Riepilogo Ordine</h3>
+    <div>
+      <div *ngFor="let prodotto of carrello$ | async" class="prodotto-order">
+        <img [src]="prodotto.immagine_url || 'http://localhost:3000/api/images/prodotti/default.jpg'" 
+             [alt]="prodotto.nome">
+        <div>
+          <h4>{{ prodotto.nome }}</h4>
+          <p>Quantità: {{ prodotto.quantita }}</p>
+          <p>Prezzo: €{{ prodotto.prezzo }}</p>
+          <p><strong>Subtotale: €{{ prodotto.prezzo * prodotto.quantita }}</strong></p>
+        </div>
+      </div>
+    </div>
+    <div class="total-section">
+      <h3>Totale: €{{ totale }}</h3>
+    </div>
+  </div>
+
+  <!-- Form di Pagamento -->
+  <div class="payment-form">
+    <h3>Dati di Pagamento</h3>
+    <form (ngSubmit)="processaAcquisto()" #checkoutForm="ngForm">
+      
+      <div class="form-group">
+        <label for="metodo_pagamento">Metodo di Pagamento:</label>
+        <select id="metodo_pagamento" 
+                [(ngModel)]="datiPagamento.metodo_pagamento" 
+                name="metodo_pagamento" 
+                required>
+          <option value="carta_credito">Carta di Credito</option>
+          <option value="carta_debito">Carta di Debito</option>
+          <option value="paypal">PayPal</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="nome_intestatario">Nome Intestatario:</label>
+        <input type="text" 
+               id="nome_intestatario"
+               [(ngModel)]="datiPagamento.nome_intestatario"
+               name="nome_intestatario"
+               placeholder="Nome e Cognome"
+               required>
+      </div>
+
+      <div class="form-group">
+        <label for="numero_carta">Numero Carta:</label>
+        <input type="text" 
+               id="numero_carta"
+               [(ngModel)]="datiPagamento.numero_carta"
+               name="numero_carta"
+               placeholder="1234 5678 9012 3456"
+               maxlength="19"
+               (input)="formatNumeroCarla()"
+               required>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="scadenza">Scadenza:</label>
+          <input type="text" 
+                 id="scadenza"
+                 placeholder="MM/AA"
+                 maxlength="5"
+                 required>
+        </div>
+        <div class="form-group">
+          <label for="cvv">CVV:</label>
+          <input type="text" 
+                 id="cvv"
+                 placeholder="123"
+                 maxlength="3"
+                 required>
+        </div>
+      </div>
+
+      <div class="checkout-actions">
+        <button type="button" (click)="tornaAlCarrello()">
+          Annulla
+        </button>
+        <button type="submit" [disabled]="processing || !checkoutForm.form.valid">
+          <span *ngIf="processing">Elaborazione...</span>
+          <span *ngIf="!processing">Completa Acquisto - €{{ totale }}</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
