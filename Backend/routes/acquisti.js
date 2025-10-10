@@ -114,30 +114,5 @@ router.get('/storico/:id_utente', async (req, res) => {
   }
 });
 
-// Ottieni dettagli di un singolo acquisto
-router.get('/dettaglio/:id_acquisto', async (req, res) => {
-  try {
-    const { rows } = await pool.query(`
-      SELECT a.*, p.nome as nome_prodotto, p.immagine,
-             CASE 
-               WHEN p.immagine IS NOT NULL 
-               THEN CONCAT('http://localhost:3000/api/images/prodotti/', p.immagine)
-               ELSE 'http://localhost:3000/api/images/prodotti/default.jpg'
-             END as immagine_url
-      FROM acquisti a
-      JOIN prodotto p ON a.id_prodotto = p.id_prodotto
-      WHERE a.id_acquisto = $1
-    `, [req.params.id_acquisto]);
-    
-    if (rows.length === 0) {
-      return res.status(404).json({ error: 'Acquisto non trovato' });
-    }
-    
-    res.json(rows[0]);
-  } catch (err) {
-    console.error('Errore recupero dettaglio acquisto:', err);
-    res.status(500).json({ error: 'Errore del server' });
-  }
-});
 
 module.exports = router;

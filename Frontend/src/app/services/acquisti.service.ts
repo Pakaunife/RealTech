@@ -1,3 +1,4 @@
+//si occupa di gestire la comunicazione con il backend e la logica degli acquisti. mentre checkout.ts si occupa solo dell’interfaccia utente.
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -39,12 +40,14 @@ export class AcquistiService {
     // Maschera il numero di carta (mostra solo le ultime 4 cifre)
     const numero_carta_mascherato = '**** **** **** ' + datiPagamento.numero_carta.slice(-4);
 
-    return this.http.post<RisultatoAcquisto>(`${this.baseUrl}/checkout`, {
+    return this.http.post<RisultatoAcquisto>(`${this.baseUrl}/checkout`, { //manda richiesta POST al backend per processare il checkout
+      //dati da mandare al backend
       id_utente: idUtente,
       metodo_pagamento: datiPagamento.metodo_pagamento,
       nome_intestatario: datiPagamento.nome_intestatario,
       numero_carta_mascherato: numero_carta_mascherato
     });
+    //Il backend riceve questi dati, li elabora (registra l’acquisto, svuota il carrello, ecc.) e restituisce una risposta.
   }
 
   // Ottieni storico acquisti dell'utente
@@ -54,7 +57,7 @@ export class AcquistiService {
       throw new Error('Utente non autenticato');
     }
 
-    return this.http.get<any[]>(`${this.baseUrl}/storico/${idUtente}`);
+    return this.http.get<any[]>(`${this.baseUrl}/storico/${idUtente}`); //manda richiesta GET al backend per ottenere lo storico acquisti dell'utente (vedi aquisti.js nel backend router.get('/storico/:id_utente', async (req, res) => )
   }
 
   // Ottieni dettagli di un singolo acquisto

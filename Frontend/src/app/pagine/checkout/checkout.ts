@@ -32,19 +32,19 @@ export class Checkout implements OnInit {
     this.carrello$ = this.carrelloService.ottieniCarrello();
   }
 
-  ngOnInit(): void {
+  ngOnInit(): void { /*ngOnInit viene chiamato appena la pagina di checkout viene caricata.  */
     this.carrello$.subscribe(carrello => {
       if (carrello.length === 0) {
         // Se il carrello è vuoto, reindirizza al catalogo
         this.router.navigate(['/catalogo']);
         return;
       }
-      this.totale = carrello.reduce((total, prodotto) => total + (prodotto.prezzo * prodotto.quantita), 0);
+      this.totale = carrello.reduce((total, prodotto) => total + (prodotto.prezzo * prodotto.quantita), 0); /*calcola il totale dell'acquisto */
     });
   }
 
-  validaForm(): boolean {
-    if (!this.datiPagamento.nome_intestatario.trim()) {
+  validaForm(): boolean { /*valida i dati inseriti dall'utente nel form di pagamento */
+    if (!this.datiPagamento.nome_intestatario.trim()) { /*.trim rimuove spazi all'inizio e alla fine della stringa */
       alert('Inserisci il nome dell\'intestatario');
       return false;
     }
@@ -64,14 +64,14 @@ export class Checkout implements OnInit {
     return true;
   }
 
-  processaAcquisto(): void {
+  processaAcquisto(): void { /*gestisce l’intera procedura di acquisto */
     if (!this.validaForm()) {
-      return;
+      return; // e la validazione fallisce, interrompe la procedura.
     }
 
     this.processing = true;
 
-    this.acquistiService.processaCheckout(this.datiPagamento).subscribe({
+    this.acquistiService.processaCheckout(this.datiPagamento).subscribe({ //manda i dati di pagamento al servizio Acquisti.Service se la procedura di valid form va a buon fine
       next: (risultato) => {
         this.processing = false;
         if (risultato.success) {
@@ -91,11 +91,11 @@ export class Checkout implements OnInit {
     });
   }
 
-  tornaAlCarrello(): void {
+  tornaAlCarrello(): void { //usata nel html per tornare alla pagina del carrello
     this.router.navigate(['/carrello']);
   }
 
-  formatNumeroCarla(): void {
+  formattaNumeroCarta(): void { 
     // Formatta il numero carta con spazi ogni 4 cifre
     let numero = this.datiPagamento.numero_carta.replace(/\s/g, '');
     let formatted = numero.replace(/(\d{4})(?=\d)/g, '$1 ');

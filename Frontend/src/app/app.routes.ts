@@ -14,6 +14,8 @@ import { Profilo } from './pagine/profilo/profilo';
 import { Carrello } from './pagine/carrello/carrello';
 import { Checkout } from './pagine/checkout/checkout';
 import { Admin } from './admin/admin';
+import { StoricoAcquisti } from './pagine/storico-acquisti/storico-acquisti';
+
 
 
 export const routes = [
@@ -32,5 +34,6 @@ export const routes = [
   { path: 'profilo', component: Profilo, canActivate: [AuthGuard] },
   { path: 'admin', component: Admin, canActivate: [AuthGuard], data: { admin: true } },
   { path: 'carrello', component: Carrello },
-  { path: 'checkout', component: Checkout, canActivate: [AuthGuard] }
+  { path: 'checkout', component: Checkout, canActivate: [AuthGuard] },
+  { path: 'storico-acquisti', component: StoricoAcquisti, canActivate: [AuthGuard] },
 ];
