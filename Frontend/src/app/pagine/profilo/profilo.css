@@ -1,0 +1,756 @@
+/* ========================================
+   LAYOUT GENERALE
+   ======================================== */
+
+.area-personale {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: rgba(20, 20, 20, 0.6);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-section {
+  background: linear-gradient(135deg, rgba(54, 51, 51, 0.2), rgba(58, 47, 47, 0.2));
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.title-icon {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.title-icon .icon-main {
+  font-size: 2.5rem;
+}
+
+.title-icon h2 {
+  color: #fff;
+  font-size: 2rem;
+  margin: 0;
+}
+
+.input-readonly {
+  background: rgba(0, 0, 0, 0.5) !important;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.info-text {
+  display: block;
+  margin-top: 0.3rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+/* ========================================
+   CARDS NAVIGAZIONE
+   ======================================== */
+
+.cards-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.card-rect {
+  background: rgba(30, 30, 30, 0.95);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  text-decoration: none;
+  color: #fff;
+  transition: all 0.3s ease;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+}
+
+.card-rect:hover {
+  background: rgba(40, 40, 40, 0.95);
+  border-color: #ffa726;
+  transform: translateX(10px);
+  box-shadow: 0 4px 20px rgba(255, 167, 38, 0.3);
+}
+
+.card-rect.active {
+  border-color: #ffa726;
+  background: rgba(255, 167, 38, 0.1);
+}
+
+.card-rect .icon {
+  font-size: 2.5rem;
+  min-width: 50px;
+  text-align: center;
+}
+
+.card-content {
+  flex: 1;
+}
+
+.card-content h3 {
+  margin: 0 0 0.3rem 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.card-content p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.card-rect .arrow {
+  font-size: 1.5rem;
+  color: #ffa726;
+  transition: transform 0.3s ease;
+}
+
+.card-rect:hover .arrow {
+  transform: translateX(5px);
+}
+
+.card-rect.logout {
+  border-color: rgba(244, 67, 54, 0.3);
+}
+
+.card-rect.logout:hover {
+  border-color: #f44336;
+  box-shadow: 0 4px 20px rgba(244, 67, 54, 0.3);
+}
+
+/* ========================================
+   CONTENUTO SEZIONI
+   ======================================== */
+
+.contenuto-sezione {
+  margin-top: 2rem;
+  background: rgba(30, 30, 30, 0.95);
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.sezione-content h3 {
+  color: #fff;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.sezione-content h4 {
+  color: #fff;
+  margin: 2rem 0 1rem;
+}
+
+/* ========================================
+   SEZIONE PROFILO
+   ======================================== */
+
+.profilo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid rgba(255, 167, 38, 0.3);
+}
+
+.btn-modifica-profilo {
+  padding: 0.8rem 1.5rem;
+  background: linear-gradient(135deg, #2196f3, #1976d2);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-modifica-profilo:hover {
+  background: linear-gradient(135deg, #1976d2, #0d47a1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+}
+
+.dati-profilo {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  padding: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.dato-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.dato-row:hover {
+  background: rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 167, 38, 0.3);
+}
+
+.dato-row .label {
+  font-weight: 600;
+  color: #ffa726;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dato-row .valore {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* ========================================
+   MESSAGGI
+   ======================================== */
+
+.messaggio-successo {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid #4caf50;
+}
+
+.messaggio-errore {
+  background: rgba(244, 67, 54, 0.2);
+  color: #f44336;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid #f44336;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ========================================
+   FORM GENERALI
+   ======================================== */
+
+.form-profilo,
+.form-indirizzo,
+.form-password {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+.form-group input {
+  padding: 0.8rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font-size: 1rem;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #ffa726;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-group-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.form-group-checkbox input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.form-group-checkbox label {
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  margin: 0;
+}
+
+.form-group select,
+.form-select {
+  padding: 0.8rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.form-group select:focus,
+.form-select:focus {
+  outline: none;
+  border-color: #ffa726;
+}
+
+.form-group select option {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+/* ========================================
+   BOTTONI
+   ======================================== */
+
+.btn-primary {
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #ffa726, #ff9800);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 167, 38, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ff9800, #f57c00);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 167, 38, 0.4);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  padding: 1rem 2rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+}
+
+.btn-elimina {
+  padding: 0.5rem 1rem;
+  background: rgba(244, 67, 54, 0.2);
+  color: #f44336;
+  border: 1px solid #f44336;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 0.9rem;
+}
+
+.btn-elimina:hover {
+  background: rgba(244, 67, 54, 0.4);
+}
+
+.btn-rimuovi {
+  width: 100%;
+  padding: 0.5rem;
+  background: rgba(244, 67, 54, 0.2);
+  color: #f44336;
+  border: 1px solid #f44336;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 0.5rem;
+}
+
+.btn-rimuovi:hover {
+  background: rgba(244, 67, 54, 0.4);
+}
+
+.btn-modifica {
+  padding: 0.5rem 1rem;
+  background: rgba(33, 150, 243, 0.2);
+  color: #2196f3;
+  border: 1px solid #2196f3;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.btn-modifica:hover {
+  background: rgba(33, 150, 243, 0.4);
+}
+
+.btn-predefinito {
+  padding: 0.5rem 1rem;
+  background: rgba(33, 150, 243, 0.2);
+  color: #2196f3;
+  border: 1px solid #2196f3;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 0.9rem;
+}
+
+.btn-predefinito:hover {
+  background: rgba(33, 150, 243, 0.4);
+}
+
+/* ========================================
+   SEZIONE INDIRIZZI
+   ======================================== */
+
+.header-indirizzi {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.btn-aggiungi {
+  padding: 0.8rem 1.5rem;
+  background: linear-gradient(135deg, #ffa726, #ff9800);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 167, 38, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-aggiungi:hover {
+  background: linear-gradient(135deg, #ff9800, #f57c00);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 167, 38, 0.4);
+}
+
+.btn-aggiungi:active {
+  transform: translateY(0);
+}
+
+.indirizzi-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.indirizzo-card {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.indirizzo-info p {
+  color: #fff;
+  margin: 0.3rem 0;
+}
+
+.indirizzo-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.badge-predefinito {
+  display: inline-block;
+  background: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+  padding: 0.3rem 0.8rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+  border: 1px solid #4caf50;
+}
+
+.form-container {
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-top: 1.5rem;
+  border: 2px solid rgba(255, 167, 38, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.form-header h4 {
+  color: #ffa726;
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.btn-chiudi {
+  background: rgba(244, 67, 54, 0.15);
+  color: #f44336;
+  border: 2px solid rgba(244, 67, 54, 0.5);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.5rem;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  line-height: 1;
+}
+
+.btn-chiudi:hover {
+  background: rgba(244, 67, 54, 0.3);
+  border-color: #f44336;
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 0 15px rgba(244, 67, 54, 0.4);
+}
+
+.btn-chiudi:active {
+  transform: rotate(90deg) scale(0.95);
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.form-actions .btn-primary,
+.form-actions .btn-secondary {
+  flex: 1;
+}
+
+/* ========================================
+   SEZIONE SICUREZZA
+   ======================================== */
+
+.sicurezza-section {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sicurezza-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.sicurezza-header h4 {
+  color: #fff;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+}
+
+.email-attuale,
+.password-info {
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.form-sicurezza {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ========================================
+   SEZIONE WISHLIST
+   ======================================== */
+
+.wishlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.wishlist-card {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.wishlist-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.wishlist-card h4 {
+  color: #fff;
+  margin: 0.5rem 0;
+  font-size: 1rem;
+}
+
+.wishlist-card .prezzo {
+  color: #ffa726;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin: 0.5rem 0;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+  .area-personale {
+    padding: 1rem;
+  }
+
+  .profilo-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .btn-modifica-profilo {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .dati-profilo {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1.5rem;
+  }
+
+  .header-indirizzi {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-aggiungi {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn-chiudi {
+    width: 35px;
+    height: 35px;
+    font-size: 1.3rem;
+  }
+
+  .indirizzo-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .indirizzo-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .sicurezza-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .sicurezza-header .btn-modifica-profilo {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .wishlist-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
