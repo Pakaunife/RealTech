@@ -15,6 +15,9 @@ import { Carrello } from './pagine/carrello/carrello';
 import { Admin } from './admin/admin';
 import { DettagliOrdine } from './pagine/dettagli-ordine/dettagli-ordine';
 import { Ordini } from './pagine/ordini/ordini';
+import { WishlistComponent } from './pagine/wishlist/wishlist';
+import { Checkout } from './pagine/checkout/checkout';
+import { StoricoAcquisti } from './pagine/storico-acquisti/storico-acquisti';
 
 
 export const routes = [
@@ -34,5 +37,8 @@ export const routes = [
   { path: 'admin', component: Admin, canActivate: [AuthGuard], data: { admin: true } },
   { path: 'carrello', component: Carrello },
   { path: 'ordini', component: Ordini , canActivate: [AuthGuard] },
-  { path: 'dettagli-ordine/:id', component: DettagliOrdine , canActivate: [AuthGuard] }
+  { path: 'dettagli-ordine/:id', component: DettagliOrdine , canActivate: [AuthGuard] },
+  { path: 'wishlist', component: WishlistComponent, canActivate: [AuthGuard] },
+  { path: 'checkout', component: Checkout, canActivate: [AuthGuard] },
+  {path: 'storico-acquisti', component: StoricoAcquisti, canActivate: [AuthGuard] }
 ];

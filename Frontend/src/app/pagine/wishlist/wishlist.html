@@ -1,1 +1,17 @@
-<p>wishlist works!</p>
+<section class="wishlist-section">
+  <h2>La mia Wishlist</h2>
+  <div *ngIf="loading">Caricamento...</div>
+  <div *ngIf="!loading && wishlist.length === 0" class="empty-state">
+    <p>La tua wishlist è vuota</p>
+  </div>
+  <div class="wishlist-grid">
+    <div *ngFor="let prodotto of wishlist" class="wishlist-card">
+      <img [src]="prodotto.immagine" [alt]="prodotto.nome">
+      <h4>{{ prodotto.nome }}</h4>
+      <p class="prezzo">{{ prodotto.prezzo | currency:'EUR' }}</p>
+      <button (click)="remove(prodotto.id)" class="btn-rimuovi">
+        Rimuovi
+      </button>
+    </div>
+  </div>
+</section>

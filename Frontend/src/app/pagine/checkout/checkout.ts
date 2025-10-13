@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { CarrelloService } from '../../services/carrello.service';
 import { AcquistiService, DatiCheckout } from '../../services/acquisti.service';
 import { Observable } from 'rxjs';
+import { CouponService, CouponResponse } from '../../services/coupon.service';
 
 @Component({
   selector: 'app-checkout',
@@ -14,8 +15,20 @@ import { Observable } from 'rxjs';
 })
 export class Checkout implements OnInit {
   carrello$: Observable<any[]>;
-  totale: number = 0;
   processing: boolean = false;
+  
+  // Coupon
+  codiceCoupon = '';
+  couponApplicato = false;
+  couponValido = false;
+  couponCorrente: any = null;
+  scontoApplicato = 0;
+  messaggioCoupon = '';
+  loading = false;
+  
+  // Totali
+  totaleOriginale = 0;
+  totaleScontato = 0;
   
   // Dati del form di pagamento
   datiPagamento: DatiCheckout = {
@@ -27,24 +40,34 @@ export class Checkout implements OnInit {
   constructor(
     private carrelloService: CarrelloService,
     private acquistiService: AcquistiService,
-    private router: Router
+    private router: Router,
+    private couponService: CouponService
   ) {
     this.carrello$ = this.carrelloService.ottieniCarrello();
   }
 
-  ngOnInit(): void { /*ngOnInit viene chiamato appena la pagina di checkout viene caricata.  */
+  ngOnInit(): void {
     this.carrello$.subscribe(carrello => {
       if (carrello.length === 0) {
         // Se il carrello è vuoto, reindirizza al catalogo
         this.router.navigate(['/catalogo']);
         return;
       }
-      this.totale = carrello.reduce((total, prodotto) => total + (prodotto.prezzo * prodotto.quantita), 0); /*calcola il totale dell'acquisto */
+      
+      // Calcola il totale originale dal carrello
+      this.totaleOriginale = carrello.reduce((total, prodotto) => {
+        return total + (prodotto.prezzo * prodotto.quantita);
+      }, 0);
+      
+      // Se non c'è coupon applicato, totaleScontato = totaleOriginale
+      if (!this.couponApplicato) {
+        this.totaleScontato = this.totaleOriginale;
+      }
     });
   }
 
-  validaForm(): boolean { /*valida i dati inseriti dall'utente nel form di pagamento */
-    if (!this.datiPagamento.nome_intestatario.trim()) { /*.trim rimuove spazi all'inizio e alla fine della stringa */
+  validaForm(): boolean {
+    if (!this.datiPagamento.nome_intestatario.trim()) {
       alert('Inserisci il nome dell\'intestatario');
       return false;
     }
@@ -64,20 +87,32 @@ export class Checkout implements OnInit {
     return true;
   }
 
-  processaAcquisto(): void { /*gestisce l’intera procedura di acquisto */
+  processaAcquisto(): void {
     if (!this.validaForm()) {
-      return; // e la validazione fallisce, interrompe la procedura.
+      return;
     }
 
     this.processing = true;
 
-    this.acquistiService.processaCheckout(this.datiPagamento).subscribe({ //manda i dati di pagamento al servizio Acquisti.Service se la procedura di valid form va a buon fine
+    // Se c'è un coupon applicato, incrementa il contatore
+    if (this.couponApplicato) {
+      this.couponService.usaCoupon(this.couponCorrente.id).subscribe();
+    }
+
+    // Passa il totale scontato al servizio acquisti
+    const datiCompleti = {
+      ...this.datiPagamento,
+      totale: this.totaleScontato,
+      coupon_applicato: this.couponApplicato ? this.couponCorrente : null
+    };
+
+    this.acquistiService.processaCheckout(datiCompleti).subscribe({
       next: (risultato) => {
         this.processing = false;
         if (risultato.success) {
           // Aggiorna il carrello (dovrebbe essere vuoto dopo l'acquisto)
           this.carrelloService.aggiornaDopoAcquisto();
-          alert(`Acquisto completato con successo! Totale: €${risultato.totale}`);
+          alert(`Acquisto completato con successo! Totale: €${this.totaleScontato.toFixed(2)}`);
           this.router.navigate(['/profilo'], { 
             queryParams: { tab: 'acquisti' } 
           });
@@ -91,7 +126,7 @@ export class Checkout implements OnInit {
     });
   }
 
-  tornaAlCarrello(): void { //usata nel html per tornare alla pagina del carrello
+  tornaAlCarrello(): void {
     this.router.navigate(['/carrello']);
   }
 
@@ -100,5 +135,46 @@ export class Checkout implements OnInit {
     let numero = this.datiPagamento.numero_carta.replace(/\s/g, '');
     let formatted = numero.replace(/(\d{4})(?=\d)/g, '$1 ');
     this.datiPagamento.numero_carta = formatted;
+  }
+
+  applicaCoupon() {
+    if (!this.codiceCoupon.trim()) return;
+
+    this.loading = true;
+    this.couponService.verificaCoupon(this.codiceCoupon, this.totaleOriginale).subscribe({
+      next: (response: CouponResponse) => {
+        this.loading = false;
+        this.couponValido = response.valido;
+        this.messaggioCoupon = response.messaggio;
+
+        if (response.valido) {
+          this.couponApplicato = true;
+          this.couponCorrente = response.coupon;
+          this.scontoApplicato = response.sconto || 0;
+          this.totaleScontato = response.totale_scontato || this.totaleOriginale;
+        } else {
+          this.resetCoupon();
+        }
+      },
+      error: () => {
+        this.loading = false;
+        this.couponValido = false;
+        this.messaggioCoupon = 'Errore nella verifica del coupon';
+        this.resetCoupon();
+      }
+    });
+  }
+
+  rimuoviCoupon() {
+    this.resetCoupon();
+    this.codiceCoupon = '';
+    this.messaggioCoupon = '';
+  }
+
+  private resetCoupon() {
+    this.couponApplicato = false;
+    this.couponCorrente = null;
+    this.scontoApplicato = 0;
+    this.totaleScontato = this.totaleOriginale;
   }
 }

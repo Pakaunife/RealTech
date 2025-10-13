@@ -1,51 +1,45 @@
 const express = require('express');
-const pool = require('../connection/DBconnect');
-const authenticateToken = require('./auth');
 const router = express.Router();
+const pool = require('../connection/DBconnect');
 
-// Aggiungi un prodotto alla wish list
-router.post('/', authenticateToken, async (req, res) => {
-  const userId = req.user.id;
-  const { prodotto_id } = req.body;
-  try {
-    await pool.query(
-      'INSERT INTO wish_list (user_id, prodotto_id) VALUES ($1, $2) ON CONFLICT DO NOTHING',
-      [userId, prodotto_id]
-    );
-    res.json({ message: 'Prodotto aggiunto alla wish list' });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// Ottieni la wish list dell'utente
-router.get('/', authenticateToken, async (req, res) => {
-  const userId = req.user.id;
+// Ottieni la wishlist di un utente
+router.get('/:userId', async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT p.* FROM prodotti p
-       JOIN wish_list w ON w.prodotto_id = p.id
-       WHERE w.user_id = $1`,
-      [userId]
+      `SELECT w.id, w.prodotto_id, p.nome, p.prezzo, p.immagine
+       FROM wishlist w
+       JOIN prodotto p ON w.prodotto_id = p.id_prodotto
+       WHERE w.user_id = $1`, [req.params.userId]
     );
     res.json(result.rows);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error(err);
+    res.status(500).json({ error: 'Errore nel recupero wishlist' });
   }
 });
 
-// Rimuovi un prodotto dalla wish list
-router.delete('/:prodotto_id', authenticateToken, async (req, res) => {
-  const userId = req.user.id;
-  const prodottoId = req.params.prodotto_id;
+// Aggiungi un prodotto alla wishlist
+router.post('/', async (req, res) => {
+  const { user_id, prodotto_id } = req.body;
   try {
     await pool.query(
-      'DELETE FROM wish_list WHERE user_id = $1 AND prodotto_id = $2',
-      [userId, prodottoId]
+      `INSERT INTO wishlist (user_id, prodotto_id) VALUES ($1, $2)`, [user_id, prodotto_id]
     );
-    res.json({ message: 'Prodotto rimosso dalla wish list' });
+    res.json({ success: true });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error(err);
+    res.status(500).json({ error: 'Errore nell\'aggiunta alla wishlist' });
+  }
+});
+
+// Rimuovi un prodotto dalla wishlist
+router.delete('/:id', async (req, res) => {
+  try {
+    await pool.query(`DELETE FROM wishlist WHERE id = $1`, [req.params.id]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Errore nella rimozione dalla wishlist' });
   }
 });
 

@@ -19,8 +19,54 @@
         </div>
       </div>
     </div>
+    
+    <h2>Hai un coupon?</h2>
+    <div class="coupon-section">
+      <h3>Codice Sconto</h3>
+      <div class="coupon-input-group">
+        <input 
+          [(ngModel)]="codiceCoupon" 
+          placeholder="Inserisci codice coupon" 
+          class="input-coupon"
+          [disabled]="couponApplicato">
+        <button 
+          (click)="applicaCoupon()" 
+          class="btn-coupon"
+          [disabled]="!codiceCoupon || loading || couponApplicato">
+          {{ loading ? 'Verifica...' : 'Applica' }}
+        </button>
+        <button 
+          *ngIf="couponApplicato"
+          (click)="rimuoviCoupon()" 
+          class="btn-rimuovi-coupon">
+          Rimuovi
+        </button>
+      </div>
+      
+      <div *ngIf="messaggioCoupon" 
+           [class]="couponValido ? 'messaggio-successo' : 'messaggio-errore'">
+        {{ messaggioCoupon }}
+      </div>
+      
+      <div *ngIf="couponApplicato" class="riepilogo-sconto">
+        <div class="riga-sconto">
+          <span>Subtotale:</span>
+          <span>€ {{ totaleOriginale | number:'1.2-2' }}</span>
+        </div>
+        <div class="riga-sconto sconto-evidenziato">
+          <span>Sconto ({{ couponCorrente.codice }}):</span>
+          <span>-€ {{ scontoApplicato | number:'1.2-2' }}</span>
+        </div>
+        <div class="riga-totale">
+          <span><strong>Totale:</strong></span>
+          <span><strong>€ {{ totaleScontato | number:'1.2-2' }}</strong></span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- CAMBIATO: Usa totaleScontato invece di totale -->
     <div class="total-section">
-      <h3>Totale: €{{ totale }}</h3>
+      <h3>Totale: €{{ totaleScontato | number:'1.2-2' }}</h3>
     </div>
   </div>
 
@@ -86,9 +132,10 @@
         <button type="button" (click)="tornaAlCarrello()">
           Annulla
         </button>
+        <!-- CAMBIATO: Usa totaleScontato invece di totale -->
         <button type="submit" [disabled]="processing || !checkoutForm.form.valid">
           <span *ngIf="processing">Elaborazione...</span>
-          <span *ngIf="!processing">Completa Acquisto - €{{ totale }}</span>
+          <span *ngIf="!processing">Completa Acquisto - €{{ totaleScontato | number:'1.2-2' }}</span>
         </button>
       </div>
     </form>

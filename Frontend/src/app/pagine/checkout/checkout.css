@@ -177,3 +177,116 @@ input, select { /* applichiamo ai pulsatti input(dove metti testo) e sulle casel
   transform: none;
 }
 
+.coupon-section {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 20px 0;
+  border: 1px solid #e9ecef;
+}
+
+.coupon-section h3 {
+  margin: 0 0 16px 0;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.coupon-input-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.input-coupon {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 1em;
+  transition: border-color 0.2s;
+}
+
+.input-coupon:focus {
+  outline: none;
+  border-color: #1a237e;
+}
+
+.input-coupon:disabled {
+  background: #f5f5f5;
+  color: #999;
+}
+
+.btn-coupon {
+  background: #1a237e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.btn-coupon:hover:not(:disabled) {
+  background: #3949ab;
+}
+
+.btn-coupon:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.btn-rimuovi-coupon {
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.btn-rimuovi-coupon:hover {
+  background: #c82333;
+}
+
+.messaggio-successo {
+  color: #28a745;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.messaggio-errore {
+  color: #dc3545;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.riepilogo-sconto {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #e9ecef;
+}
+
+.riga-sconto, .riga-totale {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.sconto-evidenziato {
+  color: #28a745;
+  font-weight: 500;
+}
+
+.riga-totale {
+  border-top: 2px solid #1a237e;
+  padding-top: 12px;
+  margin-top: 12px;
+  font-size: 1.1em;
+}
+
