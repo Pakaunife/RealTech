@@ -12,12 +12,11 @@ import { Login } from './pagine/login/login';
 import { AuthGuard } from './services/auth.guard';
 import { Profilo } from './pagine/profilo/profilo';
 import { Carrello } from './pagine/carrello/carrello';
-import { Admin } from './admin/admin';
-import { DettagliOrdine } from './pagine/dettagli-ordine/dettagli-ordine';
-import { Ordini } from './pagine/ordini/ordini';
-import { WishlistComponent } from './pagine/wishlist/wishlist';
 import { Checkout } from './pagine/checkout/checkout';
+import { Admin } from './admin/admin';
 import { StoricoAcquisti } from './pagine/storico-acquisti/storico-acquisti';
+import { Novita } from './pagine/novita/novita';
+
 
 
 export const routes = [
@@ -36,9 +35,7 @@ export const routes = [
   { path: 'profilo', component: Profilo, canActivate: [AuthGuard] },
   { path: 'admin', component: Admin, canActivate: [AuthGuard], data: { admin: true } },
   { path: 'carrello', component: Carrello },
-  { path: 'ordini', component: Ordini , canActivate: [AuthGuard] },
-  { path: 'dettagli-ordine/:id', component: DettagliOrdine , canActivate: [AuthGuard] },
-  { path: 'wishlist', component: WishlistComponent, canActivate: [AuthGuard] },
   { path: 'checkout', component: Checkout, canActivate: [AuthGuard] },
-  {path: 'storico-acquisti', component: StoricoAcquisti, canActivate: [AuthGuard] }
+  { path: 'storico-acquisti', component: StoricoAcquisti, canActivate: [AuthGuard] },
+  { path: 'novita/:articolo', component: Novita },
 ];
