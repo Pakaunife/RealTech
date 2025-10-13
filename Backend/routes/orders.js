@@ -63,6 +63,47 @@ router.get('/:id/stato', authenticateToken, async (req, res) => {
   }
 });
 
+router.get('/user/:userId', async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    const result = await pool.query('SELECT * FROM ordini WHERE user_id = $1', [userId]);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: 'Errore nel recupero ordini' });
+  }
+});
+
+router.get('/:orderId', async (req, res) => {
+  const orderId = req.params.orderId;
+  try {
+    const ordineResult = await pool.query(
+      `SELECT id, user_id, indirizzo_consegna, totale, stato, data_ordine
+       FROM ordini WHERE id = $1`, [orderId]
+    );
+    if (ordineResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Ordine non trovato' });
+    }
+    const ordine = ordineResult.rows[0];
+
+    const prodottiResult = await pool.query(
+      `SELECT 
+         p.nome,
+         p.immagine, 
+         op.quantita, 
+         op.prezzo AS prezzo_unitario,
+         (op.quantita * op.prezzo) AS subtotale
+       FROM ordine_prodotti op
+       JOIN prodotto p ON op.prodotto_id = p.id_prodotto
+       WHERE op.ordine_id = $1`, [orderId]
+    );
+
+    res.json({ ordine, prodotti: prodottiResult.rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Errore nel recupero dettagli ordine' });
+  }
+});
+
 
 
 module.exports = router;

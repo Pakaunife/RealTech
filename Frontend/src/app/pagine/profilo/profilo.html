@@ -1,7 +1,6 @@
 <section class="area-personale">
   <div class="header-section">
     <div class="title-icon">
-      <i class="icon-main">👤</i>
       <h2>Area Personale</h2>
     </div>
   </div>
@@ -26,14 +25,14 @@
       <i class="arrow">→</i>
     </a>
 
-    <a routerLink="/profilo/ordini" class="card-rect">
-      <i class="icon">📦</i>
-      <div class="card-content">
-        <h3>I miei ordini</h3>
-        <p>Gestisci e visualizza lo storico dei tuoi acquisti</p>
-      </div>
-      <i class="arrow">→</i>
-    </a>
+    <a (click)="vaiAgliOrdini()" class="card-rect">
+  <i class="icon">📦</i>
+  <div class="card-content">
+    <h3>I miei ordini</h3>
+    <p>Gestisci e visualizza lo storico dei tuoi acquisti</p>
+  </div>
+  <i class="arrow">→</i>
+</a>
 
     <a (click)="cambiaSezione('wishlist')" class="card-rect" [class.active]="sezioneAttiva === 'wishlist'">
       <i class="icon">❤️</i>

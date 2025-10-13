@@ -13,6 +13,8 @@ import { AuthGuard } from './services/auth.guard';
 import { Profilo } from './pagine/profilo/profilo';
 import { Carrello } from './pagine/carrello/carrello';
 import { Admin } from './admin/admin';
+import { DettagliOrdine } from './pagine/dettagli-ordine/dettagli-ordine';
+import { Ordini } from './pagine/ordini/ordini';
 
 
 export const routes = [
@@ -30,5 +32,7 @@ export const routes = [
   { path: 'login', component: Login },
   { path: 'profilo', component: Profilo, canActivate: [AuthGuard] },
   { path: 'admin', component: Admin, canActivate: [AuthGuard], data: { admin: true } },
-  { path: 'carrello', component: Carrello }
+  { path: 'carrello', component: Carrello },
+  { path: 'ordini', component: Ordini , canActivate: [AuthGuard] },
+  { path: 'dettagli-ordine/:id', component: DettagliOrdine , canActivate: [AuthGuard] }
 ];

@@ -508,4 +508,8 @@ export class Profilo implements OnInit {
       }
     });
   }
+
+  vaiAgliOrdini() {
+    this.router.navigate(['/ordini']);
+  }
 }
