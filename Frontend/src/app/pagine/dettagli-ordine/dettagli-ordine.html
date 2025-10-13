@@ -1,0 +1,36 @@
+<section class="dettaglio-ordine-section">
+  <h2 class="titolo-sezione">Dettaglio Ordine #{{ ordine?.id }}</h2>
+  <div *ngIf="loading" class="loading">Caricamento...</div>
+  <div *ngIf="!loading && ordine">
+    <div class="ordine-info-blocco">
+      <div>
+        <span class="ordine-label">Data:</span>
+        <span>{{ ordine.data_ordine | date:'dd/MM/yyyy' }}</span>
+      </div>
+      <div>
+        <span class="ordine-label">Stato:</span>
+        <span class="ordine-stato stato-{{ ordine.stato | lowercase }}">{{ ordine.stato }}</span>
+      </div>
+      <div>
+        <span class="ordine-label">Totale:</span>
+        <span class="ordine-totale">€ {{ ordine.totale }}</span>
+      </div>
+    </div>
+
+    <h3 class="sottotitolo">Prodotti ordinati</h3>
+    <ul class="prodotti-lista">
+      <li *ngFor="let p of prodotti" class="prodotto-riga">
+        <img *ngIf="p.immagine" [src]="p.immagine" alt="{{ p.nome }}" class="prodotto-img">
+        <div class="prodotto-nome">{{ p.nome }}</div>
+        <div class="prodotto-quantita">x{{ p.quantita }}</div>
+        <div class="prodotto-prezzo">€ {{ p.prezzo_unitario }}</div>
+        <div class="prodotto-subtotale">Totale: € {{ p.subtotale | number:'1.2-2' }}</div>
+      </li>
+    </ul>
+
+    <h3 class="sottotitolo">Indirizzo di spedizione</h3>
+    <div class="indirizzo-box">
+      {{ ordine.indirizzo_consegna }}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,112 @@
+.ordini-section {
+  max-width: 700px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  padding: 32px 24px;
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+}
+
+.titolo-sezione {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 28px;
+  color: #222;
+  letter-spacing: 0.5px;
+}
+
+.lista-ordini {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ordine-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #f7f7fa;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: box-shadow 0.2s, background 0.2s;
+  border: 1px solid #ececf0;
+}
+
+.ordine-card:hover {
+  background: #f0f4ff;
+  box-shadow: 0 2px 8px rgba(0,60,255,0.07);
+}
+
+.ordine-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.ordine-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1rem;
+  color: #444;
+}
+
+.ordine-totale {
+  color: #1a237e;
+}
+
+.ordine-stato {
+  padding: 2px 10px;
+  border-radius: 8px;
+  font-size: 0.95em;
+  font-weight: 500;
+  background: #e3e7fa;
+  color: #2a3eb1;
+  text-transform: capitalize;
+}
+
+.stato-in\ lavorazione { background: #fffbe7; color: #bfa600; }
+.stato-spedito { background: #e7faff; color: #0077b6; }
+.stato-consegnato { background: #e7faed; color: #1b8a3a; }
+.stato-annullato { background: #fae7e7; color: #b10000; }
+
+.ordine-arrow {
+  align-self: flex-end;
+  font-size: 1.3em;
+  color: #b0b0b0;
+  margin-top: 4px;
+  transition: color 0.2s;
+}
+
+.ordine-card:hover .ordine-arrow {
+  color: #1a237e;
+}
+
+.loading, .empty-state {
+  text-align: center;
+  color: #888;
+  margin-top: 40px;
+  font-size: 1.1em;
+}
+
+.btn-ordini {
+  background: linear-gradient(90deg, #ff3d00 0%, #ff3d00 100%);
+  color: #fff;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 500;
+  padding: 10px 28px;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(26,35,126,0.08);
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+  margin: 18px 0;
+  letter-spacing: 0.5px;
+}
+

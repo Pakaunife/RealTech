@@ -1,0 +1,21 @@
+<section class="ordini-section">
+  <h2 class="titolo-sezione">I miei ordini</h2>
+  <div *ngIf="loading" class="loading">Caricamento...</div>
+  <div *ngIf="!loading && ordini.length === 0" class="empty-state">
+    <p>Non hai ancora effettuato ordini.</p>
+    <button class = "btn-ordini" (click)="vaiANuovoOrdine()">Crea un nuovo ordine</button>
+  </div>
+  <ul *ngIf="!loading && ordini.length > 0" class="lista-ordini">
+    <li *ngFor="let ordine of ordini" (click)="vaiADettaglio(ordine.id)" class="ordine-card">
+      <div class="ordine-header">
+        <span class="ordine-numero">Ordine #{{ ordine.id }}</span>
+        <span class="ordine-data">{{ ordine.data | date:'dd/MM/yyyy' }}</span>
+      </div>
+      <div class="ordine-info">
+        <span class="ordine-totale">Totale: <strong>€ {{ ordine.totale }}</strong></span>
+        <span class="ordine-stato stato-{{ ordine.stato | lowercase }}">{{ ordine.stato }}</span>
+      </div>
+      <span class="ordine-arrow">→</span>
+    </li>
+  </ul>
+</section>

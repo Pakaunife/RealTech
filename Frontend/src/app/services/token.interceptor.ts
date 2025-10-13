@@ -7,7 +7,16 @@ export const TokenInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const token = localStorage.getItem('token');
   
-  if (!token && !req.url.includes('/api/auth/login') && !req.url.includes('/api/auth/register')) {
+   const publicRoutes = [
+    '/api/auth/login',
+    '/api/auth/register',
+    '/api/catalogo',           
+    '/api/products',           
+    '/api/images'              
+  ];
+    const isPublicRoute = publicRoutes.some(route => req.url.includes(route));
+
+  if (!token && !isPublicRoute) {
     console.log('Token mancante, redirect...');
     localStorage.clear();
     sessionStorage.clear();

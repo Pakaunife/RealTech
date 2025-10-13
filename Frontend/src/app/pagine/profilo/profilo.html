@@ -1,7 +1,293 @@
+<section class="area-personale">
+  <div class="header-section">
+    <div class="title-icon">
+      <h2>Area Personale</h2>
+    </div>
+  </div>
+  
+  <!-- Menu laterale / Cards -->
+  <div class="cards-vertical">
+    <a (click)="cambiaSezione('profilo')" class="card-rect" [class.active]="sezioneAttiva === 'profilo'">
+      <i class="icon">👤</i>
+      <div class="card-content">
+        <h3>Profilo</h3>
+        <p>Visualizza e modifica i tuoi dati</p>
+      </div>
+      <i class="arrow">→</i>
+    </a>
 
-<div class="container mt-4">
-  <h2>Profilo utente</h2>
-  <p><strong>Nome:</strong> {{ user.nome }}</p>
-  <p><strong>Cognome:</strong> {{ user.cognome }}</p>
-  <p><strong>Email:</strong> {{ user.email }}</p>
+    <a (click)="cambiaSezione('indirizzi')" class="card-rect" [class.active]="sezioneAttiva === 'indirizzi'">
+      <i class="icon">📍</i>
+      <div class="card-content">
+        <h3>I miei indirizzi</h3>
+        <p>Gestisci i tuoi indirizzi di spedizione</p>
+      </div>
+      <i class="arrow">→</i>
+    </a>
+
+    <a (click)="vaiAgliOrdini()" class="card-rect">
+  <i class="icon">📦</i>
+  <div class="card-content">
+    <h3>I miei ordini</h3>
+    <p>Gestisci e visualizza lo storico dei tuoi acquisti</p>
+  </div>
+  <i class="arrow">→</i>
+</a>
+
+    <a (click)="cambiaSezione('wishlist')" class="card-rect" [class.active]="sezioneAttiva === 'wishlist'">
+      <i class="icon">❤️</i>
+      <div class="card-content">
+        <h3>Wishlist</h3>
+        <p>I tuoi prodotti preferiti</p>
+      </div>
+      <i class="arrow">→</i>
+    </a>
+
+    <a (click)="cambiaSezione('password')" class="card-rect" [class.active]="sezioneAttiva === 'password'">
+      <i class="icon">🔒</i>
+      <div class="card-content">
+        <h3>Sicurezza</h3>
+        <p>Aggiorna la tua password di accesso</p>
+      </div>
+      <i class="arrow">→</i>
+    </a>
+  </div>
+
+  <!-- Contenuto dinamico -->
+  <div class="contenuto-sezione" #contenutoSezione>
+    <!-- Messaggi -->
+    <div *ngIf="messaggio" class="messaggio-successo">{{ messaggio }}</div>
+    <div *ngIf="errore" class="messaggio-errore">{{ errore }}</div>
+
+    <!-- Sezione Profilo -->
+   <div *ngIf="sezioneAttiva === 'profilo'" class="sezione-content">
+  <div class="profilo-header">
+    <h3>I miei Dati Personali</h3>
+    <button 
+      *ngIf="!modalitaModificaProfilo" 
+      (click)="abilitaModificaProfilo()" 
+      class="btn-modifica-profilo">
+      ✏️ Modifica
+    </button>
+  </div>
+  
+  <!-- Visualizzazione dati (modalità lettura) -->
+  <div *ngIf="!modalitaModificaProfilo" class="dati-profilo">
+    <div class="dato-row">
+      <span class="label">Nome:</span>
+      <span class="valore">{{ utente.nome || 'Non specificato' }}</span>
+    </div>
+    <div class="dato-row">
+      <span class="label">Cognome:</span>
+      <span class="valore">{{ utente.cognome || 'Non specificato' }}</span>
+    </div>
+    <div class="dato-row">
+      <span class="label">Email:</span>
+      <span class="valore">{{ utente.email }}</span>
+    </div>
+    <div class="dato-row">
+      <span class="label">Sesso:</span>
+      <span class="valore">{{ utente.sesso || 'Non specificato' }}</span>
+    </div>
+    <div class="dato-row">
+      <span class="label">Telefono:</span>
+      <span class="valore">{{ utente.telefono || 'Non specificato' }}</span>
+    </div>
+    <div class="dato-row">
+      <span class="label">Data di nascita:</span>
+      <span class="valore">{{ utente.data_nascita ? (utente.data_nascita | date:'dd/MM/yyyy') : 'Non specificata' }}</span>
+    </div>
+  </div>
+
+  <!-- Form modifica (modalità modifica) -->
+  <form *ngIf="modalitaModificaProfilo" (ngSubmit)="aggiornaProfilo()" class="form-profilo">
+    <!-- Email in sola lettura -->
+    <div class="form-group">
+      <label>Email (non modificabile)</label>
+      <input type="email" [value]="utente.email" readonly class="input-readonly">
+      <small class="info-text">Per modificare l'email vai nella sezione Sicurezza</small>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Nome *</label>
+        <input type="text" [(ngModel)]="utente.nome" name="nome" required>
+      </div>
+      <div class="form-group">
+        <label>Cognome *</label>
+        <input type="text" [(ngModel)]="utente.cognome" name="cognome" required>
+      </div>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Sesso</label>
+        <select [(ngModel)]="utente.sesso" name="sesso" class="form-select">
+          <option value="">Seleziona</option>
+          <option value="Maschio">Maschio</option>
+          <option value="Femmina">Femmina</option>
+          <option value="Altro">Altro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Telefono</label>
+        <input type="tel" [(ngModel)]="utente.telefono" name="telefono" 
+               placeholder="+39 123 456 7890">
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label>Data di nascita</label>
+      <input type="date" [(ngModel)]="utente.data_nascita" name="data_nascita">
+    </div>
+
+    <div class="form-actions">
+      <button type="button" (click)="annullaModificaProfilo()" class="btn-secondary">
+        Annulla
+      </button>
+      <button type="submit" class="btn-primary" [disabled]="loading">
+        {{ loading ? 'Salvataggio...' : 'Salva modifiche' }}
+      </button>
+    </div>
+  </form>
 </div>
+    <!-- Sezione Indirizzi -->
+    <div *ngIf="sezioneAttiva === 'indirizzi'" class="sezione-content">
+  <div class="header-indirizzi">
+    <h3>I miei Indirizzi</h3>
+    <button 
+      (click)="toggleFormIndirizzo()" 
+      class="btn-aggiungi"
+      *ngIf="!mostraFormIndirizzo">
+      + Aggiungi nuovo indirizzo
+    </button>
+  </div>
+  
+  <div class="indirizzi-lista" *ngIf="indirizzi.length > 0">
+    <div *ngFor="let indirizzo of indirizzi" class="indirizzo-card">
+      <div class="indirizzo-info">
+        <p><strong>{{ indirizzo.indirizzo }}</strong></p>
+        <p>{{ indirizzo.cap }} {{ indirizzo.citta }} ({{ indirizzo.provincia }})</p>
+        <p>{{ indirizzo.paese }}</p>
+        <span *ngIf="indirizzo.predefinito" class="badge-predefinito">Predefinito</span>
+      </div>
+      <div class="indirizzo-actions">
+        <button 
+          (click)="modificaIndirizzo(indirizzo)" 
+          class="btn-modifica">
+          ✏️ Modifica
+        </button>
+        <button 
+          *ngIf="!indirizzo.predefinito" 
+          (click)="impostaPredefinito(indirizzo.id)" 
+          class="btn-predefinito">
+          Imposta predefinito
+        </button>
+        <button (click)="eliminaIndirizzo(indirizzo.id)" class="btn-elimina">Elimina</button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="indirizzi.length === 0 && !loading && !mostraFormIndirizzo" class="empty-state">
+    <p>Non hai ancora aggiunto indirizzi</p>
+    <button (click)="toggleFormIndirizzo()" class="btn-primary">
+      Aggiungi il tuo primo indirizzo
+    </button>
+  </div>
+
+  <!-- Form per aggiungere/modificare indirizzo -->
+  <div *ngIf="mostraFormIndirizzo" class="form-container">
+    <div class="form-header">
+      <h4>{{ modalitaModifica ? 'Modifica indirizzo' : 'Aggiungi nuovo indirizzo' }}</h4>
+      <button (click)="toggleFormIndirizzo()" class="btn-chiudi">✕</button>
+    </div>
+    <form (ngSubmit)="aggiungiIndirizzo()" class="form-indirizzo">
+      <div class="form-group">
+        <label>Indirizzo completo</label>
+        <input type="text" [(ngModel)]="nuovoIndirizzo.indirizzo" name="indirizzo" 
+               placeholder="Via, numero civico" required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>CAP</label>
+          <input type="text" [(ngModel)]="nuovoIndirizzo.cap" name="cap" 
+                 placeholder="00100" required>
+        </div>
+        <div class="form-group">
+          <label>Città</label>
+          <input type="text" [(ngModel)]="nuovoIndirizzo.citta" name="citta" 
+                 placeholder="Roma" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Provincia</label>
+          <input type="text" [(ngModel)]="nuovoIndirizzo.provincia" name="provincia" 
+                 placeholder="RM" maxlength="2" required>
+        </div>
+        <div class="form-group">
+          <label>Paese</label>
+          <input type="text" [(ngModel)]="nuovoIndirizzo.paese" name="paese" 
+                 placeholder="Italia" required>
+        </div>
+      </div>
+      <div class="form-group-checkbox">
+        <input type="checkbox" [(ngModel)]="nuovoIndirizzo.predefinito" 
+               name="predefinito" id="predefinito">
+        <label for="predefinito">Imposta come indirizzo predefinito</label>
+      </div>
+      <div class="form-actions">
+        <button type="button" (click)="toggleFormIndirizzo()" class="btn-secondary">
+          Annulla
+        </button>
+        <button type="submit" class="btn-primary" [disabled]="loading">
+          {{ loading ? (modalitaModifica ? 'Salvataggio...' : 'Aggiunta in corso...') : (modalitaModifica ? 'Salva modifiche' : 'Aggiungi indirizzo') }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+    <!-- Sezione Password -->
+    <div *ngIf="sezioneAttiva === 'password'" class="sezione-content">
+      <h3>Cambia Password</h3>
+      <form (ngSubmit)="cambiaPassword()" class="form-password">
+        <div class="form-group">
+          <label>Password attuale</label>
+          <input type="password" [(ngModel)]="passwordData.vecchia_password" 
+                 name="vecchia_password" required>
+        </div>
+        <div class="form-group">
+          <label>Nuova password</label>
+          <input type="password" [(ngModel)]="passwordData.nuova_password" 
+                 name="nuova_password" required>
+        </div>
+        <div class="form-group">
+          <label>Conferma nuova password</label>
+          <input type="password" [(ngModel)]="passwordData.conferma_password" 
+                 name="conferma_password" required>
+        </div>
+        <button type="submit" class="btn-primary" [disabled]="loading">
+          {{ loading ? 'Cambio in corso...' : 'Cambia password' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- Sezione Wishlist -->
+    <div *ngIf="sezioneAttiva === 'wishlist'" class="sezione-content">
+      <h3>La mia Wishlist</h3>
+      <div *ngIf="wishlist.length === 0 && !loading" class="empty-state">
+        <p>La tua wishlist è vuota</p>
+      </div>
+      <div class="wishlist-grid">
+        <div *ngFor="let prodotto of wishlist" class="wishlist-card">
+          <img [src]="prodotto.immagine" [alt]="prodotto.nome">
+          <h4>{{ prodotto.nome }}</h4>
+          <p class="prezzo">{{ prodotto.prezzo | currency:'EUR' }}</p>
+          <button (click)="rimuoviDaWishlist(prodotto.id)" class="btn-rimuovi">
+            Rimuovi
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
