@@ -13,6 +13,7 @@ const AddressesRoutes = require('./routes/indirizzi');
 const ProfileRoutes = require('./routes/profile');
 const CatalogoRoutes = require('./routes/catalogo');
 const CarrelloRoutes = require('./routes/carrello');
+const AcquistiRoutes = require('./routes/acquisti');
 const AdminRoutes = require('./routes/admin');
 const immagineRoutes = require('./routes/immagine');
 const app = express();
@@ -46,6 +47,7 @@ app.use('/api/indirizzi', AddressesRoutes);
 app.use('/api/profile', ProfileRoutes);
 app.use('/api/catalogo', CatalogoRoutes);
 app.use('/api/carrello', CarrelloRoutes);
+app.use('/api/acquisti', AcquistiRoutes);
 app.use('/api/admin', AdminRoutes);
 app.use('/api/immagine', immagineRoutes);
 

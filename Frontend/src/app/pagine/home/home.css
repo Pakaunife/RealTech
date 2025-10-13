@@ -84,13 +84,11 @@
   margin-bottom: 30px;
 }
 
-.film-card img {
+.prodotto-img {
   width: 100%;
-  height: 400px;
-  object-fit: contain; 
-  border-radius: 16px;
-  object-fit: cover; 
-  border-radius: 23px;
+  max-width: 320px;
+  height: 220px;
+  object-fit: contain;
 }
 .film-info {
   text-align: center;
@@ -109,6 +107,27 @@
   margin: 0;
   
 }
+
+.product-stats {
+  margin-top: 0.5rem;
+}
+
+.product-stats small {
+  color: #90caf9;
+  font-size: 0.8rem;
+}
+
+.loading-message, .error-message {
+  color: #ffffff;
+  text-align: center;
+  margin: 2rem 0;
+  font-size: 1.1rem;
+}
+
+.error-message {
+  color: #ff3d00;
+}
+
 body, .home-page, .package-card, .film-card, h1, h2, h3, p, button {
   font-family: 'Segoe UI', 'Arial', 'Helvetica', 'Verdana', 'Tahoma', sans-serif;
 }

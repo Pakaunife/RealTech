@@ -2,6 +2,188 @@
 
 Progetto e-commerce sviluppato con Angular 20.2.0 che implementa un sistema di carrello personalizzato per ogni utente autenticato.
 
+## 🔥 **Aggiornamenti 9 Ottobre 2025 - Sistema Prodotti Più Visualizzati**
+
+### 🏠 **Homepage - Prodotti Trending**
+- **Query Database**: Nuova API `/api/catalogo/popular` per prodotti più visualizzati
+- **Servizio Catalogo**: Creato `CatalogoService` per gestire endpoint catalogo
+- **UI Dinamica**: Homepage mostra i primi 3 prodotti più visti dal database
+- **Fallback**: Sistema di prodotti fittizi in caso di errore DB
+- **CSS Ottimizzato**: Immagini ridimensionate (220px altezza) con `object-fit: contain`
+
+### 🎯 **Navigazione Prodotti**
+- **Click-to-Detail**: Prodotti homepage cliccabili per dettaglio
+- **URL Parametrizzato**: Navigazione via `?prodottoId=X` per link diretti
+- **UX Intelligente**: 
+  - Da home → Dettaglio pulito (no pulsante "Torna ai Prodotti")
+  - Da catalogo → Dettaglio completo (con navigazione standard)
+
+### 🔧 **Backend API Enhancement**
+```sql
+-- Nuova query prodotti più visualizzati
+SELECT p.*, c.nome AS categoria, m.nome AS marchio, 
+       COUNT(v.id) as total_views
+FROM prodotto p
+LEFT JOIN visualizzazioni v ON p.id_prodotto = v.prodotto_id
+GROUP BY p.id_prodotto
+ORDER BY total_views DESC NULLS LAST
+LIMIT 3
+```
+
+### 🖼️ **Sistema Immagini Migliorato**
+- **URL Dinamici**: `http://localhost:3000/api/images/prodotti/{immagine}`
+- **Fallback Automatico**: Immagine default se prodotto senza foto
+- **Costruzione Automatica**: URL immagini generati server-side
+
+### 🎨 **UX Dettaglio Prodotto**
+- **Modalità Pulita**: Da home nasconde elementi ridondanti
+- **Informazioni Smart**: Disponibilità e titolo secondario nascosti quando appropriato
+- **Marchio Corretto**: Risolto problema "Non specificato" usando endpoint catalogo
+
+---
+
+## 💻 **Implementazione Tecnica Dettagliata**
+
+### 🛠️ **1. Backend - Nuova API `/api/catalogo/popular`**
+
+**File**: `Backend/routes/catalogo.js`
+```javascript
+router.get('/popular', async (req, res) => {
+  const { limit = 3 } = req.query; 
+  
+  const result = await pool.query(`
+    SELECT 
+      p.id_prodotto, p.nome, p.prezzo, p.descrizione, p.immagine,
+      p.quantita_disponibile, m.nome AS marchio, c.nome AS categoria,
+      COALESCE(v.total_views, 0) as total_views
+    FROM prodotto p
+    LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
+    LEFT JOIN marchio m ON p.id_marchio = m.id_marchio
+    LEFT JOIN (
+      SELECT prodotto_id, COUNT(*) as total_views
+      FROM visualizzazioni 
+      GROUP BY prodotto_id
+    ) v ON p.id_prodotto = v.prodotto_id
+    WHERE p.quantita_disponibile > 0 AND p.bloccato = false
+    ORDER BY total_views DESC NULLS LAST, p.nome
+    LIMIT $1
+  `, [limit]);
+  
+  // Costruisce URL immagini automaticamente
+  const prodotti = result.rows.map(prodotto => ({
+    ...prodotto,
+    immagine_url: prodotto.immagine ? 
+      `http://localhost:3000/api/images/prodotti/${prodotto.immagine}` : 
+      'http://localhost:3000/api/images/prodotti/default.jpg'
+  }));
+  
+  res.json(prodotti);
+});
+```
+
+### 🎯 **2. Frontend - Servizio Catalogo**
+
+**File**: `Frontend/src/app/services/catalogo.service.ts`
+```typescript
+@Injectable({ providedIn: 'root' })
+export class CatalogoService {
+  private apiUrl = 'http://localhost:3000/api/catalogo';
+
+  constructor(private http: HttpClient) {}
+
+  // Ottieni prodotti più visualizzati (per la home)
+  getProdottiPopular(limit: number = 6): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/popular?limit=${limit}`);
+  }
+
+  // Altri metodi catalogo...
+  getCategorie(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/prodotti`);
+  }
+}
+```
+
+### 🏠 **3. Homepage - Integrazione Dinamica**
+
+**File**: `Frontend/src/app/pagine/home/home.ts`
+```typescript
+export class Home implements OnInit {
+  prodottiInEvidenza: any[] = [];
+  loading = true;
+  error = '';
+
+  constructor(
+    public auth: AuthService,
+    private catalogoService: CatalogoService
+  ) {}
+  
+  ngOnInit() {
+    this.loadProdottiPopular();
+  }
+
+  loadProdottiPopular() {
+    this.loading = true;
+    this.catalogoService.getProdottiPopular(3).subscribe({
+      next: (prodotti) => {
+        this.prodottiInEvidenza = prodotti;
+        this.loading = false;
+      },
+      error: (err) => {
+        // Fallback a dati fittizi
+        this.prodottiInEvidenza = [...prodottiFallback];
+        this.loading = false;
+      }
+    });
+  }
+}
+```
+
+**File**: `Frontend/src/app/pagine/home/home.html`
+```html
+<div class="films-row" *ngIf="!loading && !error">
+  <div class="film-card" *ngFor="let prodotto of prodottiInEvidenza | slice:0:3">
+    <div class="film-info">
+      <img [src]="prodotto.immagine_url" [alt]="prodotto.nome" class="prodotto-img" />
+      <h2>{{ prodotto.nome }}</h2>
+      <p>{{ prodotto.categoria || 'Categoria' }}</p>
+    </div>
+  </div>
+</div>
+```
+
+### 🎯 **4. Navigazione Intelligente al Dettaglio**
+
+**File**: `Frontend/src/app/pagine/catalogo/catalogo.ts`
+```typescript
+export class Catalogo {
+  arrivoDaHome: boolean = false;
+  
+  constructor(private route: ActivatedRoute, ...) {
+    this.route.queryParams.subscribe(params => {
+      if (params['prodottoId']) {
+        this.arrivoDaHome = true; // Flag per UX differenziata
+        this.caricaProdottoDettaglio(params['prodottoId']);
+      } else {
+        this.arrivoDaHome = false;
+        this.caricaCategorie();
+      }
+    });
+  }
+
+  caricaProdottoDettaglio(id: number) {
+    // Usa endpoint catalogo per dati completi (marchio incluso)
+    this.http.get<any[]>(`http://localhost:3000/api/catalogo/popular?limit=1000`)
+      .subscribe(prodotti => {
+        const prodotto = prodotti.find(p => p.id_prodotto == id);
+        if (prodotto) {
+          this.prodottoSelezionato = prodotto;
+          this.mostraDettaglio = true;
+        }
+      });
+  }
+}
+
+```
 ## 🎨 **Aggiornamenti UI/UX - 8 Ottobre 2025**
 
 ### ✨ **Ottimizzazioni CSS e Layout**
@@ -33,7 +215,7 @@ Progetto e-commerce sviluppato con Angular 20.2.0 che implementa un sistema di c
 - Gestione automatica della sessione utente
 
 ### 🛒 Carrello Personalizzato per Utente
-- **Carrello specifico per ogni utente** basato sull'ID estratto dal JWT token
+- **Carrello specifico per ogni utente** basato sull'ID estratto dal JWT token dell'utente loggato
 - **Sicurezza**: Solo utenti autenticati possono gestire il carrello
 - **Persistenza**: I prodotti rimangono salvati anche dopo logout/login
 - **Sincronizzazione automatica**: Il carrello si aggiorna in tempo reale
@@ -348,6 +530,92 @@ const carrelloConUrl = rows.map(item => ({
 
 ---
 
-## Additional Resources
+## 🐞 Bug Risolto: Catalogo non si resettava dopo visualizzazione prodotto popolare
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+### Problema
+Quando si cliccava su un prodotto nei "PRODOTTI PIÙ VISUALIZZATI" dalla home, il parametro `prodottoId` rimaneva nell'URL. Se poi si cliccava su "Catalogo" nell'header, la pagina continuava a mostrare il dettaglio del prodotto invece della lista del catalogo.
+
+### Soluzione Implementata
+- **Componente Catalogo (`catalogo.ts`):**
+  - Aggiunto metodo `resetStato()` che pulisce tutte le variabili di stato e riporta la vista alla lista delle categorie.
+  - Modificato il costruttore: quando non ci sono parametri di query, viene chiamato `resetStato()` per assicurare che la pagina sia pulita.
+  - Ora la navigazione diretta al catalogo mostra sempre la lista delle categorie/prodotti.
+- **Header (`header.html` e `header.ts`):**
+  - Modificato il link "Catalogo" nell'header per chiamare il metodo `pulisciParametriCatalogo()`.
+
+---
+
+## 🛒 Funzioni e Collegamenti Implementati per Acquisti/Checkout
+
+### Backend
+- **Route principale:** `Backend/routes/acquisti.js`
+  - `/api/acquisti/checkout`  
+    Riceve i dati di pagamento e processa l'acquisto (inserisce in tabella `acquisti`, aggiorna quantità prodotti, svuota carrello).
+  - `/api/acquisti/storico/:id_utente`  
+    Restituisce lo storico degli acquisti di un utente.
+  - `/api/acquisti/dettaglio/:id_acquisto`  
+    Restituisce i dettagli di un singolo acquisto.
+
+- **Collegamento in `index.js`:**
+  ```js
+  const AcquistiRoutes = require('./routes/acquisti');
+  app.use('/api/acquisti', AcquistiRoutes);
+  ```
+
+### Frontend
+
+- **Servizio Acquisti:**  
+  `src/app/services/acquisti.service.ts`
+  - `processaCheckout(datiPagamento: DatiCheckout)`  
+    Invia i dati di pagamento al backend e riceve conferma acquisto.
+  - `getStoricoAcquisti()`  
+    Ottiene la lista degli acquisti dell'utente.
+  - `getDettaglioAcquisto(idAcquisto)`  
+    Ottiene i dettagli di un singolo acquisto.
+
+- **Pagina Checkout:**  
+  `src/app/pagine/checkout/checkout.ts`  
+  - Mostra riepilogo carrello, form pagamento, gestisce invio dati e navigazione.
+  - Funzioni principali:
+    - `processaAcquisto()`  
+      Valida il form, invia i dati al servizio acquisti, aggiorna il carrello e reindirizza.
+    - `tornaAlCarrello()`  
+      Torna alla pagina carrello.
+    - `formatNumeroCarla()`  
+      Formatta il numero della carta.
+
+- **Template Checkout:**  
+  `src/app/pagine/checkout/checkout.html`  
+  - Collega i dati del carrello e del form ai metodi del componente.
+
+- **Collegamento dal Carrello:**  
+  - Pulsante "Procedi al checkout" in `carrello.html` chiama `procediAlCheckout()` che naviga alla pagina `/checkout`.
+
+- **Routing:**  
+  `src/app/app.routes.ts`
+  ```typescript
+  { path: 'checkout', component: Checkout, canActivate: [AuthGuard] }
+  ```
+
+- **Semplificazione CSS:**  
+  - Il file `checkout.css` ora usa selettori semplici e poche classi, facilitando la manutenzione.
+
+---
+
+## Modifiche Quantità Prodotti Disponibili
+
+### Descrizione
+Quando un utente effettua un acquisto, la quantità dei prodotti disponibili viene aggiornata nel backend per riflettere l'acquisto effettuato.
+
+### Dettagli Implementativi
+- **Modifica quantità prodotti disponibili:**
+    - La quantità disponibile viene aggiornata direttamente nel backend, all'interno della route `/api/acquisti/checkout` nel file `Backend/routes/acquisti.js`.
+    - Per ogni prodotto acquistato, viene eseguita la query:
+      ```js
+      await client.query(`
+        UPDATE prodotto 
+        SET quantita_disponibile = quantita_disponibile - $1 
+        WHERE id_prodotto = $2
+      `, [item.quantita, item.id_prodotto]);
+      ```
+    - Questo garantisce che la quantità dei prodotti sia sempre aggiornata dopo ogni acquisto.

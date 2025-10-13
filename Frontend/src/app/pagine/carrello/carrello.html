@@ -29,7 +29,7 @@
   
   <div *ngIf="(carrello$ | async) && (carrello$ | async)!.length > 0" class="totale">
     <h3 class="carrello-text">Totale: €{{ totale }}</h3>
-    <button class="btn-checkout">Procedi al checkout</button>
+    <button class="btn-checkout" (click)="procediAlCheckout()">Procedi al checkout</button>
   </div>
 </div>
 

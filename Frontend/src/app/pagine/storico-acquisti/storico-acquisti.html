@@ -1,0 +1,17 @@
+<h2>Storico Acquisti</h2>
+
+<div *ngIf="loading">Caricamento...</div>
+
+<div *ngIf="errore">{{ errore }}</div>
+
+<div *ngIf="!loading && acquisti.length === 0">Nessun acquisto trovato.</div>
+
+<ul *ngIf="!loading && acquisti.length > 0">
+  <li *ngFor="let acquisto of acquisti">
+    <img [src]="acquisto.immagine_url" alt="prodotto" width="50" height="50" />
+    <strong>{{ acquisto.nome_prodotto }}</strong> - 
+    Quantità: {{ acquisto.quantita }} - 
+    Prezzo: €{{ acquisto.prezzo_unitario }} - 
+    Data: {{ acquisto.data_acquisto | date:'short' }}
+  </li>
+</ul>

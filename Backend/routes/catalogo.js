@@ -56,6 +56,51 @@ router.get('/prodotti/categoria/:nome', async (req, res) => {   //Riceve il nome
   }
 });
 
+// Versione semplificata per prodotti più visti (solo basata su visualizzazioni)
+router.get('/popular', async (req, res) => {
+  try {
+  const { limit = 4 } = req.query; 
+    
+    const result = await pool.query(`
+      SELECT 
+        p.id_prodotto, 
+        p.nome, 
+        p.prezzo,
+        p.descrizione,
+        p.immagine,
+        p.quantita_disponibile,
+        m.nome AS marchio,
+        c.nome AS categoria,
+        COALESCE(v.total_views, 0) as total_views
+      FROM prodotto p
+      LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
+      LEFT JOIN marchio m ON p.id_marchio = m.id_marchio
+      LEFT JOIN (
+        SELECT 
+          prodotto_id, 
+          COUNT(*) as total_views
+        FROM visualizzazioni 
+        GROUP BY prodotto_id
+      ) v ON p.id_prodotto = v.prodotto_id
+      WHERE p.quantita_disponibile > 0 
+      AND p.bloccato = false
+      ORDER BY total_views DESC NULLS LAST, p.nome
+      LIMIT $1
+    `, [limit]);
+    
+    // Aggiungi URL completo dell'immagine a ogni prodotto
+    const prodottiPopular = result.rows.map(prodotto => ({
+      ...prodotto,
+      immagine_url: prodotto.immagine ? `http://localhost:3000/api/images/prodotti/${prodotto.immagine}` : 'http://localhost:3000/api/images/prodotti/default.jpg'
+    }));
+    
+    res.json(prodottiPopular);
+  } catch (err) {
+    console.error('Errore popular:', err);
+    res.status(500).json({ error: 'Errore DB' });
+  }
+});
+
 router.get('/brand', async (req, res) => {
   try {
     const result = await pool.query(`
