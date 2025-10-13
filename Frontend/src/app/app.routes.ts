@@ -15,6 +15,7 @@ import { Carrello } from './pagine/carrello/carrello';
 import { Checkout } from './pagine/checkout/checkout';
 import { Admin } from './admin/admin';
 import { StoricoAcquisti } from './pagine/storico-acquisti/storico-acquisti';
+import { Novita } from './pagine/novita/novita';
 
 
 
@@ -36,4 +37,5 @@ export const routes = [
   { path: 'carrello', component: Carrello },
   { path: 'checkout', component: Checkout, canActivate: [AuthGuard] },
   { path: 'storico-acquisti', component: StoricoAcquisti, canActivate: [AuthGuard] },
+  { path: 'novita/:articolo', component: Novita },
 ];

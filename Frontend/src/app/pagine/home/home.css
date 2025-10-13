@@ -145,3 +145,71 @@ body, .home-page, .package-card, .film-card, h1, h2, h3, p, button {
   justify-content: center; /* Centra le card all'interno della riga */
   
 }
+
+/* Stili per la sezione novità */
+.news-container {
+  width: 100%;
+  margin: 1.5rem -2rem;
+  padding: 2.5rem 1.5rem;
+  background-image: url('/assets/arancione2.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: local;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 200px;
+}
+
+.news-container .package-TitoloParagrafo {
+  text-align: center;
+}
+
+
+.news-row {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.news-row-bottom {
+  /* Seconda fila: 2 card centrate */
+  justify-content: center;
+}
+
+.news-card {
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  flex: 0 0 280px;
+  max-width: 320px;
+}
+
+.news-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.news-img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+.news-card h3 {
+  color: #ffffff;
+  font-size: 1.1rem;
+  margin: 0.8rem 0.8rem 0.4rem;
+  font-weight: 600;
+}
+
+.news-card p {
+  color: #b0b8c4;
+  font-size: 0.9rem;
+  margin: 0 0.8rem 0.8rem;
+  line-height: 1.3;
+}

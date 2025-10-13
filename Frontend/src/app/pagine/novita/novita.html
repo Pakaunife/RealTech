@@ -1,0 +1,13 @@
+<div class="novita-container">
+  <div class="article-header">
+    <img [src]="immagine" [alt]="titolo" class="article-image" />
+    <h1>{{ titolo }}</h1>
+  </div>
+  
+  <div class="article-content" [innerHTML]="contenuto">
+  </div>
+  
+  <div class="back-button">
+    <button onclick="history.back()" class="btn-back">← Torna alla Home</button>
+  </div>
+</div>

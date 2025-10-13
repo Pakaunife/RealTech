@@ -28,6 +28,10 @@ export class Home implements OnInit {
   vaiAlDettaglioProdotto(prodotto: any) {
     this.router.navigate(['/catalogo'], { queryParams: { prodottoId: prodotto.id_prodotto } });
   }
+
+  vaiANovita(articolo: string) {
+    this.router.navigate(['/novita', articolo]);
+  }
   
   ngOnInit() {
     if (this.user) {

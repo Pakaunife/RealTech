@@ -28,6 +28,45 @@
   <button class="btn btn-link" (click)="logout()">Logout</button>
 </div>
 
+  <!-- Sezione Novità -->
+  <div class="news-container">
+    <div class="package-TitoloParagrafo">NOVITÀ DAL MONDO TECH</div>
+    <!-- Prima fila: 3 card -->
+    <div class="news-row news-row-top">
+      <div class="news-card" (click)="vaiANovita('notebook-gaming-2025')">
+        <img src="assets/news-notebook.jpg" alt="Miglior notebook per studenti" class="news-img" />
+        <h3>Miglior notebook per studenti e gamer del 2025</h3>
+        <p>Non importa il percorso di studi, ROG ha il notebook perfetto per...</p>
+      </div>
+      
+      <div class="news-card" (click)="vaiANovita('raffreddamento-smartphone')">
+        <img src="assets/news-cooling.jpg" alt="Sistema raffreddamento" class="news-img" />
+        <h3>Sistema di raffreddamento negli smartphone gaming</h3>
+        <p>Come ROG rivoluziona il mobile gaming grazie a soluzioni di raff...</p>
+      </div>
+      
+      <div class="news-card" (click)="vaiANovita('rog-phone-9-pro')">
+        <img src="assets/1.jpg" alt="ROG Phone 9 Pro" class="news-img" />
+        <h3>AI gaming con ROG Phone 9 Pro</h3>
+        <p>Ecco come il ROG Phone 9 Pro rivoluziona il gaming su mobile c...</p>
+      </div>
+    </div>
+    
+    <!-- Seconda fila: 2 card centrate -->
+    <div class="news-row news-row-bottom">
+      <div class="news-card" (click)="vaiANovita('command-center-z13')">
+        <img src="assets/news-command-center.jpg" alt="Command Center" class="news-img" />
+        <h3>Come funziona il Command Center del ROG Flow Z13</h3>
+        <p>Il ROG Flow Z13 del 2025 è un PC gaming 2-in-1 che offre una vasta gamma di strumenti per personalizza...</p>
+      </div>
+      
+      <div class="news-card" (click)="vaiANovita('vetrina-flow-z13')">
+        <img src="assets/news-flow-z13.jpg" alt="ROG Flow Z13 2025" class="news-img" />
+        <h3>Vetrina prodotti | ROG Flow Z13 2025</h3>
+      <p>Il tablet da gaming più potente al mondo è tornato, ancora più potente grazie a un nuovissimo processore...</p>
+    </div>
+  </div>
+</div>
 
   <div class="package-TitoloParagrafo">OFFERTE SPECIALI</div>
   <div class="offers-row">
