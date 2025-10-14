@@ -112,6 +112,10 @@ export class Catalogo {
     this.prodottoSelezionato = null;
   }
   
+  tornaAllaHome() {
+    this.router.navigate(['/']);
+  }
+  
   tornaAlleCategorie() {
     this.mostraCategorie = true;
     this.mostraProdotti = false;
