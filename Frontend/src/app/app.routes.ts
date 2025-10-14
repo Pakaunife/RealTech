@@ -16,7 +16,8 @@ import { Checkout } from './pagine/checkout/checkout';
 import { Admin } from './admin/admin';
 import { StoricoAcquisti } from './pagine/storico-acquisti/storico-acquisti';
 import { Novita } from './pagine/novita/novita';
-
+import { Ordini } from './pagine/ordini/ordini';
+import { DettagliOrdine } from './pagine/dettagli-ordine/dettagli-ordine';
 
 
 export const routes = [
@@ -38,4 +39,6 @@ export const routes = [
   { path: 'checkout', component: Checkout, canActivate: [AuthGuard] },
   { path: 'storico-acquisti', component: StoricoAcquisti, canActivate: [AuthGuard] },
   { path: 'novita/:articolo', component: Novita },
+  { path: 'ordini', component: Ordini, canActivate: [AuthGuard] },
+  { path: 'dettagli-ordine/:id', component: DettagliOrdine, canActivate: [AuthGuard] },
 ];
