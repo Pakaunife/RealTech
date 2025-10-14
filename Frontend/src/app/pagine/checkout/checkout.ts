@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CarrelloService } from '../../services/carrello.service';
 import { AcquistiService, DatiCheckout } from '../../services/acquisti.service';
+import { UserService } from '../../services/user.service'; // <-- usa UserService
+import { AuthService } from '../../services/auth.service';
 import { Observable } from 'rxjs';
 import { CouponService, CouponResponse } from '../../services/coupon.service';
 
@@ -30,16 +32,33 @@ export class Checkout implements OnInit {
   totaleOriginale = 0;
   totaleScontato = 0;
   
+  // Indirizzi
+  indirizzi: any[] = [];
+  indirizzoSelezionato: number | null = null;
+  mostraFormNuovoIndirizzo = false;
+  nuovoIndirizzo = {
+    nome: '',
+    indirizzo: '',
+    citta: '',
+    cap: '',
+    provincia: '',
+    telefono: ''
+  };
+  
   // Dati del form di pagamento
   datiPagamento: DatiCheckout = {
     metodo_pagamento: 'carta_credito',
     nome_intestatario: '',
-    numero_carta: ''
+    numero_carta: '',
+    scadenza: '',
+    cvv: ''
   };
 
   constructor(
     private carrelloService: CarrelloService,
     private acquistiService: AcquistiService,
+    private userService: UserService, // <-- usa UserService invece di IndirizziService
+    private authService: AuthService,
     private router: Router,
     private couponService: CouponService
   ) {
@@ -49,24 +68,139 @@ export class Checkout implements OnInit {
   ngOnInit(): void {
     this.carrello$.subscribe(carrello => {
       if (carrello.length === 0) {
-        // Se il carrello è vuoto, reindirizza al catalogo
         this.router.navigate(['/catalogo']);
         return;
       }
       
-      // Calcola il totale originale dal carrello
       this.totaleOriginale = carrello.reduce((total, prodotto) => {
         return total + (prodotto.prezzo * prodotto.quantita);
       }, 0);
       
-      // Se non c'è coupon applicato, totaleScontato = totaleOriginale
       if (!this.couponApplicato) {
         this.totaleScontato = this.totaleOriginale;
       }
     });
+
+    // Carica gli indirizzi dell'utente
+    this.caricaIndirizzi();
+  }
+
+  caricaIndirizzi(): void {
+    this.userService.getAddresses().subscribe({
+      next: (indirizzi: any[]) => {
+        this.indirizzi = indirizzi;
+        // Se c'è solo un indirizzo, selezionalo automaticamente
+        if (this.indirizzi.length === 1) {
+          this.selezionaIndirizzo(this.indirizzi[0]);
+        }
+      },
+      error: (err: any) => console.error('Errore caricamento indirizzi:', err)
+    });
+  }
+
+  selezionaIndirizzo(indirizzo: any): void {
+    this.indirizzoSelezionato = indirizzo.id;
+    this.mostraFormNuovoIndirizzo = false;
+  }
+
+  mostraNuovoIndirizzo(): void {
+    this.mostraFormNuovoIndirizzo = true;
+    this.indirizzoSelezionato = null;
+  }
+
+  annullaNuovoIndirizzo(): void {
+    this.mostraFormNuovoIndirizzo = false;
+    this.resetNuovoIndirizzo();
+  }
+
+  validaNuovoIndirizzo(): boolean {
+    return !!(
+      this.nuovoIndirizzo.nome.trim() &&
+      this.nuovoIndirizzo.indirizzo.trim() &&
+      this.nuovoIndirizzo.citta.trim() &&
+      this.nuovoIndirizzo.cap.trim() &&
+      this.nuovoIndirizzo.provincia.trim() &&
+      this.nuovoIndirizzo.telefono.trim()
+    );
+  }
+
+  salvaIndirizzo(): void {
+    if (!this.validaNuovoIndirizzo()) return;
+
+    this.userService.addAddress(this.nuovoIndirizzo).subscribe({
+      next: (nuovoIndirizzo: any) => {
+        this.indirizzi.push(nuovoIndirizzo);
+        this.selezionaIndirizzo(nuovoIndirizzo);
+        this.resetNuovoIndirizzo();
+        alert('Indirizzo salvato con successo!');
+      },
+      error: (err: any) => {
+        console.error('Errore salvataggio indirizzo:', err);
+        alert('Errore nel salvataggio dell\'indirizzo');
+      }
+    });
+  }
+
+  modificaIndirizzo(indirizzo: any, event: Event): void {
+    event.stopPropagation();
+    // Popola il form con i dati dell'indirizzo esistente
+    this.nuovoIndirizzo = { ...indirizzo };
+    this.mostraFormNuovoIndirizzo = true;
+    this.indirizzoSelezionato = null;
+  }
+
+  eliminaIndirizzo(indirizzoId: number, event: Event): void {
+    event.stopPropagation();
+    if (confirm('Sei sicuro di voler eliminare questo indirizzo?')) {
+      this.userService.deleteAddress(indirizzoId).subscribe({
+        next: () => {
+          this.indirizzi = this.indirizzi.filter(i => i.id !== indirizzoId);
+          if (this.indirizzoSelezionato === indirizzoId) {
+            this.indirizzoSelezionato = null;
+          }
+          alert('Indirizzo eliminato con successo!');
+        },
+        error: (err: any) => {
+          console.error('Errore eliminazione indirizzo:', err);
+          alert('Errore nell\'eliminazione dell\'indirizzo');
+        }
+      });
+    }
+  }
+
+  haIndirizzoSelezionato(): boolean {
+    return this.indirizzoSelezionato !== null || this.validaNuovoIndirizzo();
+  }
+
+  private resetNuovoIndirizzo(): void {
+    this.nuovoIndirizzo = {
+      nome: '',
+      indirizzo: '',
+      citta: '',
+      cap: '',
+      provincia: '',
+      telefono: ''
+    };
+  }
+
+  private getIndirizzoCompleto(): string {
+    if (this.indirizzoSelezionato) {
+      const indirizzo = this.indirizzi.find(i => i.id === this.indirizzoSelezionato);
+      if (indirizzo) {
+        return `${indirizzo.indirizzo}, ${indirizzo.citta} ${indirizzo.cap}, ${indirizzo.provincia}`;
+      }
+    } else if (this.validaNuovoIndirizzo()) {
+      return `${this.nuovoIndirizzo.indirizzo}, ${this.nuovoIndirizzo.citta} ${this.nuovoIndirizzo.cap}, ${this.nuovoIndirizzo.provincia}`;
+    }
+    return '';
   }
 
   validaForm(): boolean {
+    if (!this.haIndirizzoSelezionato()) {
+      alert('Seleziona un indirizzo di consegna');
+      return false;
+    }
+
     if (!this.datiPagamento.nome_intestatario.trim()) {
       alert('Inserisci il nome dell\'intestatario');
       return false;
@@ -77,10 +211,19 @@ export class Checkout implements OnInit {
       return false;
     }
 
-    // Validazione base numero carta (16 cifre)
     const numeroSolo = this.datiPagamento.numero_carta.replace(/\s/g, '');
     if (!/^\d{16}$/.test(numeroSolo)) {
       alert('Il numero della carta deve contenere 16 cifre');
+      return false;
+    }
+
+    if (!this.datiPagamento.scadenza.trim()) {
+      alert('Inserisci la scadenza della carta');
+      return false;
+    }
+
+    if (!this.datiPagamento.cvv.trim()) {
+      alert('Inserisci il CVV della carta');
       return false;
     }
 
@@ -94,23 +237,24 @@ export class Checkout implements OnInit {
 
     this.processing = true;
 
-    // Se c'è un coupon applicato, incrementa il contatore
     if (this.couponApplicato) {
       this.couponService.usaCoupon(this.couponCorrente.id).subscribe();
     }
 
-    // Passa il totale scontato al servizio acquisti
-    const datiCompleti = {
-      ...this.datiPagamento,
-      totale: this.totaleScontato,
-      coupon_applicato: this.couponApplicato ? this.couponCorrente : null
-    };
+
+   const datiCompleti = {
+    ...this.datiPagamento,
+    totale: this.totaleScontato,
+    totale_originale: this.totaleOriginale,     
+    sconto_applicato: this.scontoApplicato,     
+    coupon_applicato: this.couponApplicato ? this.couponCorrente : null,
+    indirizzo_consegna: this.getIndirizzoCompleto()
+  };
 
     this.acquistiService.processaCheckout(datiCompleti).subscribe({
-      next: (risultato) => {
+      next: (risultato: any) => {
         this.processing = false;
         if (risultato.success) {
-          // Aggiorna il carrello (dovrebbe essere vuoto dopo l'acquisto)
           this.carrelloService.aggiornaDopoAcquisto();
           alert(`Acquisto completato con successo! Totale: €${this.totaleScontato.toFixed(2)}`);
           this.router.navigate(['/profilo'], { 
@@ -118,7 +262,7 @@ export class Checkout implements OnInit {
           });
         }
       },
-      error: (err) => {
+      error: (err: any) => {
         this.processing = false;
         console.error('Errore checkout:', err);
         alert(err.error?.error || 'Errore durante il processo di acquisto');
@@ -130,14 +274,21 @@ export class Checkout implements OnInit {
     this.router.navigate(['/carrello']);
   }
 
+  formattaScadenza(): void {
+  let valore = this.datiPagamento.scadenza.replace(/\D/g, ''); // Solo numeri
+  if (valore.length >= 2) {
+    valore = valore.substring(0, 2) + '/' + valore.substring(2, 4);
+  }
+  this.datiPagamento.scadenza = valore;
+}
+
   formattaNumeroCarta(): void { 
-    // Formatta il numero carta con spazi ogni 4 cifre
     let numero = this.datiPagamento.numero_carta.replace(/\s/g, '');
     let formatted = numero.replace(/(\d{4})(?=\d)/g, '$1 ');
     this.datiPagamento.numero_carta = formatted;
   }
 
-  applicaCoupon() {
+  applicaCoupon(): void {
     if (!this.codiceCoupon.trim()) return;
 
     this.loading = true;
@@ -165,13 +316,13 @@ export class Checkout implements OnInit {
     });
   }
 
-  rimuoviCoupon() {
+  rimuoviCoupon(): void {
     this.resetCoupon();
     this.codiceCoupon = '';
     this.messaggioCoupon = '';
   }
 
-  private resetCoupon() {
+  private resetCoupon(): void {
     this.couponApplicato = false;
     this.couponCorrente = null;
     this.scontoApplicato = 0;

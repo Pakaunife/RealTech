@@ -56,6 +56,7 @@
   color: #222;
 }
 
+/* PRODOTTI */
 .prodotti-lista {
   list-style: none;
   padding: 0;
@@ -64,29 +65,127 @@
 
 .prodotto-riga {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   background: #f7f7fa;
   border-radius: 8px;
-  padding: 12px 18px;
+  padding: 15px;
   margin-bottom: 10px;
-  font-size: 1rem;
+  gap: 15px;
+}
+
+.prodotto-img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.prodotto-info {
+  flex: 1;
 }
 
 .prodotto-nome {
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 1.1em;
+  margin-bottom: 8px;
   color: #333;
 }
 
-.prodotto-quantita {
-  color: #555;
+.prodotto-dettagli {
+  display: flex;
+  gap: 20px;
+  color: #666;
+  font-size: 0.9em;
+  flex-wrap: wrap;
 }
 
-.prodotto-prezzo {
+.prodotto-quantita, .prodotto-prezzo, .prodotto-subtotale {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.prodotto-subtotale {
+  font-weight: 600;
   color: #1a237e;
+}
+
+/* RIEPILOGO PREZZI */
+.riepilogo-prezzi {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  border: 1px solid #e9ecef;
+}
+
+.prezzi-dettaglio {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.riga-prezzo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.riga-prezzo.sconto {
+  color: #28a745;
   font-weight: 500;
 }
 
+.riga-prezzo.totale-finale {
+  border-top: 2px solid #1a237e;
+  padding-top: 15px;
+  margin-top: 10px;
+  font-size: 1.1em;
+}
+
+.label-prezzo {
+  font-weight: 500;
+}
+
+.valore-prezzo {
+  font-weight: 600;
+}
+
+.sconto-valore {
+  color: #28a745;
+}
+
+.coupon-code {
+  background: #e3f2fd;
+  color: #1a237e;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* PAGAMENTO */
+.pagamento-info {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  border: 1px solid #e9ecef;
+}
+
+.pagamento-dettagli {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pagamento-dettagli > div {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* INDIRIZZO */
 .indirizzo-box {
   background: #f7f7fa;
   border-radius: 8px;
@@ -101,19 +200,4 @@
   color: #888;
   margin-top: 40px;
   font-size: 1.1em;
-}
-
-.prodotto-img {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-right: 16px;
-  border: 1px solid #eee;
-}
-.prodotto-riga {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  
 }

@@ -76,14 +76,31 @@ router.get('/user/:userId', async (req, res) => {
 router.get('/:orderId', async (req, res) => {
   const orderId = req.params.orderId;
   try {
+    console.log('Recupero dettagli ordine ID:', orderId); // Debug
+    
     const ordineResult = await pool.query(
-      `SELECT id, user_id, indirizzo_consegna, totale, stato, data_ordine
+      `SELECT 
+         id, 
+         user_id, 
+         indirizzo_consegna, 
+         totale_originale,
+         sconto_coupon,
+         totale, 
+         stato, 
+         data_ordine,
+         metodo_pagamento,
+         nome_intestatario,
+         numero_carta_mascherato,
+         coupon_utilizzato
        FROM ordini WHERE id = $1`, [orderId]
     );
+    
     if (ordineResult.rows.length === 0) {
       return res.status(404).json({ error: 'Ordine non trovato' });
     }
+    
     const ordine = ordineResult.rows[0];
+    console.log('Ordine recuperato dal database:', ordine); // Debug
 
     const prodottiResult = await pool.query(
       `SELECT 
@@ -91,19 +108,29 @@ router.get('/:orderId', async (req, res) => {
          p.immagine, 
          op.quantita, 
          op.prezzo AS prezzo_unitario,
-         (op.quantita * op.prezzo) AS subtotale
+         (op.quantita * op.prezzo) AS subtotale,
+         CASE 
+           WHEN p.immagine IS NOT NULL 
+           THEN CONCAT('http://localhost:3000/api/images/prodotti/', p.immagine)
+           ELSE 'http://localhost:3000/api/images/prodotti/default.jpg'
+         END as immagine_url
        FROM ordine_prodotti op
        JOIN prodotto p ON op.prodotto_id = p.id_prodotto
        WHERE op.ordine_id = $1`, [orderId]
     );
 
-    res.json({ ordine, prodotti: prodottiResult.rows });
+    console.log('Prodotti recuperati:', prodottiResult.rows); // Debug
+
+    res.json({ 
+      ordine: ordine, 
+      prodotti: prodottiResult.rows 
+    });
+    
   } catch (err) {
-    console.error(err);
+    console.error('Errore nel recupero dettagli ordine:', err);
     res.status(500).json({ error: 'Errore nel recupero dettagli ordine' });
   }
 });
-
 
 
 module.exports = router;

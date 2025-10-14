@@ -1,7 +1,10 @@
 <section class="dettaglio-ordine-section">
   <h2 class="titolo-sezione">Dettaglio Ordine #{{ ordine?.id }}</h2>
+  
   <div *ngIf="loading" class="loading">Caricamento...</div>
+  
   <div *ngIf="!loading && ordine">
+    <!-- INFO ORDINE -->
     <div class="ordine-info-blocco">
       <div>
         <span class="ordine-label">Data:</span>
@@ -12,25 +15,75 @@
         <span class="ordine-stato stato-{{ ordine.stato | lowercase }}">{{ ordine.stato }}</span>
       </div>
       <div>
-        <span class="ordine-label">Totale:</span>
-        <span class="ordine-totale">€ {{ ordine.totale }}</span>
+        <span class="ordine-label">Metodo Pagamento:</span>
+        <span>{{ getMetodoPagamento(ordine.metodo_pagamento) }}</span>
+      </div>
+      <div *ngIf="ordine.coupon_utilizzato">
+        <span class="ordine-label">Coupon Utilizzato:</span>
+        <span class="coupon-code">{{ ordine.coupon_utilizzato }}</span>
       </div>
     </div>
 
+    <!-- PRODOTTI -->
     <h3 class="sottotitolo">Prodotti ordinati</h3>
     <ul class="prodotti-lista">
       <li *ngFor="let p of prodotti" class="prodotto-riga">
         <img *ngIf="p.immagine" [src]="p.immagine" alt="{{ p.nome }}" class="prodotto-img">
-        <div class="prodotto-nome">{{ p.nome }}</div>
-        <div class="prodotto-quantita">x{{ p.quantita }}</div>
-        <div class="prodotto-prezzo">€ {{ p.prezzo_unitario }}</div>
-        <div class="prodotto-subtotale">Totale: € {{ p.subtotale | number:'1.2-2' }}</div>
+        <div class="prodotto-info">
+          <div class="prodotto-nome">{{ p.nome }}</div>
+          <div class="prodotto-dettagli">
+            <span class="prodotto-quantita">Quantità: {{ p.quantita }}</span>
+            <span class="prodotto-prezzo">Prezzo: € {{ getPrezzoUnitario(p) | number:'1.2-2' }}</span>
+            <span class="prodotto-subtotale">Subtotale: € {{ getSubtotaleProdotto(p) | number:'1.2-2' }}</span>
+          </div>
+        </div>
       </li>
     </ul>
 
+    <!-- RIEPILOGO PREZZI -->
+    <div class="riepilogo-prezzi">
+      <h3 class="sottotitolo">Riepilogo Ordine</h3>
+      <div class="prezzi-dettaglio">
+        <div class="riga-prezzo">
+          <span class="label-prezzo">Subtotale:</span>
+          <span class="valore-prezzo">€ {{ subtotale | number:'1.2-2' }}</span>
+        </div>
+        
+        <div *ngIf="scontoApplicato > 0" class="riga-prezzo sconto">
+          <span class="label-prezzo">Sconto<span *ngIf="ordine.coupon_utilizzato"> ({{ ordine.coupon_utilizzato }})</span>:</span>
+          <span class="valore-prezzo sconto-valore">-€ {{ scontoApplicato | number:'1.2-2' }}</span>
+        </div>
+        
+        <div class="riga-prezzo totale-finale">
+          <span class="label-prezzo"><strong>Totale Pagato:</strong></span>
+          <span class="valore-prezzo"><strong>€ {{ totaleFinale | number:'1.2-2' }}</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- INDIRIZZO -->
     <h3 class="sottotitolo">Indirizzo di spedizione</h3>
     <div class="indirizzo-box">
       {{ ordine.indirizzo_consegna }}
+    </div>
+
+    <!-- PAGAMENTO -->
+    <div class="pagamento-info">
+      <h3 class="sottotitolo">Informazioni Pagamento</h3>
+      <div class="pagamento-dettagli">
+        <div>
+          <span class="ordine-label">Metodo:</span>
+          <span>{{ getMetodoPagamento(ordine.metodo_pagamento) }}</span>
+        </div>
+        <div *ngIf="ordine.nome_intestatario">
+          <span class="ordine-label">Intestatario:</span>
+          <span>{{ ordine.nome_intestatario }}</span>
+        </div>
+        <div *ngIf="ordine.numero_carta_mascherato">
+          <span class="ordine-label">Carta:</span>
+          <span>{{ ordine.numero_carta_mascherato }}</span>
+        </div>
+      </div>
     </div>
   </div>
 </section>
