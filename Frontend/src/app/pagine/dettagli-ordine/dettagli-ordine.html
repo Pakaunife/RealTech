@@ -1,5 +1,9 @@
 <section class="dettaglio-ordine-section">
   <h2 class="titolo-sezione">Dettaglio Ordine #{{ ordine?.id }}</h2>
+
+  <button class="btn-torna" (click)="tornaAListaOrdini()">
+    <i class="fas fa-arrow-left"></i> torna agli ordini
+  </button>
   
   <div *ngIf="loading" class="loading">Caricamento...</div>
   

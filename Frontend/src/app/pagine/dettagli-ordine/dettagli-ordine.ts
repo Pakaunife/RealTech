@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { OrderService } from '../../services/order.service';
 import { DatePipe, NgIf, NgFor, LowerCasePipe, DecimalPipe } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dettagli-ordine',
@@ -21,7 +22,8 @@ export class DettagliOrdine implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -121,5 +123,9 @@ export class DettagliOrdine implements OnInit {
   console.log('Risultato finale:', risultato);
   
   return risultato;
+}
+
+tornaAListaOrdini() {
+  this.router.navigate(['/ordini']); 
 }
 }

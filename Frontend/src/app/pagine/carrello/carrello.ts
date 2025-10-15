@@ -20,7 +20,9 @@ export class Carrello implements OnInit {
 
   ngOnInit(): void {
     this.carrello$.subscribe(carrello => {
-      this.totale = carrello.reduce((total, item) => total + (item.prezzo * item.quantita), 0);
+     this.totale = Math.round(
+  carrello.reduce((total, item) => total + (item.prezzo * item.quantita), 0) * 100
+) / 100;
     });
   }
 

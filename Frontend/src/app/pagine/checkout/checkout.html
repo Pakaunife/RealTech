@@ -14,8 +14,8 @@
         <div>
           <h4>{{ prodotto.nome }}</h4>
           <p>Quantità: {{ prodotto.quantita }}</p>
-          <p>Prezzo: €{{ prodotto.prezzo }}</p>
-          <p><strong>Subtotale: €{{ prodotto.prezzo * prodotto.quantita }}</strong></p>
+          <p>Prezzo: {{ prodotto.prezzo }}€</p>
+          <p><strong>Subtotale: {{ prodotto.prezzo * prodotto.quantita }}€</strong></p>
         </div>
       </div>
     </div>
@@ -51,21 +51,21 @@
       <div *ngIf="couponApplicato" class="riepilogo-sconto">
         <div class="riga-sconto">
           <span>Subtotale:</span>
-          <span>€ {{ totaleOriginale | number:'1.2-2' }}</span>
+          <span>{{ totaleOriginale | number:'1.2-2' }}€</span>
         </div>
         <div class="riga-sconto sconto-evidenziato">
           <span>Sconto ({{ couponCorrente.codice }}):</span>
-          <span>-€ {{ scontoApplicato | number:'1.2-2' }}</span>
+          <span>{{ scontoApplicato | number:'1.2-2' }}€</span>
         </div>
         <div class="riga-totale">
           <span><strong>Totale:</strong></span>
-          <span><strong>€ {{ totaleScontato | number:'1.2-2' }}</strong></span>
+          <span><strong> {{ totaleScontato | number:'1.2-2' }}€</strong></span>
         </div>
       </div>
     </div>
     
     <div class="total-section">
-      <h3>Totale: €{{ totaleScontato | number:'1.2-2' }}</h3>
+      <h3>Totale: {{ totaleScontato | number:'1.2-2'}}€</h3>
     </div>
   </div>
 
@@ -268,7 +268,7 @@
         <button type="submit" 
                 [disabled]="processing || !checkoutForm.form.valid || !haIndirizzoSelezionato()">
           <span *ngIf="processing">Elaborazione...</span>
-          <span *ngIf="!processing">Completa Acquisto - €{{ totaleScontato | number:'1.2-2' }}</span>
+          <span *ngIf="!processing">Completa Acquisto  {{ totaleScontato | number:'1.2-2' }}€</span>
         </button>
       </div>
     </form>

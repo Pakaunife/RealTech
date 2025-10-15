@@ -178,16 +178,16 @@ input, select { /* applichiamo ai pulsatti input(dove metti testo) e sulle casel
 }
 
 .coupon-section {
-  background: #f8f9fa;
+  background: rgba(20, 20, 20, 0.7);
   border-radius: 12px;
   padding: 24px;
   margin: 20px 0;
-  border: 1px solid #e9ecef;
+  border: 1px solid rgba(0, 0, 0, 0.7);
 }
 
 .coupon-section h3 {
   margin: 0 0 16px 0;
-  color: #333;
+  color: #ffffff;
   font-size: 1.2rem;
 }
 
@@ -298,21 +298,21 @@ input, select { /* applichiamo ai pulsatti input(dove metti testo) e sulle casel
 }
 
 .indirizzo-card {
-  border: 2px solid #e9ecef;
+  border: 1px solid rgba(0, 0, 0, 0.7);
   border-radius: 8px;
   padding: 16px;
   cursor: pointer;
   transition: all 0.2s;
-  background: #f8f9fa;
+  background: rgba(20, 20, 20, 0.7);
 }
 
 .indirizzo-card:hover {
-  border-color: #1a237e;
+  border-color: rgba(20, 20, 20, 0.7);
 }
 
 .indirizzo-card.selected {
-  border-color: #1a237e;
-  background: #e3f2fd;
+  border-color: rgba(255, 102, 1, 0.7);
+  background: rgba(20, 20, 20, 0.7);
 }
 
 .indirizzo-info {
@@ -380,10 +380,10 @@ input, select { /* applichiamo ai pulsatti input(dove metti testo) e sulle casel
 }
 
 .form-section {
-  background: #f8f9fa;
+  background: rgba(20, 20, 20, 0.7);
   border-radius: 12px;
   padding: 24px;
   margin-bottom: 24px;
-  border: 1px solid #e9ecef;
+  border: 1px solid rgba(20, 20, 20, 0.7);
 }
 
