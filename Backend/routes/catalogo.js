@@ -114,4 +114,53 @@ router.get('/brand', async (req, res) => {
   }
 });
 
+// Endpoint per suggerimenti di ricerca
+router.get('/search/suggestions', async (req, res) => {
+  try {
+    const { q, limit = 5 } = req.query;
+    
+    if (!q || q.trim().length < 2) {
+      return res.json([]);
+    }
+    
+    const searchTerm = `%${q.trim().toLowerCase()}%`;
+    
+    const result = await pool.query(`
+      SELECT 
+        p.id_prodotto, 
+        p.nome, 
+        p.prezzo,
+        p.immagine,
+        m.nome AS marchio,
+        c.nome AS categoria
+      FROM prodotto p
+      LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
+      LEFT JOIN marchio m ON p.id_marchio = m.id_marchio
+      WHERE (LOWER(p.nome) LIKE $1 OR LOWER(m.nome) LIKE $1 OR LOWER(c.nome) LIKE $1)
+      AND p.quantita_disponibile > 0 
+      AND p.bloccato = false
+      ORDER BY 
+        CASE 
+          WHEN LOWER(p.nome) LIKE $2 THEN 1
+          WHEN LOWER(p.nome) LIKE $1 THEN 2
+          WHEN LOWER(m.nome) LIKE $1 THEN 3
+          ELSE 4
+        END,
+        p.nome
+      LIMIT $3
+    `, [searchTerm, `${q.trim().toLowerCase()}%`, limit]);
+    
+    // Aggiungi URL completo dell'immagine a ogni prodotto
+    const suggestions = result.rows.map(prodotto => ({
+      ...prodotto,
+      immagine_url: prodotto.immagine ? `http://localhost:3000/api/images/prodotti/${prodotto.immagine}` : 'http://localhost:3000/api/images/prodotti/default.jpg'
+    }));
+    
+    res.json(suggestions);
+  } catch (err) {
+    console.error('Errore suggestions:', err);
+    res.status(500).json({ error: 'Errore DB' });
+  }
+});
+
 module.exports = router;

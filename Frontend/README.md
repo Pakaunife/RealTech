@@ -2,7 +2,183 @@
 
 Progetto e-commerce sviluppato con Angular 20.2.0 che implementa un sistema di carrello personalizzato per ogni utente autenticato.
 
-## 🔥 **Aggiornamenti 9 Ottobre 2025 - Sistema Prodotti Più Visualizzati**
+## �️ **Aggiornamenti 15 Ottobre 2025 - Fix Sfarfallio Suggerimenti Ricerca**
+
+### 🔧 **Problemi Risolti**
+- **Sfarfallio eliminato**: Stabilizzate dimensioni immagini e container suggerimenti
+- **Performance ottimizzata**: Debounce aumentato a 400ms per ridurre chiamate API
+- **Layout stabile**: Dimensioni fisse per prevenire layout shifts durante caricamento
+
+### ⚡ **Miglioramenti Tecnici**
+```css
+.suggestion-image {
+  width: 35px; height: 35px;
+  flex-shrink: 0; /* Previene ridimensionamento */
+  background-color: #252b34; /* Placeholder durante caricamento */
+}
+.suggestion-item {
+  min-height: 55px; /* Altezza fissa per stabilità */
+}
+```
+
+### 🎨 **UX Migliorata**
+- **Caricamento fluido**: Loading lazy per immagini + placeholder colorato
+- **Testo ottimizzato**: Ellipsis per nomi prodotti lunghi
+- **CSS pulito**: Rimosso codice duplicato che causava conflitti
+
+---
+
+## 🔍 **Aggiornamenti 14 Ottobre 2025 - Sistema Ricerca Intelligente con Suggerimenti**
+
+### 🎯 **Architettura Completa del Sistema di Ricerca**
+
+#### 🔄 **Flusso di Funzionamento**
+1. **Input utente** → Digitazione nella barra di ricerca
+2. **Debouncing** → RxJS attende 400ms prima di elaborare
+3. **API Call** → Richiesta al backend per suggerimenti
+4. **Rendering** → Visualizzazione dropdown con risultati
+5. **Navigazione** → Click porta alla pagina dettaglio prodotto
+
+#### 🧩 **Componenti e Connessioni**
+
+### 🖥️ **Frontend - Header Component**
+**File**: `Frontend/src/app/header/header.ts`
+```typescript
+export class Header {
+  searchSuggestions: any[] = [];
+  showSuggestions: boolean = false;
+  private searchSubject = new Subject<string>();
+  
+  constructor(private catalogoService: CatalogoService) {
+    // 🔄 Setup RxJS pipeline per gestione ricerca
+    this.searchSubject.pipe(
+      debounceTime(400),           // ⏱️ Attende 400ms tra le digitazioni
+      distinctUntilChanged(),      // 🔄 Evita chiamate duplicate
+      switchMap((query: string) => {
+        if (query.length >= 2) {
+          return this.catalogoService.getSearchSuggestions(query);
+        } else {
+          return [];  // 🚫 Query troppo corta
+        }
+      })
+    ).subscribe(suggestions => {
+      // 📊 Aggiorna UI solo se query ancora valida
+      if (this.searchQuery.length >= 2) {
+        this.searchSuggestions = suggestions;
+        this.showSuggestions = suggestions.length > 0;
+      }
+    });
+  }
+
+  // 🔤 Gestisce input utente in tempo reale
+  onSearchInput(event: any) {
+    const query = event.target.value;
+    this.searchQuery = query;
+    this.searchSubject.next(query);  // 📡 Invia al pipeline RxJS
+  }
+
+  // 🎯 Gestisce click su suggerimento
+  selectSuggestion(product: any) {
+    this.searchQuery = '';
+    this.showSuggestions = false;
+    // 🧭 Naviga direttamente alla pagina prodotto
+    this.router.navigate(['/catalogo'], { 
+      queryParams: { prodottoId: product.id_prodotto } 
+    });
+  }
+}
+```
+
+### 🔧 **Frontend - Servizio Catalogo**
+**File**: `Frontend/src/app/services/catalogo.service.ts`
+```typescript
+@Injectable({ providedIn: 'root' })
+export class CatalogoService {
+  private apiUrl = 'http://localhost:3000/api/catalogo';
+
+  // 🔍 Metodo per ottenere suggerimenti di ricerca
+  getSearchSuggestions(query: string, limit: number = 5): Observable<any[]> {
+    if (!query || query.trim().length < 2) {
+      return new Observable(observer => observer.next([]));
+    }
+    return this.http.get<any[]>(`${this.apiUrl}/search/suggestions`, {
+      params: { q: query.trim(), limit: limit.toString() }
+    });
+  }
+}
+```
+
+### 🏗️ **Backend - API Endpoint**
+**File**: `Backend/routes/catalogo.js`
+```javascript
+// 🔍 Endpoint intelligente per suggerimenti ricerca
+router.get('/search/suggestions', async (req, res) => {
+  try {
+    const { q, limit = 5 } = req.query;
+    
+    // ✅ Validazione input
+    if (!q || q.trim().length < 2) {
+      return res.json([]);
+    }
+    
+    const searchTerm = `%${q.trim().toLowerCase()}%`;
+    
+    // 🗄️ Query SQL con priorità intelligente
+    const result = await pool.query(`
+      SELECT 
+        p.id_prodotto, p.nome, p.prezzo, p.immagine,
+        m.nome AS marchio, c.nome AS categoria
+      FROM prodotto p
+      LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
+      LEFT JOIN marchio m ON p.id_marchio = m.id_marchio
+      WHERE (LOWER(p.nome) LIKE $1 OR LOWER(m.nome) LIKE $1 OR LOWER(c.nome) LIKE $1)
+      AND p.quantita_disponibile > 0 AND p.bloccato = false
+      ORDER BY 
+        CASE 
+          WHEN LOWER(p.nome) LIKE $2 THEN 1  -- 🥇 Priorità: nomi che iniziano con query
+          WHEN LOWER(p.nome) LIKE $1 THEN 2  -- 🥈 Nomi che contengono query
+          WHEN LOWER(m.nome) LIKE $1 THEN 3  -- 🥉 Marchi che contengono query
+          ELSE 4
+        END, p.nome
+      LIMIT $3
+    `, [searchTerm, `${q.trim().toLowerCase()}%`, limit]);
+    
+    // 🖼️ Costruzione URL immagini automatica
+    const suggestions = result.rows.map(prodotto => ({
+      ...prodotto,
+      immagine_url: prodotto.immagine ? 
+        `http://localhost:3000/api/images/prodotti/${prodotto.immagine}` : 
+        'http://localhost:3000/api/images/prodotti/default.jpg'
+    }));
+    
+    res.json(suggestions);
+  } catch (err) {
+    res.status(500).json({ error: 'Errore DB' });
+  }
+});
+```
+
+### 🔄 **Ciclo di Vita Completo**
+1. **Utente digita** → `onSearchInput()` cattura evento
+2. **RxJS Pipeline** → Debounce + DistinctUntilChanged + SwitchMap
+3. **Servizio Angular** → `catalogoService.getSearchSuggestions()`
+4. **HTTP Request** → GET `/api/catalogo/search/suggestions?q=...`
+5. **Database Query** → PostgreSQL con LIKE e priorità ORDER BY
+6. **Response Processing** → Costruzione URL immagini + mapping
+7. **UI Update** → Rendering dropdown con `*ngFor`
+8. **User Click** → `selectSuggestion()` → Navigation con `queryParams`
+9. **Catalogo Component** → Intercetta `prodottoId` → Mostra dettaglio
+
+### 🛡️ **Gestione Errori e Edge Cases**
+- **Query troppo corta**: Nessuna ricerca < 2 caratteri
+- **Immagini mancanti**: Fallback automatico a default.jpg
+- **API offline**: Observable vuoto previene crash
+- **Click fuori dropdown**: HostListener chiude suggerimenti
+- **Escape key**: Chiusura rapida dropdown
+
+---
+
+## �🔥 **Aggiornamenti 9 Ottobre 2025 - Sistema Prodotti Più Visualizzati**
 
 ### 🏠 **Homepage - Prodotti Trending**
 - **Query Database**: Nuova API `/api/catalogo/popular` per prodotti più visualizzati

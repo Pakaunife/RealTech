@@ -16,8 +16,9 @@ const CarrelloRoutes = require('./routes/carrello');
 const AcquistiRoutes = require('./routes/acquisti');
 const AdminRoutes = require('./routes/admin');
 const immagineRoutes = require('./routes/immagine');
+const PacchettiRoutes = require('./routes/pacchetti');
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors({
   origin: 'http://localhost:4200',
@@ -50,6 +51,7 @@ app.use('/api/carrello', CarrelloRoutes);
 app.use('/api/acquisti', AcquistiRoutes);
 app.use('/api/admin', AdminRoutes);
 app.use('/api/immagine', immagineRoutes);
+app.use('/api/pacchetti', PacchettiRoutes);
 
 app.use((err, _req, res, _next) => {
   const status = err.status || 500;
