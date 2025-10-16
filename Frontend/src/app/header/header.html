@@ -26,13 +26,12 @@
       <li *ngIf="user"><a routerLink="/profilo">Profilo</a></li>
       <li *ngIf="user"><a href="#" (click)="logout()">Logout</a></li>
       <li><a routerLink="/about">About</a></li>
-      <li><a routerLink="/storico-acquisti">Storico Acquisti</a></li>
       <li><a routerLink="/catalogo" (click)="pulisciParametriCatalogo()">Catalogo</a></li>
       <li><a routerLink="/carrello">Carrello</a></li>
       <li *ngIf="auth.isAdmin()"><a routerLink="/admin">Area Admin</a></li>
       <li><a href="#">Feedback</a></li>
     </div>
-    
+
     <!-- Icona di ricerca in alto a destra -->
     <div class="search-icon-trigger" (click)="toggleSearchOverlay()" title="Cerca prodotti">
       <i class="fa-solid fa-search"></i>
