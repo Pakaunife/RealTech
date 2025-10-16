@@ -1,4 +1,4 @@
-<app-header-minimal></app-header-minimal>
+
 
 <div class="container mt-4">
   <h2>Registrazione</h2>
@@ -15,6 +15,29 @@
       <label for="email" class="form-label">Email</label>
       <input type="email" id="email" class="form-control" formControlName="email" required>
     </div>
+    <div class="mb-3">
+  <label for="sesso" class="form-label">Sesso</label>
+  <select id="sesso" class="form-control" formControlName="sesso" required>
+    <option value="">Seleziona...</option>
+    <option value="M">Maschio</option>
+    <option value="F">Femmina</option>
+    <option value="Altro">Altro</option>
+  </select>
+</div>
+<div class="mb-3">
+  <label for="dataNascita" class="form-label">Data di nascita</label>
+  <input type="date" id="dataNascita" class="form-control" formControlName="dataNascita" required>
+  <div *ngIf="registerForm.get('dataNascita')?.touched && registerForm.get('dataNascita')?.errors?.['minAge']" class="text-danger">
+  Devi essere maggiorenne per registrarti.
+</div>
+</div>
+<div class="mb-3">
+  <label for="telefono" class="form-label">Numero di telefono</label>
+  <input type="tel" id="telefono" class="form-control" formControlName="telefono" required pattern="^[0-9]{10,15}$">
+  <div *ngIf="registerForm.get('telefono')?.touched && registerForm.get('telefono')?.invalid" class="text-danger">
+    Inserisci un numero di telefono valido.
+  </div>
+</div>
     <div class="mb-3">
       <label for="password" class="form-label">Password</label>
       <input type="password" id="password" class="form-control" formControlName="password" required>

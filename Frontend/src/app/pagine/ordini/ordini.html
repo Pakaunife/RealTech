@@ -1,4 +1,6 @@
+
 <section class="ordini-section">
+  <button class="btn-ordini" (click)="vaiAProfilo()"> Torna al profilo </button>
   <h2 class="titolo-sezione">I miei ordini</h2>
   <div *ngIf="loading" class="loading">Caricamento...</div>
   <div *ngIf="!loading && ordini.length === 0" class="empty-state">

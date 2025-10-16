@@ -18,8 +18,8 @@ router.post('/login', async (req, res) => {
     if (!valid) return res.status(401).json({ message: 'Credenziali non valide' });
 
     // Genera JWT
-    const token = jwt.sign({ id: user.id, nome: user.nome, email: user.email,is_admin: user.is_admin }, process.env.JWT_SECRET, { expiresIn: '2h' });
-    res.json({ token, user: { id: user.id, nome: user.nome, email: user.email, is_admin: user.is_admin } });
+    const token = jwt.sign({ id: user.id, nome: user.nome, email: user.email, ruolo: user.ruolo }, process.env.JWT_SECRET, { expiresIn: '2h' });
+    res.json({ token, user: { id: user.id, nome: user.nome, email: user.email, ruolo: user.ruolo } });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

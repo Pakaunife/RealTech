@@ -35,4 +35,7 @@ export class Ordini implements OnInit {
   vaiANuovoOrdine() {
     this.router.navigate(['/catalogo']);
   }
+  vaiAProfilo() {
+    this.router.navigate(['/profilo']);
+  }
 }

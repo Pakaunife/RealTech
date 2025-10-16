@@ -33,11 +33,7 @@ export class AuthService {
     }
     return null;
   }
-   isAdmin(): boolean {
-    const user = this.getUser();
-    console.log('Decoded JWT user:', user);
-    return user ? !!user.is_admin : false;
-  }
+   
 
   logout() {
     localStorage.clear();

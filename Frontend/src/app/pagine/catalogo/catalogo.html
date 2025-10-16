@@ -46,8 +46,8 @@
     
     <!-- Filtro per marca -->
     <div class="filtro-marca" *ngIf="marcheDisponibili.length > 0" style="margin-bottom: 20px; text-align: center;">
-      <label for="marca" style="color: white; margin-right: 10px;">Filtra per marca:</label>
-      <select id="marca" [(ngModel)]="marcaSelezionata" style="padding: 5px; border-radius: 5px;">
+      <label for="marca" style="color: white;  margin-right: 10px;">Filtra per marca:</label>
+      <select id="marca" [(ngModel)]="marcaSelezionata" style="padding: 10px; background: #ff3d00; color: #fff; border: none;">
         <option value="">Tutte le marche</option>
         <option *ngFor="let marca of marcheDisponibili" [value]="marca">{{ marca }}</option>
       </select>

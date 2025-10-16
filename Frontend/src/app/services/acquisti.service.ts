@@ -1,4 +1,3 @@
-//si occupa di gestire la comunicazione con il backend e la logica degli acquisti. mentre checkout.ts si occupa solo dell’interfaccia utente.
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -8,6 +7,8 @@ export interface DatiCheckout {
   metodo_pagamento: string;
   nome_intestatario: string;
   numero_carta: string;
+  scadenza: string;
+  cvv: string;
 }
 
 export interface RisultatoAcquisto {
@@ -31,23 +32,21 @@ export class AcquistiService {
   }
 
   // Processa il checkout
-  processaCheckout(datiPagamento: DatiCheckout): Observable<RisultatoAcquisto> {
+  processaCheckout(datiCheckout: any): Observable<any> {
     const idUtente = this.getIdUtente();
     if (!idUtente) {
       throw new Error('Utente non autenticato');
     }
 
-    // Maschera il numero di carta (mostra solo le ultime 4 cifre)
-    const numero_carta_mascherato = '**** **** **** ' + datiPagamento.numero_carta.slice(-4);
+    // Aggiungi automaticamente l'ID utente ai dati
+    const datiCompleti = {
+      ...datiCheckout,
+      id_utente: idUtente
+    };
 
-    return this.http.post<RisultatoAcquisto>(`${this.baseUrl}/checkout`, { //manda richiesta POST al backend per processare il checkout
-      //dati da mandare al backend
-      id_utente: idUtente,
-      metodo_pagamento: datiPagamento.metodo_pagamento,
-      nome_intestatario: datiPagamento.nome_intestatario,
-      numero_carta_mascherato: numero_carta_mascherato
-    });
-    //Il backend riceve questi dati, li elabora (registra l’acquisto, svuota il carrello, ecc.) e restituisce una risposta.
+    console.log('Dati inviati al backend:', datiCompleti); // Per debug
+    
+    return this.http.post<any>(`${this.baseUrl}/checkout`, datiCompleti);
   }
 
   // Ottieni storico acquisti dell'utente
@@ -57,7 +56,7 @@ export class AcquistiService {
       throw new Error('Utente non autenticato');
     }
 
-    return this.http.get<any[]>(`${this.baseUrl}/storico/${idUtente}`); //manda richiesta GET al backend per ottenere lo storico acquisti dell'utente (vedi aquisti.js nel backend router.get('/storico/:id_utente', async (req, res) => )
+    return this.http.get<any[]>(`${this.baseUrl}/storico/${idUtente}`);
   }
 
   // Ottieni dettagli di un singolo acquisto

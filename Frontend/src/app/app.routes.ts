@@ -17,6 +17,7 @@ import { Admin } from './admin/admin';
 import { Novita } from './pagine/novita/novita';
 import { Ordini } from './pagine/ordini/ordini';
 import { DettagliOrdine } from './pagine/dettagli-ordine/dettagli-ordine';
+import { Wishlist } from './pagine/wishlist/wishlist';
 
 
 export const routes = [
@@ -39,5 +40,5 @@ export const routes = [
   { path: 'novita/:articolo', component: Novita },
   { path: 'ordini', component: Ordini, canActivate: [AuthGuard] },
   { path: 'dettagli-ordine/:id', component: DettagliOrdine, canActivate: [AuthGuard] },
-  
+  { path: 'wishlist', component: Wishlist, canActivate: [AuthGuard] }
 ];

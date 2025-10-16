@@ -1,17 +1,223 @@
-<app-header-minimal></app-header-minimal>
+<div *ngIf="mostraOrdiniUtente" class="modal-overlay" (click)="chiudiOrdiniUtente()">
+  <div class="modal-content modal-large" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>
+        <i class="fas fa-user-circle"></i>
+        Ordini di {{ utenteSelezionatoOrdini?.nome }} {{ utenteSelezionatoOrdini?.cognome }}
+      </h3>
+      <button (click)="chiudiOrdiniUtente()" class="modal-close">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <div *ngIf="ordiniUtenteSelezionato.length === 0" class="no-orders">
+        Questo utente non ha ancora effettuato ordini.
+      </div>
+      
+      <table *ngIf="ordiniUtenteSelezionato.length > 0" class="admin-user-mini-table">
+        <thead>
+          <tr>
+            <th>ID Ordine</th>
+            <th>Data</th>
+            <th>Totale</th>
+            <th>Stato</th>
+            <th>Prodotti</th>
+            <th>Pagamento</th>
+            <th>Azioni</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ordine of ordiniUtenteSelezionato">
+            <td>#{{ ordine.id }}</td>
+            <td>{{ ordine.data_ordine | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td class="stat-totale">{{ ordine.totale | number:'1.2-2' }}€ </td>
+            <td>
+              <span class="status-badge" [ngClass]="'status-' + ordine.stato.toLowerCase().replace(' ', '-')">
+                {{ ordine.stato }}
+              </span>
+            </td>
+            <td>{{ ordine.numero_prodotti }}</td>
+            <td>{{ ordine.metodo_pagamento || 'N/A' }}</td>
+            <td>
+              <button (click)="visualizzaDettaglioOrdineDaUtente(ordine)" class="btn-dettagli">
+                Dettagli
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
+      <div *ngIf="ordiniUtenteSelezionato.length > 0" class="statistiche-utente">
+        <h4>Riepilogo Cliente</h4>
+        <div class="riepilogo-grid">
+          <div class="riepilogo-item">
+            <span class="riepilogo-label">Totale Ordini:</span>
+            <span class="riepilogo-valore">{{ ordiniUtenteSelezionato.length }}</span>
+          </div>
+          <div class="riepilogo-item">
+            <span class="riepilogo-label">Totale Speso:</span>
+            <span class="riepilogo-valore stat-totale">€ {{ calcolaTotaleSpeso() | number:'1.2-2' }}</span>
+          </div>
+          <div class="riepilogo-item">
+            <span class="riepilogo-label">Ordine Medio:</span>
+            <span class="riepilogo-valore">€ {{ calcolaOrdineMedio() | number:'1.2-2' }}</span>
+          </div>
+          <div class="riepilogo-item">
+            <span class="riepilogo-label">Ultimo Ordine:</span>
+            <span class="riepilogo-valore">{{ getUltimoOrdine() | date:'dd/MM/yyyy' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="mostraDettaglioOrdine" class="modal-overlay" (click)="chiudiDettaglioOrdine()">
+  <div class="modal-content modal-extra-large" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Dettaglio Ordine #{{ ordineDettaglio?.id }}</h3>
+      <button (click)="chiudiDettaglioOrdine()" class="modal-close">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <div *ngIf="ordineDettaglio">
+        <!-- INFO ORDINE -->
+        <div class="dettaglio-grid">
+          <div class="dettaglio-section">
+            <h4>Informazioni Cliente</h4>
+            <p><strong>Nome:</strong> {{ ordineDettaglio.nome_cliente || utenteSelezionatoOrdini?.nome }} {{ ordineDettaglio.cognome_cliente || utenteSelezionatoOrdini?.cognome }}</p>
+            <p><strong>Email:</strong> {{ ordineDettaglio.email_cliente || utenteSelezionatoOrdini?.email }}</p>
+          </div>
+          
+          <div class="dettaglio-section">
+            <h4>Informazioni Ordine</h4>
+            <p><strong>Data:</strong> {{ ordineDettaglio.data_ordine | date:'dd/MM/yyyy HH:mm' }}</p>
+            <p><strong>Stato:</strong> 
+              <span class="status-badge" [ngClass]="'status-' + ordineDettaglio.stato.toLowerCase().replace(' ', '-')">
+                {{ ordineDettaglio.stato }}
+              </span>
+            </p>
+            <p><strong>Pagamento:</strong> {{ ordineDettaglio.metodo_pagamento || 'N/A' }}</p>
+          </div>
+        </div>
+
+        <!-- INDIRIZZO SPEDIZIONE -->
+        <div class="dettaglio-section">
+          <h4>Indirizzo di Spedizione</h4>
+          <p>{{ ordineDettaglio.indirizzo_consegna }}</p>
+        </div>
+
+        <!-- PRODOTTI -->
+        <div class="dettaglio-section">
+          <h4>Prodotti Ordinati</h4>
+          <table class="admin-user-mini-table">
+            <thead>
+              <tr>
+                <th>Prodotto</th>
+                <th>Quantità</th>
+                <th>Prezzo Unitario</th>
+                <th>Subtotale</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let prodotto of prodottiOrdineDettaglio">
+                <td>{{ prodotto.nome }}</td>
+                <td>{{ prodotto.quantita }}</td>
+                <td>{{ prodotto.prezzo_unitario | number:'1.2-2' }} €</td>
+                <td class="stat-totale">{{ prodotto.subtotale | number:'1.2-2' }} €</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- TOTALI -->
+        <div class="dettaglio-section totali-section">
+          <div class="totali-grid">
+            <div class="totale-item">
+              <span>Subtotale:</span>
+              <span>{{ ordineDettaglio.totale_originale || ordineDettaglio.totale | number:'1.2-2' }} €</span>
+            </div>
+            <div class="totale-item" *ngIf="ordineDettaglio.sconto_applicato && ordineDettaglio.sconto_applicato > 0">
+              <span>Sconto:</span>
+              <span class="sconto">-{{ ordineDettaglio.sconto_applicato | number:'1.2-2' }} €</span>
+            </div>
+            <div class="totale-item totale-finale">
+              <span><strong>Totale:</strong></span>
+              <span><strong>{{ ordineDettaglio.totale | number:'1.2-2' }} €</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- AZIONI CAMBIO STATO -->
+        <div class="dettaglio-azioni">
+          <h4>Gestione Ordine</h4>
+          <div class="stato-azioni">
+            <button 
+              *ngIf="ordineDettaglio.stato === 'In lavorazione'" 
+              (click)="cambiaStatoOrdine(ordineDettaglio, 'Spedito')" 
+              class="btn-spedisci">
+              Marca come Spedito
+            </button>
+
+             <button 
+              *ngIf="ordineDettaglio.stato === 'Spedito'" 
+              (click)="cambiaStatoOrdine(ordineDettaglio, 'In transito')" 
+              class="btn-transito">
+              <i class="fas fa-route"></i>
+              Marca come In Transito
+            </button>
+
+            <button 
+              *ngIf="ordineDettaglio.stato === 'In transito'" 
+              (click)="cambiaStatoOrdine(ordineDettaglio, 'In consegna')" 
+              class="btn-in-consegna">
+              <i class="fas fa-truck-loading"></i>
+              Marca come In Consegna
+            </button>
+            
+            <button 
+              *ngIf="ordineDettaglio.stato === 'In consegna'" 
+              (click)="cambiaStatoOrdine(ordineDettaglio, 'Consegnato')" 
+              class="btn-consegna">
+              Marca come Consegnato
+            </button>
+            
+            <button 
+              *ngIf="ordineDettaglio.stato !== 'Annullato' && ordineDettaglio.stato !== 'Consegnato'" 
+              (click)="cambiaStatoOrdine(ordineDettaglio, 'Annullato')" 
+              class="btn-annulla">
+              Annulla Ordine
+            </button>
+            
+            <button (click)="tornaAOrdiniUtente()" class="btn-torna">
+              Torna agli Ordini
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <section class="admin-section">
     <div class="admin-table-container">
       <h2>Gestione Utenti</h2>
+      
+      
       <input
         type="text"
         [(ngModel)]="queryUtente"
         placeholder="Cerca per nome, cognome o email..."
         class="admin-user-search"
       />
-
-      <div *ngIf="utentiFiltrati.length > 0 && queryUtente.trim()">
+      
+      
+     <span class = "filter-font"> Filtra per ruolo:</span>
+<select [(ngModel)]="ruoloUtenteSelezionato" class="admin-user-search">
+  <option value="">Tutti i ruoli</option>
+  <option value="owner">Owner</option>
+  <option value="admin">Admin</option>
+  <option value="user">User</option>
+</select>
+      <div *ngIf="utentiFiltrati.length > 0">
         
       <table class="admin-user-mini-table">
         <thead>
@@ -19,25 +225,65 @@
             <th>Nome</th>
             <th>Cognome</th>
             <th>Email</th>
+            <th>Ruolo</th>
+             <th>N° Ordini</th>
+            <th>Totale Speso</th>
             <th>Azioni</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let user of utentiFiltrati">
+          <tr *ngFor="let user of utentiPaginati">
             <td>{{ user.nome }}</td>
             <td>{{ user.cognome }}</td>
             <td>{{ user.email }}</td>
+            <td>{{ user.ruolo }}</td>
+             <td class="stat-numero">{{ user.numero_ordini || 0 }}</td>
+            <td class="stat-totale">€ {{ user.totale_speso || 0 | number:'1.2-2' }}</td>
             <td>
-              <button (click)="toggleBlock(user)">
+               <button (click)="visualizzaOrdiniUtente(user)">
+                Vai ai dettagli
+              </button>
+              <button 
+                *ngIf="user.ruolo !== 'owner' && (currentUser?.ruolo === 'owner' || (currentUser?.ruolo === 'admin' && user.ruolo === 'user'))"
+                (click)="toggleBlock(user)">
                 {{ user.is_blocked ? 'Sblocca' : 'Blocca' }}
               </button>
-              <button (click)="toggleAdmin(user)">
-                {{ user.is_admin ? 'Rimuovi Admin' : 'Rendi Admin' }}
+
+              <!-- Pulsante Rendi Admin (solo se user e chi guarda è owner o admin) -->
+              <button 
+                *ngIf="user.ruolo === 'user' && (currentUser?.ruolo === 'owner' || currentUser?.ruolo === 'admin')" 
+                (click)="toggleAdmin(user)">
+                Rendi Admin
+              </button>
+
+              <!-- Pulsante Rimuovi Admin (solo se user è admin e chi guarda è owner) -->
+              <button 
+                *ngIf="user.ruolo === 'admin' && currentUser?.ruolo === 'owner'" 
+                (click)="toggleAdmin(user)">
+                Rimuovi Admin
               </button>
             </td>
           </tr>
         </tbody>
       </table>
+      <div class="paginazione-pallini">
+  <span class="freccia-pagina"
+        [class.disabilitata]="paginaUtenti === 1"
+        (click)="cambiaPaginaUtenti(paginaUtenti - 1)">
+    &#8592;
+  </span>
+  <span 
+    *ngFor="let p of [].constructor(numeroPagineUtenti); let i = index"
+    class="pallino"
+    [class.attivo]="paginaUtenti === i + 1"
+    (click)="cambiaPaginaUtenti(i + 1)">
+  </span>
+  <span class="freccia-pagina"
+        [class.disabilitata]="paginaUtenti === numeroPagineUtenti"
+        (click)="cambiaPaginaUtenti(paginaUtenti + 1)">
+    &#8594;
+  </span>
+</div>
     </div>
     <div *ngIf="queryUtente.trim() && utentiFiltrati.length === 0">
   Nessun utente trovato.
@@ -48,14 +294,14 @@
 <section class="admin-section">
   <div class="admin-table-container">
     <h2>Gestione Prodotti</h2>
-    <button *ngIf="!mostraFormProdotto" (click)="apriFormProdotto()">
+    <button class="btn-gestione" *ngIf="!mostraFormProdotto" (click)="apriFormProdotto()">
     Aggiungi Prodotto
   </button>
-  <button *ngIf="mostraFormProdotto" (click)="chiudiFormProdotto()">
+  <button class="btn-gestione" *ngIf="mostraFormProdotto" (click)="chiudiFormProdotto()">
     Chiudi Form
   </button>
     <!-- Form inserimento/modifica prodotto -->
-    <form *ngIf="mostraFormProdotto" (ngSubmit)="salvaProdotto()" class="admin-prodotto-form">
+    <form id = "form-prodotto" *ngIf="mostraFormProdotto" (ngSubmit)="salvaProdotto()" class="admin-prodotto-form">
       <input [(ngModel)]="prodottoForm.nome" name="nome" placeholder="Nome" required>
       <input [(ngModel)]="prodottoForm.descrizione" name="descrizione" placeholder="Descrizione" required>
       <input [(ngModel)]="prodottoForm.prezzo" name="prezzo" placeholder="Prezzo" type="number" required>
@@ -65,7 +311,7 @@
         <option *ngFor="let cat of categorie" [value]="cat.id_categoria">{{ cat.nome }}</option>
       </select>
       <select [(ngModel)]="prodottoForm.id_marchio" name="id_marchio" required>
-        <option value="" disabled>Brand</option>
+        <option value="" disabled>Marchio</option>
         <option *ngFor="let brand of brandDisponibili" [value]="brand.id_marchio">{{ brand.nome }}</option>
       </select>
         <label class="immagine-form">
@@ -91,20 +337,29 @@
     </form>
 
     <!-- Tabella prodotti -->
-    <select [(ngModel)]="brandSelezionato" class="admin-user-search">
+  <div class="filtri-prodotti-row">
+  <span class="filter-font">Filtra per marchio:</span>
+  <select [(ngModel)]="brandSelezionato" class="admin-user-search">
     <option value="">Tutti i brand</option>
     <option *ngFor="let brand of brandDisponibili" [value]="brand.id_marchio">{{ brand.nome }}</option>
   </select>
-    <select [(ngModel)]="categoriaSelezionata" class="admin-user-search">
+
+  <span class="filter-font">Filtra per categoria:</span>
+  <select [(ngModel)]="categoriaSelezionata" class="admin-user-search">
     <option value="">Tutte le categorie</option>
     <option *ngFor="let cat of categorie" [value]="cat.id_categoria">{{ cat.nome }}</option>
   </select>
+  </div>
+
+  <div class="filtri-prodotti-search">
     <input
-    type="text"
-    [(ngModel)]="prodottoQuery"
-    placeholder="Cerca prodotto per nome o descrizione..."
-    class="admin-user-search"
-  />
+      type="text"
+      [(ngModel)]="prodottoQuery"
+      placeholder="Cerca prodotto per nome o Categoria..."
+      class="admin-user-search"
+    />
+  </div>
+  
     <table class="admin-user-mini-table" *ngIf="prodotti.length > 0">
       <thead>
         <tr>
@@ -120,20 +375,71 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let prodotto of prodottiFiltrati">
+        <tr *ngFor="let prodotto of prodottiPaginati">
           <td>{{ prodotto.nome }}</td>
           <td>{{ prodotto.prezzo }}</td>
           <td>{{ prodotto.quantita_disponibile }}</td>
-          <td>{{ prodotto.categoria_nome }}</td>
-          <td>{{ prodotto.brand_nome }}</td>
+          <td>{{ prodotto.nome_categoria }}</td>
+          <td>{{ prodotto.nome_marchio }}</td>
           <td>{{ prodotto.in_vetrina ? 'Sì' : 'No' }}</td>
           <td>{{ prodotto.promo ? 'Sì' : 'No' }}</td>
           <td>{{ prodotto.bloccato ? 'Sì' : 'No' }}</td>
           <td>
             <button (click)="modificaProdotto(prodotto)">Modifica</button>
+            <button (click)="rimuoviProdotto(prodotto)" >
+              Rimuovi
+            </button>
           </td>
         </tr>
       </tbody>
     </table>
+   <div class="paginazione-pallini">
+  <span class="freccia-pagina"
+        [class.disabilitata]="paginaProdotti === 1"
+        (click)="cambiaPaginaProdotti(paginaProdotti - 1)">
+    &#8592;
+  </span>
+  <span 
+    *ngFor="let p of [].constructor(numeroPagineProdotti); let i = index"
+    class="pallino"
+    [class.attivo]="paginaProdotti === i + 1"
+    (click)="cambiaPaginaProdotti(i + 1)">
+  </span>
+  <span class="freccia-pagina"
+        [class.disabilitata]="paginaProdotti === numeroPagineProdotti"
+        (click)="cambiaPaginaProdotti(paginaProdotti + 1)">
+    &#8594;
+  </span>
+</div>
   </div>
-</section>
+
+
+<div *ngIf="mostraConfermaRimozione" class="modal-overlay" (click)="annullaRimozione()">
+  <div class="modal-content modal-conferma" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Conferma Rimozione</h3>
+      <button (click)="annullaRimozione()" class="modal-close">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <p>Sei sicuro di voler rimuovere il prodotto <strong>"{{ prodottoDaRimuovere?.nome }}"</strong>?</p>
+      <p class="warning-text">⚠️ Questa operazione non può essere annullata.</p>
+      
+      <div class="prodotto-info">
+        <p><strong>Prezzo:</strong> €{{ prodottoDaRimuovere?.prezzo }}</p>
+        <p><strong>Disponibilità:</strong> {{ prodottoDaRimuovere?.quantita_disponibile }} pezzi</p>
+        <p><strong>Categoria:</strong> {{ prodottoDaRimuovere?.categoria_nome }}</p>
+        <p><strong>Brand:</strong> {{ prodottoDaRimuovere?.brand_nome }}</p>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button (click)="annullaRimozione()" class="btn-annulla">
+        Annulla
+      </button>
+      <button (click)="confermarimozione()" class="btn-conferma-rimozione">
+        Conferma Rimozione
+      </button>
+    </div>
+  </div>
+</div>

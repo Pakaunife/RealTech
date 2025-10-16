@@ -14,71 +14,250 @@
         <div>
           <h4>{{ prodotto.nome }}</h4>
           <p>Quantità: {{ prodotto.quantita }}</p>
-          <p>Prezzo: €{{ prodotto.prezzo }}</p>
-          <p><strong>Subtotale: €{{ prodotto.prezzo * prodotto.quantita }}</strong></p>
+          <p>Prezzo: {{ prodotto.prezzo }}€</p>
+          <p><strong>Subtotale: {{ prodotto.prezzo * prodotto.quantita }}€</strong></p>
         </div>
       </div>
     </div>
+    
+    <h2>Hai un coupon?</h2>
+    <div class="coupon-section">
+      <h3>Codice Sconto</h3>
+      <div class="coupon-input-group">
+        <input 
+          [(ngModel)]="codiceCoupon" 
+          placeholder="Inserisci codice coupon" 
+          class="input-coupon"
+          [disabled]="couponApplicato">
+        <button 
+          (click)="applicaCoupon()" 
+          class="btn-coupon"
+          [disabled]="!codiceCoupon || loading || couponApplicato">
+          {{ loading ? 'Verifica...' : 'Applica' }}
+        </button>
+        <button 
+          *ngIf="couponApplicato"
+          (click)="rimuoviCoupon()" 
+          class="btn-rimuovi-coupon">
+          Rimuovi
+        </button>
+      </div>
+      
+      <div *ngIf="messaggioCoupon" 
+           [class]="couponValido ? 'messaggio-successo' : 'messaggio-errore'">
+        {{ messaggioCoupon }}
+      </div>
+      
+      <div *ngIf="couponApplicato" class="riepilogo-sconto">
+        <div class="riga-sconto">
+          <span>Subtotale:</span>
+          <span>{{ totaleOriginale | number:'1.2-2' }}€</span>
+        </div>
+        <div class="riga-sconto sconto-evidenziato">
+          <span>Sconto ({{ couponCorrente.codice }}):</span>
+          <span>{{ scontoApplicato | number:'1.2-2' }}€</span>
+        </div>
+        <div class="riga-totale">
+          <span><strong>Totale:</strong></span>
+          <span><strong> {{ totaleScontato | number:'1.2-2' }}€</strong></span>
+        </div>
+      </div>
+    </div>
+    
     <div class="total-section">
-      <h3>Totale: €{{ totale }}</h3>
+      <h3>Totale: {{ totaleScontato | number:'1.2-2'}}€</h3>
     </div>
   </div>
 
   <!-- Form di Pagamento -->
   <div class="payment-form">
-    <h3>Dati di Pagamento</h3>
     <form (ngSubmit)="processaAcquisto()" #checkoutForm="ngForm">
-      
-      <div class="form-group">
-        <label for="metodo_pagamento">Metodo di Pagamento:</label>
-        <select id="metodo_pagamento" 
-                [(ngModel)]="datiPagamento.metodo_pagamento" 
-                name="metodo_pagamento" 
-                required>
-          <option value="carta_credito">Carta di Credito</option>
-          <option value="carta_debito">Carta di Debito</option>
-          <option value="paypal">PayPal</option>
-        </select>
+
+      <!-- SEZIONE INDIRIZZO DI CONSEGNA -->
+      <div class="form-section">
+        <h3>Indirizzo di Consegna</h3>
+        
+        <!-- Selezione indirizzo esistente -->
+        <div *ngIf="indirizzi.length > 0" class="indirizzi-esistenti">
+          <h4>Seleziona un indirizzo salvato:</h4>
+          <div class="indirizzi-lista">
+            <div *ngFor="let indirizzo of indirizzi; let i = index" 
+                 class="indirizzo-card"
+                 [class.selected]="indirizzoSelezionato === indirizzo.id"
+                 (click)="selezionaIndirizzo(indirizzo)">
+              <div class="indirizzo-info">
+                <strong>{{ indirizzo.nome }}</strong><br>
+                {{ indirizzo.indirizzo }}<br>
+                {{ indirizzo.citta }}, {{ indirizzo.cap }} ({{ indirizzo.provincia }})<br>
+                <small>Tel: {{ indirizzo.telefono }}</small>
+              </div>
+              <div class="indirizzo-actions">
+                <button type="button" 
+                        class="btn-modifica" 
+                        (click)="modificaIndirizzo(indirizzo, $event)">
+                  Modifica
+                </button>
+                <button type="button" 
+                        class="btn-elimina" 
+                        (click)="eliminaIndirizzo(indirizzo.id, $event)">
+                  Elimina
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <button type="button" 
+                  class="btn-nuovo-indirizzo" 
+                  (click)="mostraNuovoIndirizzo()">
+            + Aggiungi nuovo indirizzo
+          </button>
+        </div>
+
+        <!-- Form nuovo indirizzo -->
+        <div *ngIf="indirizzi.length === 0 || mostraFormNuovoIndirizzo" class="nuovo-indirizzo">
+          <h4 *ngIf="indirizzi.length > 0">Nuovo Indirizzo</h4>
+          <h4 *ngIf="indirizzi.length === 0">Aggiungi il tuo primo indirizzo</h4>
+          
+          <div class="form-group">
+            <label for="nome_destinatario">Nome Destinatario:</label>
+            <input type="text" 
+                   id="nome_destinatario"
+                   [(ngModel)]="nuovoIndirizzo.nome"
+                   name="nome_destinatario"
+                   placeholder="Nome e Cognome"
+                   required>
+          </div>
+
+          <div class="form-group">
+            <label for="indirizzo">Indirizzo:</label>
+            <input type="text" 
+                   id="indirizzo"
+                   [(ngModel)]="nuovoIndirizzo.indirizzo"
+                   name="indirizzo"
+                   placeholder="Via, Numero Civico"
+                   required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="citta">Città:</label>
+              <input type="text" 
+                     id="citta"
+                     [(ngModel)]="nuovoIndirizzo.citta"
+                     name="citta"
+                     placeholder="Città"
+                     required>
+            </div>
+            <div class="form-group">
+              <label for="cap">CAP:</label>
+              <input type="text" 
+                     id="cap"
+                     [(ngModel)]="nuovoIndirizzo.cap"
+                     name="cap"
+                     placeholder="12345"
+                     maxlength="5"
+                     required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="provincia">Provincia:</label>
+            <input type="text" 
+                   id="provincia"
+                   [(ngModel)]="nuovoIndirizzo.provincia"
+                   name="provincia"
+                   placeholder="Provincia"
+                   maxlength="2"
+                   required>
+          </div>
+
+          <div class="form-group">
+            <label for="telefono">Telefono:</label>
+            <input type="tel" 
+                   id="telefono"
+                   [(ngModel)]="nuovoIndirizzo.telefono"
+                   name="telefono"
+                   placeholder="+39 123 456 7890"
+                   required>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" 
+                    class="btn-salva-indirizzo" 
+                    (click)="salvaIndirizzo()"
+                    [disabled]="!validaNuovoIndirizzo()">
+              Salva e Usa questo Indirizzo
+            </button>
+            <button type="button" 
+                    *ngIf="indirizzi.length > 0"
+                    class="btn-annulla" 
+                    (click)="annullaNuovoIndirizzo()">
+              Annulla
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="nome_intestatario">Nome Intestatario:</label>
-        <input type="text" 
-               id="nome_intestatario"
-               [(ngModel)]="datiPagamento.nome_intestatario"
-               name="nome_intestatario"
-               placeholder="Nome e Cognome"
-               required>
-      </div>
-
-      <div class="form-group">
-        <label for="numero_carta">Numero Carta:</label>
-        <input type="text" 
-               id="numero_carta"
-               [(ngModel)]="datiPagamento.numero_carta"
-               name="numero_carta"
-               placeholder="1234 5678 9012 3456"
-               maxlength="19"
-               (input)="formattaNumeroCarta()"
-               required>
-      </div>
-
-      <div class="form-row">
+      <!-- SEZIONE DATI DI PAGAMENTO -->
+      <div class="form-section">
+        <h3>Dati di Pagamento</h3>
+        
         <div class="form-group">
-          <label for="scadenza">Scadenza:</label>
+          <label for="metodo_pagamento">Metodo di Pagamento:</label>
+          <select id="metodo_pagamento" 
+                  [(ngModel)]="datiPagamento.metodo_pagamento" 
+                  name="metodo_pagamento" 
+                  required>
+            <option value="carta_credito">Carta di Credito</option>
+            <option value="carta_debito">Carta di Debito</option>
+            <option value="paypal">PayPal</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="nome_intestatario">Nome Intestatario:</label>
           <input type="text" 
-                 id="scadenza"
-                 placeholder="MM/AA"
-                 maxlength="5"
+                 id="nome_intestatario"
+                 [(ngModel)]="datiPagamento.nome_intestatario"
+                 name="nome_intestatario"
+                 placeholder="Nome e Cognome"
                  required>
         </div>
+
         <div class="form-group">
-          <label for="cvv">CVV:</label>
+          <label for="numero_carta">Numero Carta:</label>
           <input type="text" 
-                 id="cvv"
-                 placeholder="123"
-                 maxlength="3"
+                 id="numero_carta"
+                 [(ngModel)]="datiPagamento.numero_carta"
+                 name="numero_carta"
+                 placeholder="1234 5678 9012 3456"
+                 maxlength="19"
+                 (input)="formattaNumeroCarta()"
                  required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="scadenza">Scadenza:</label>
+            <input type="text" 
+                   id="scadenza"
+                   [(ngModel)]="datiPagamento.scadenza"
+                   name="scadenza"
+                   placeholder="MM/AA"
+                   maxlength="5"
+                   (input)="formattaScadenza()"
+                   required>
+          </div>
+          <div class="form-group">
+            <label for="cvv">CVV:</label>
+            <input type="text" 
+                   id="cvv"
+                   [(ngModel)]="datiPagamento.cvv"
+                   name="cvv"
+                   placeholder="123"
+                   maxlength="3"
+                   required>
+          </div>
         </div>
       </div>
 
@@ -86,9 +265,10 @@
         <button type="button" (click)="tornaAlCarrello()">
           Annulla
         </button>
-        <button type="submit" [disabled]="processing || !checkoutForm.form.valid">
+        <button type="submit" 
+                [disabled]="processing || !checkoutForm.form.valid || !haIndirizzoSelezionato()">
           <span *ngIf="processing">Elaborazione...</span>
-          <span *ngIf="!processing">Completa Acquisto - €{{ totale }}</span>
+          <span *ngIf="!processing">Completa Acquisto  {{ totaleScontato | number:'1.2-2' }}€</span>
         </button>
       </div>
     </form>
