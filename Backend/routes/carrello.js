@@ -29,28 +29,89 @@ router.post('/aggiungi', async (req, res) => {
     
     res.json({ success: true, message: 'Prodotto aggiunto al carrello' });
   } catch (err) {
+    console.error('Errore in /aggiungiPacchetto:', err.stack || err);
+    // Per debug: ritorna messaggio e stack (rimuovere in produzione)
+    res.status(500).json({ error: err.message || 'Errore del server', stack: err.stack });
+  }
+});
+
+// Aggiungi pacchetto al carrello (salvato nella tabella carrello_pacchetto)
+router.post('/aggiungiPacchetto', async (req, res) => {
+  const { id_utente, id_pacchetto, quantita } = req.body;
+
+  try {
+    // Verifica se il pacchetto è già nel carrello
+    const esistente = await pool.query(
+      'SELECT * FROM carrello_pacchetto WHERE id_utente = $1 AND id_pacchetto = $2',
+      [id_utente, id_pacchetto]
+    );
+
+    if (esistente.rows.length > 0) {
+      // Aggiorna quantità
+      await pool.query(
+        'UPDATE carrello_pacchetto SET quantita = quantita + $1 WHERE id_utente = $2 AND id_pacchetto = $3',
+        [quantita, id_utente, id_pacchetto]
+      );
+    } else {
+      // Inserisci nuovo pacchetto
+      await pool.query(
+        'INSERT INTO carrello_pacchetto (id_utente, id_pacchetto, quantita) VALUES ($1, $2, $3)',
+        [id_utente, id_pacchetto, quantita]
+      );
+    }
+
+    res.json({ success: true, message: 'Pacchetto aggiunto al carrello' });
+  } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Errore del server' });
   }
 });
 
-// Ottieni carrello dell'utente
+// Ottieni carrello dell'utente, Scopo: permettere al frontend di mostrare insieme prodotti singoli e pacchetti.
 router.get('/:id_utente', async (req, res) => {
   try {
-    const { rows } = await pool.query(`
-      SELECT c.*, p.nome, p.prezzo, p.immagine
+    const idUtente = req.params.id_utente;
+
+    // Recupera prodotti nel carrello
+    const prodottiRes = await pool.query(`
+      SELECT c.id_prodotto, c.quantita, p.nome, p.prezzo, p.immagine
       FROM carrello c
       JOIN prodotto p ON c.id_prodotto = p.id_prodotto
       WHERE c.id_utente = $1
-    `, [req.params.id_utente]);
-    
-    // Aggiungi URL completo dell'immagine a ogni prodotto del carrello
-    const carrelloConUrl = rows.map(item => ({
-      ...item,
+    `, [idUtente]);
+
+    const prodotti = prodottiRes.rows.map(item => ({
+      tipo: 'prodotto',
+      id_prodotto: item.id_prodotto,
+      quantita: item.quantita,
+      nome: item.nome,
+      prezzo: item.prezzo,
+      immagine: item.immagine,
       immagine_url: item.immagine ? `http://localhost:3000/api/images/prodotti/${item.immagine}` : 'http://localhost:3000/api/images/prodotti/default.jpg'
     }));
-    
-    res.json(carrelloConUrl);
+
+    // Recupera pacchetti nel carrello
+    const pacchettiRes = await pool.query(`
+      SELECT cp.id_pacchetto, cp.quantita, pt.nome, pt.prezzo_totale, pt.immagine
+      FROM carrello_pacchetto cp
+      JOIN pacchetto_tematico pt ON cp.id_pacchetto = pt.id_pacchetto
+      WHERE cp.id_utente = $1
+    `, [idUtente]);
+
+    const pacchetti = pacchettiRes.rows.map(item => ({
+      tipo: 'pacchetto',
+      id_pacchetto: item.id_pacchetto,
+      quantita: item.quantita,
+      nome: item.nome,
+      prezzo: item.prezzo_totale,
+      immagine: item.immagine,
+      immagine_url: item.immagine ? `http://localhost:3000/api/images/pacchetti/${item.immagine}` : 'http://localhost:3000/api/images/pacchetti/default.jpg'
+    }));
+
+    // Unisci prodotti e pacchetti
+    const carrello = [...prodotti, ...pacchetti];
+
+    res.json(carrello);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Errore del server' });

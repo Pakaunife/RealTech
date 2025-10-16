@@ -40,32 +40,16 @@ export class Home implements OnInit {
     this.router.navigate(['/novita', articolo]);
   }
 
-  vaiADettaglioPacchetto(pacchetto: Pacchetto) {
-    // Recupera i prodotti del pacchetto e li aggiunge al carrello
-    this.pacchettiService.getPacchettoDettaglio(pacchetto.id_pacchetto).subscribe({
-      next: (dettaglio) => {
-        if (dettaglio && dettaglio.prodotti && dettaglio.prodotti.length > 0) {
-          let aggiunti = 0;
-          dettaglio.prodotti.forEach(prodotto => {
-            this.carrelloService.aggiungiAlCarrello(prodotto.id_prodotto, prodotto.quantita).subscribe({ // Aggiunge ogni prodotto al carrello (chiama funzione in carrkello.service.ts)
-              next: () => {
-                aggiunti++;
-                if (aggiunti === dettaglio.prodotti.length) {
-                  alert('Tutti i prodotti del pacchetto sono stati aggiunti al carrello!');
-                }
-              },
-              error: (err) => {
-                console.error('Errore aggiunta prodotto al carrello:', err);
-              }
-            });
-          });
-        } else {
-          alert('Nessun prodotto trovato nel pacchetto.');
-        }
+  vaiADettaglioPacchetto(pacchetto: Pacchetto) { //Effetto funzionale: dal frontend ora si aggiunge un singolo item “pacchetto” al carrello (con quantità 1), invece di inserire i prodotti singoli nel carrello.
+    // Ora aggiungiamo il pacchetto come singolo item nel carrello
+    const quantitaPacchetto = 1;
+    this.carrelloService.aggiungiPacchettoAlCarrello(pacchetto.id_pacchetto, quantitaPacchetto).subscribe({
+      next: () => {
+        alert(`Pacchetto "${pacchetto.nome}" aggiunto al carrello.`);
       },
       error: (err) => {
-        console.error('Errore nel recupero dettagli pacchetto:', err);
-        alert('Errore nel recupero dei prodotti del pacchetto.');
+        console.error('Errore aggiunta pacchetto al carrello:', err);
+        alert('Errore nell\'aggiunta del pacchetto al carrello.');
       }
     });
   }

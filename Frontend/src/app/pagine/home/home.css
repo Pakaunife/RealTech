@@ -3,21 +3,23 @@
 }
 .package-card {
   max-width: 600px;        /* Limita la larghezza massima */
-  width: 100%;             /* Occupa tutta la larghezza disponibile */
-  height: auto;            /* Altezza automatica */
-  background: #171c24;
+  width: 100%;             /* Occupa tutta la larghezza disponibile */            /* Altezza automatica */
+  /* Effetto semi-trasparente tipo glass, coordinato con .film-card */
+  background-color: rgba(23, 28, 36, 0.6);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   color: #ffffff;
   border-radius: 16px;
-  box-shadow: 0 2px 8px #0008;
-  display: flex;
+  display: flex; 
   flex-direction: column;
-  align-items: center; /* Allinea il contenuto al centro */
-  justify-content: center;
+  /* Allinea il contenuto al centro */
+  align-items: center;
   padding: 2rem;           /* Spazio interno */
-  text-align: left;
-  margin: 0.5rem ;
-  box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.3);
-  margin-bottom: 8rem; /* per avvicinare le sezioni */
+  margin: 0.5rem;
+  margin-bottom: 3rem; /* meno spazio sotto la card rispetto a prima */
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Aggiunta della transizione per l'animazione, cosi si ha sia in entrata che in uscita */
+
 }
 
 .offers-row {
@@ -26,6 +28,9 @@
   gap: 0.8rem; /* ridotto per avvicinare le due card */
   margin-bottom: 1rem; /* meno spazio sotto la riga */
   flex-wrap: wrap;
+}
+.package-card:hover { /* Hover indica lo stato in cui il puntatore del mouse è sopra un elemento della pagina. Hover si attiva appena passi sopra con il muose */
+  transform: translateY(-5px);
   
 }
 .package-card h2 {
@@ -74,10 +79,8 @@
 }
 
 .btn-primary:hover {
-  background: #90caf9;           
+  background: #ff3d00;           
 }
-
-
 
 .films-row {
   display: flex;
