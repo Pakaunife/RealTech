@@ -39,6 +39,22 @@ export class CarrelloService {
     );
   }
 
+  // Aggiungi pacchetto al carrello (chiamata al backend)
+  aggiungiPacchettoAlCarrello(idPacchetto: number, quantita: number): Observable<any> {
+    const idUtente = this.getIdUtente();
+    if (!idUtente) {
+      throw new Error('Utente non autenticato. Effettua il login per aggiungere pacchetti al carrello.');
+    }
+
+    return this.http.post(`${this.baseUrl}/aggiungiPacchetto`, {
+      id_utente: idUtente,
+      id_pacchetto: idPacchetto,
+      quantita: quantita
+    }).pipe(
+      tap(() => this.caricaCarrello())
+    );
+  }
+
   rimuoviDalCarrello(idProdotto: number): Observable<any> {
     const idUtente = this.getIdUtente();
     if (!idUtente) {

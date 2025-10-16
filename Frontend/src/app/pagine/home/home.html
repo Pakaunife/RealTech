@@ -23,7 +23,36 @@
     </div>
   </div>
 
+  <div *ngIf="showWelcome;" class="alert alert-success mt-3">
+  Benvenuto/a, {{ user.nome}}!
+  <button class="btn btn-link" (click)="logout()">Logout</button>
+</div>
+<div class="offerte-container">
+  <div class="package-TitoloParagrafo">OFFERTE SPECIALI</div>
   
+  <!-- Loading indicator per pacchetti -->
+  <div *ngIf="loadingPacchetti" class="loading-message">
+    <p>Caricamento offerte speciali...</p>
+  </div>
+
+  <!-- Error message per pacchetti -->
+  <div *ngIf="errorPacchetti && !loadingPacchetti" class="error-message">
+    <p>{{ errorPacchetti }}</p>
+  </div>
+
+  <!-- Pacchetti dal database -->
+  <div class="offers-row" *ngIf="!loadingPacchetti && !errorPacchetti">
+    <div class="package-card" *ngFor="let pacchetto of pacchetti">
+      <h2>{{ pacchetto.nome }}</h2>
+      <div class="package-paragrafo">{{ pacchetto.descrizione }}</div>
+      <div class="package-price">€{{ pacchetto.prezzo_totale }}</div>
+      <div class="package-info" *ngIf="pacchetto.numero_prodotti > 0">
+        <small>{{ pacchetto.numero_prodotti }} prodott{{ pacchetto.numero_prodotti === 1 ? 'o' : 'i' }} inclus{{ pacchetto.numero_prodotti === 1 ? 'o' : 'i' }}</small>
+      </div>
+      <button class="btn-primary" (click)="vaiADettaglioPacchetto(pacchetto)">Aggiungi al carrello</button>
+    </div>
+  </div>
+</div>
 
   <!-- Sezione Novità -->
   <div class="news-container">
@@ -65,25 +94,3 @@
   </div>
 </div>
 
-  <div class="package-TitoloParagrafo">OFFERTE SPECIALI</div>
-  <div class="offers-row">
-    <div class="package-card">
-      <h2>Abbonamento 10 ingressi</h2>
-      <div class="package-paragrafo">Risparmia e vieni al cinema quando vuoi! Valido per tutti i film.</div>
-      <div class="package-price">€60</div>
-      <button class="btn-primary">Acquista ora</button>
-    </div>
-    <div class="package-card">
-      <h2>Pacchetto Family</h2>
-      <div class="package-paragrafo">4 biglietti + popcorn e bibite a prezzo speciale.</div>
-      <div class="package-price">€45</div>
-      <button class="btn-primary">Acquista ora</button>
-    </div>
-    <div class="package-card">
-      <h2>Offerta studenti imperdibile</h2>
-      <div class="package-paragrafo">Se sei studente UNIFE puoi ottenere uno sconto del 20% su tutti i biglietti.</div>
-      <div class="package-price">€7</div>
-      <button class="btn-primary">Acquista ora</button>
-    </div>
-  </div>
-</div>

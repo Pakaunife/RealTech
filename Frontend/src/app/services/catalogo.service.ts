@@ -27,4 +27,14 @@ export class CatalogoService {
   getBrand(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/brand`);
   }
+
+  // Ottieni suggerimenti di ricerca
+  getSearchSuggestions(query: string, limit: number = 5): Observable<any[]> {
+    if (!query || query.trim().length < 2) {
+      return new Observable(observer => observer.next([]));
+    }
+    return this.http.get<any[]>(`${this.apiUrl}/search/suggestions`, {
+      params: { q: query.trim(), limit: limit.toString() }
+    });
+  }
 }

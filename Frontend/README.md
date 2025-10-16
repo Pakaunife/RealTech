@@ -2,7 +2,183 @@
 
 Progetto e-commerce sviluppato con Angular 20.2.0 che implementa un sistema di carrello personalizzato per ogni utente autenticato.
 
-## 🔥 **Aggiornamenti 9 Ottobre 2025 - Sistema Prodotti Più Visualizzati**
+## �️ **Aggiornamenti 15 Ottobre 2025 - Fix Sfarfallio Suggerimenti Ricerca**
+
+### 🔧 **Problemi Risolti**
+- **Sfarfallio eliminato**: Stabilizzate dimensioni immagini e container suggerimenti
+- **Performance ottimizzata**: Debounce aumentato a 400ms per ridurre chiamate API
+- **Layout stabile**: Dimensioni fisse per prevenire layout shifts durante caricamento
+
+### ⚡ **Miglioramenti Tecnici**
+```css
+.suggestion-image {
+  width: 35px; height: 35px;
+  flex-shrink: 0; /* Previene ridimensionamento */
+  background-color: #252b34; /* Placeholder durante caricamento */
+}
+.suggestion-item {
+  min-height: 55px; /* Altezza fissa per stabilità */
+}
+```
+
+### 🎨 **UX Migliorata**
+- **Caricamento fluido**: Loading lazy per immagini + placeholder colorato
+- **Testo ottimizzato**: Ellipsis per nomi prodotti lunghi
+- **CSS pulito**: Rimosso codice duplicato che causava conflitti
+
+---
+
+## 🔍 **Aggiornamenti 14 Ottobre 2025 - Sistema Ricerca Intelligente con Suggerimenti**
+
+### 🎯 **Architettura Completa del Sistema di Ricerca**
+
+#### 🔄 **Flusso di Funzionamento**
+1. **Input utente** → Digitazione nella barra di ricerca
+2. **Debouncing** → RxJS attende 400ms prima di elaborare
+3. **API Call** → Richiesta al backend per suggerimenti
+4. **Rendering** → Visualizzazione dropdown con risultati
+5. **Navigazione** → Click porta alla pagina dettaglio prodotto
+
+#### 🧩 **Componenti e Connessioni**
+
+### 🖥️ **Frontend - Header Component**
+**File**: `Frontend/src/app/header/header.ts`
+```typescript
+export class Header {
+  searchSuggestions: any[] = [];
+  showSuggestions: boolean = false;
+  private searchSubject = new Subject<string>();
+  
+  constructor(private catalogoService: CatalogoService) {
+    // 🔄 Setup RxJS pipeline per gestione ricerca
+    this.searchSubject.pipe(
+      debounceTime(400),           // ⏱️ Attende 400ms tra le digitazioni
+      distinctUntilChanged(),      // 🔄 Evita chiamate duplicate
+      switchMap((query: string) => {
+        if (query.length >= 2) {
+          return this.catalogoService.getSearchSuggestions(query);
+        } else {
+          return [];  // 🚫 Query troppo corta
+        }
+      })
+    ).subscribe(suggestions => {
+      // 📊 Aggiorna UI solo se query ancora valida
+      if (this.searchQuery.length >= 2) {
+        this.searchSuggestions = suggestions;
+        this.showSuggestions = suggestions.length > 0;
+      }
+    });
+  }
+
+  // 🔤 Gestisce input utente in tempo reale
+  onSearchInput(event: any) {
+    const query = event.target.value;
+    this.searchQuery = query;
+    this.searchSubject.next(query);  // 📡 Invia al pipeline RxJS
+  }
+
+  // 🎯 Gestisce click su suggerimento
+  selectSuggestion(product: any) {
+    this.searchQuery = '';
+    this.showSuggestions = false;
+    // 🧭 Naviga direttamente alla pagina prodotto
+    this.router.navigate(['/catalogo'], { 
+      queryParams: { prodottoId: product.id_prodotto } 
+    });
+  }
+}
+```
+
+### 🔧 **Frontend - Servizio Catalogo**
+**File**: `Frontend/src/app/services/catalogo.service.ts`
+```typescript
+@Injectable({ providedIn: 'root' })
+export class CatalogoService {
+  private apiUrl = 'http://localhost:3000/api/catalogo';
+
+  // 🔍 Metodo per ottenere suggerimenti di ricerca
+  getSearchSuggestions(query: string, limit: number = 5): Observable<any[]> {
+    if (!query || query.trim().length < 2) {
+      return new Observable(observer => observer.next([]));
+    }
+    return this.http.get<any[]>(`${this.apiUrl}/search/suggestions`, {
+      params: { q: query.trim(), limit: limit.toString() }
+    });
+  }
+}
+```
+
+### 🏗️ **Backend - API Endpoint**
+**File**: `Backend/routes/catalogo.js`
+```javascript
+// 🔍 Endpoint intelligente per suggerimenti ricerca
+router.get('/search/suggestions', async (req, res) => {
+  try {
+    const { q, limit = 5 } = req.query;
+    
+    // ✅ Validazione input
+    if (!q || q.trim().length < 2) {
+      return res.json([]);
+    }
+    
+    const searchTerm = `%${q.trim().toLowerCase()}%`;
+    
+    // 🗄️ Query SQL con priorità intelligente
+    const result = await pool.query(`
+      SELECT 
+        p.id_prodotto, p.nome, p.prezzo, p.immagine,
+        m.nome AS marchio, c.nome AS categoria
+      FROM prodotto p
+      LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
+      LEFT JOIN marchio m ON p.id_marchio = m.id_marchio
+      WHERE (LOWER(p.nome) LIKE $1 OR LOWER(m.nome) LIKE $1 OR LOWER(c.nome) LIKE $1)
+      AND p.quantita_disponibile > 0 AND p.bloccato = false
+      ORDER BY 
+        CASE 
+          WHEN LOWER(p.nome) LIKE $2 THEN 1  -- 🥇 Priorità: nomi che iniziano con query
+          WHEN LOWER(p.nome) LIKE $1 THEN 2  -- 🥈 Nomi che contengono query
+          WHEN LOWER(m.nome) LIKE $1 THEN 3  -- 🥉 Marchi che contengono query
+          ELSE 4
+        END, p.nome
+      LIMIT $3
+    `, [searchTerm, `${q.trim().toLowerCase()}%`, limit]);
+    
+    // 🖼️ Costruzione URL immagini automatica
+    const suggestions = result.rows.map(prodotto => ({
+      ...prodotto,
+      immagine_url: prodotto.immagine ? 
+        `http://localhost:3000/api/images/prodotti/${prodotto.immagine}` : 
+        'http://localhost:3000/api/images/prodotti/default.jpg'
+    }));
+    
+    res.json(suggestions);
+  } catch (err) {
+    res.status(500).json({ error: 'Errore DB' });
+  }
+});
+```
+
+### 🔄 **Ciclo di Vita Completo**
+1. **Utente digita** → `onSearchInput()` cattura evento
+2. **RxJS Pipeline** → Debounce + DistinctUntilChanged + SwitchMap
+3. **Servizio Angular** → `catalogoService.getSearchSuggestions()`
+4. **HTTP Request** → GET `/api/catalogo/search/suggestions?q=...`
+5. **Database Query** → PostgreSQL con LIKE e priorità ORDER BY
+6. **Response Processing** → Costruzione URL immagini + mapping
+7. **UI Update** → Rendering dropdown con `*ngFor`
+8. **User Click** → `selectSuggestion()` → Navigation con `queryParams`
+9. **Catalogo Component** → Intercetta `prodottoId` → Mostra dettaglio
+
+### 🛡️ **Gestione Errori e Edge Cases**
+- **Query troppo corta**: Nessuna ricerca < 2 caratteri
+- **Immagini mancanti**: Fallback automatico a default.jpg
+- **API offline**: Observable vuoto previene crash
+- **Click fuori dropdown**: HostListener chiude suggerimenti
+- **Escape key**: Chiusura rapida dropdown
+
+---
+
+## �🔥 **Aggiornamenti 9 Ottobre 2025 - Sistema Prodotti Più Visualizzati**
 
 ### 🏠 **Homepage - Prodotti Trending**
 - **Query Database**: Nuova API `/api/catalogo/popular` per prodotti più visualizzati
@@ -221,6 +397,69 @@ export class Catalogo {
 - **Sincronizzazione automatica**: Il carrello si aggiorna in tempo reale
 
 ## 🔧 Modifiche Tecniche Implementate
+
+---
+
+## 📝 Modifiche recenti (16 Ottobre 2025)
+
+Questa sezione riepiloga le modifiche implementate di recente durante lo sviluppo della feature "pacchetti offerte" e alcune modifiche al comportamento del carrello e al layout della homepage.
+
+Per ogni file indico il percorso e le funzioni/metodi principali toccati; usare questi riferimenti per navigare velocemente il codice.
+
+### Backend (aggiunta route pacchetti)
+- File: `Backend/routes/pacchetti.js`
+  - GET `/api/pacchetti` -> ritorna lista pacchetti tematici con `immagine_url` e `numero_prodotti`.
+  - GET `/api/pacchetti/:id` -> ritorna dettaglio del pacchetto e lista prodotti associati.
+
+### Frontend: servizi e componenti
+- File: `Frontend/src/app/services/pacchetti.service.ts`
+  - getPacchetti(): Observable<Pacchetto[]> — chiama `GET /api/pacchetti`.
+  - getPacchettoDettaglio(id): Observable<any> — chiama `GET /api/pacchetti/:id`.
+
+- File: `Frontend/src/app/pagine/home/home.ts`
+  - loadPacchetti(): carica i pacchetti e popola `this.pacchetti`.
+  - vaiADettaglioPacchetto(pacchetto: Pacchetto): ora INVIA i prodotti del pacchetto al carrello chiamando `CarrelloService.aggiungiAlCarrello(...)` per ogni prodotto.
+    - Nota: aggiunta lato UI del pulsante "Aggiungi al carrello" nella sezione OFFERTE SPECIALI (solo il pulsante esegue l'azione; clic sulla card non la attiva).
+
+- File: `Frontend/src/app/services/carrello.service.ts`
+  - getIdUtente(): legge l'utente dal `AuthService` e ritorna `id` oppure `null`.
+  - aggiungiAlCarrello(idProdotto, quantita):
+    - comportamento utenti autenticati: POST al backend `/api/carrello/aggiungi` e poi `caricaCarrello()`.
+    - comportamento guest (semplice, in-memory): mantiene un array temporaneo in memoria e aggiorna `carrelloSubject` (non persistente).
+  - rimuoviDalCarrello(idProdotto): supporta rimozione sia per utenti autenticati (backend) sia per guest (in-memory).
+  - aggiornaQuantita(idProdotto, quantita): supporto sia backend (auth) sia in-memory (guest); se `quantita <= 0` rimuove l'item per guest.
+  - ottieniCarrello(): Observable<any[]> — espone `carrello$` (BehaviorSubject) per la UI.
+  - isLoggedIn(): helper che ritorna boolean (utile per bloccare il checkout se non loggati).
+
+### Frontend: template e CSS
+- File: `Frontend/src/app/pagine/home/home.html`
+  - Sezione OFFERTE SPECIALI: le card `.package-card` non hanno più il `(click)` globale — solo il bottone "Aggiungi al carrello" lancia `vaiADettaglioPacchetto(pacchetto)`.
+
+- File: `Frontend/src/app/pagine/home/home.css`
+  - `.film-card`: ora ha background semi-trasparente (rgba) + `backdrop-filter: blur(4px)` per effetto glass.
+  - `.news-container`: immagine di sfondo spostata in `::before` per permettere opacità controllata (es. `opacity: 0.45`).
+  - `.offers-row`: gap ridotto (da 2rem → 0.8rem) e margin-bottom ridotto per avvicinare le card.
+  - `.package-card` e `.films-row`: margini verticali ridotti per avvicinare le righe.
+
+### Come testare velocemente
+1. Avvia il backend (cartella `Backend`) e assicurati che ascolti su `http://localhost:3000`.
+2. Avvia il frontend (`npm start` o `ng serve`) e apri `http://localhost:4200`.
+3. Homepage:
+   - Controlla la sezione "Prodotti più visualizzati" (prima riga): prodotti dovrebbero essere cliccabili per il dettaglio.
+   - Nella sezione "Offerte speciali" clicca soltanto sul pulsante "Aggiungi al carrello" per aggiungere i prodotti del pacchetto al carrello.
+4. Carrello:
+   - Se sei loggato: le modifiche vengono salvate sul backend e ricaricate.
+   - Se non sei loggato: puoi aggiungere/rimuovere/aggiornare in memoria (non persistente). Usa `CarrelloService.isLoggedIn()` per bloccare il checkout nel UI.
+5. CSS:
+   - Verifica l'effetto semi-trasparente sulle card (`.film-card`) e l'opacità dello sfondo in `.news-container`.
+
+### Note e prossimi miglioramenti consigliati
+- Migliorare il comportamento guest: persistenza (localStorage) o merge guest→user al login.
+- Creare un endpoint backend per batch fetch prodotti per id (es. `/api/products?ids=1,2,3`) per arricchire il carrello guest in modo efficiente.
+- Sostituire gli alert JS con snackbar/toast e disabilitare i bottoni durante le chiamate API.
+
+Se vuoi, posso aprire una PR con queste modifiche o riportare lo stesso riepilogo anche nel `README.md` principale (root) del repository.
+
 
 ### 🛒 CarrelloService (`carrello.service.ts`)
 

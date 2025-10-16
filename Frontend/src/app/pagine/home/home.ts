@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router'; 
 import { AuthService } from '../../services/auth.service';
 import { CatalogoService } from '../../services/catalogo.service';
+import { PacchettiService, Pacchetto } from '../../services/pacchetti.service';
+import { CarrelloService } from '../../services/carrello.service';
 
 @Component({
   selector: 'app-home',
@@ -15,12 +17,17 @@ export class Home implements OnInit {
     user: any;
     showWelcome = false;
     prodottiInEvidenza: any[] = [];
+    pacchetti: Pacchetto[] = [];
     loading = true;
+    loadingPacchetti = true;
     error = '';
+    errorPacchetti = '';
 
   constructor(
     public auth: AuthService,
     private catalogoService: CatalogoService,
+    private pacchettiService: PacchettiService,
+    private carrelloService: CarrelloService,
     private router: Router
   ) {
     this.user = this.auth.getUser();
@@ -31,6 +38,20 @@ export class Home implements OnInit {
 
   vaiANovita(articolo: string) {
     this.router.navigate(['/novita', articolo]);
+  }
+
+  vaiADettaglioPacchetto(pacchetto: Pacchetto) { //Effetto funzionale: dal frontend ora si aggiunge un singolo item “pacchetto” al carrello (con quantità 1), invece di inserire i prodotti singoli nel carrello.
+    // Ora aggiungiamo il pacchetto come singolo item nel carrello
+    const quantitaPacchetto = 1;
+    this.carrelloService.aggiungiPacchettoAlCarrello(pacchetto.id_pacchetto, quantitaPacchetto).subscribe({
+      next: () => {
+        alert(`Pacchetto "${pacchetto.nome}" aggiunto al carrello.`);
+      },
+      error: (err) => {
+        console.error('Errore aggiunta pacchetto al carrello:', err);
+        alert('Errore nell\'aggiunta del pacchetto al carrello.');
+      }
+    });
   }
   
   ngOnInit() {
@@ -43,6 +64,9 @@ export class Home implements OnInit {
 
     // Carica i prodotti più visualizzati dal database
     this.loadProdottiPopular();
+    
+    // Carica i pacchetti tematici dal database
+    this.loadPacchetti();
   }
 
   loadProdottiPopular() {
@@ -74,6 +98,22 @@ export class Home implements OnInit {
             categoria: 'Hardware'
           }
         ];
+      }
+    });
+  }
+
+  loadPacchetti() {
+    this.loadingPacchetti = true;
+    this.pacchettiService.getPacchetti().subscribe({
+      next: (pacchetti) => {
+        this.pacchetti = pacchetti;
+        this.loadingPacchetti = false;
+      },
+      error: (err) => {
+        console.error('Errore nel caricamento pacchetti:', err);
+        this.errorPacchetti = 'Errore nel caricamento delle offerte speciali';
+        this.loadingPacchetti = false;
+        this.pacchetti = [];
       }
     });
   }
