@@ -41,7 +41,7 @@ router.get('/promo', async (_req, res) => {
 
 router.get('/load',authenticateToken, async (_req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM prodotto');
+    const result = await pool.query('SELECT prodotto.*, c.nome as nome_categoria, m.nome as nome_marchio FROM prodotto  join categoria c on prodotto.id_categoria = c.id_categoria join marchio m on prodotto.id_marchio = m.id_marchio');
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ message: err.message });

@@ -9,7 +9,7 @@ import { CurrencyPipe, NgFor, NgIf } from '@angular/common';
   styleUrls: ['./wishlist.css'],
   imports: [CurrencyPipe, NgFor, NgIf]
 })
-export class WishlistComponent implements OnInit {
+export class Wishlist implements OnInit {
   wishlist: any[] = [];
   loading = true;
 

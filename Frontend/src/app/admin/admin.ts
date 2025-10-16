@@ -26,6 +26,7 @@ export class Admin implements OnInit {
   immagineVecchia: string = '';
   categoriaSelezionata: string = '';
   brandSelezionato: string = '';
+  ruoloUtenteSelezionato: string = '';
 
   mostraConfermaRimozione = false;
   prodottoDaRimuovere: any = null;
@@ -37,34 +38,84 @@ export class Admin implements OnInit {
   mostraDettaglioOrdine = false;
   ordineDettaglio: any = null;
   prodottiOrdineDettaglio: any[] = [];
+
+  paginaProdotti: number = 1;
+  prodottiPerPagina: number = 10;
+  
+  paginaUtenti: number = 1;
+  utentiPerPagina: number = 10;
+  
   
   currentUser: any = null;
 
   constructor(private http: HttpClient, private adminService: AdminService, private authService: AuthService) {}
 
- get utentiFiltrati() {
-  if (!this.queryUtente?.trim()) return this.users;
-  const q = this.queryUtente.trim().toLowerCase();
-  return this.users.filter(u =>
-    u.nome.toLowerCase().includes(q) ||
-    u.cognome.toLowerCase().includes(q) ||
-    u.email.toLowerCase().includes(q)
-  );
+
+
+  get utentiPaginati() {
+  const start = (this.paginaUtenti - 1) * this.utentiPerPagina;
+  return this.utentiFiltrati.slice(start, start + this.utentiPerPagina);
+}
+
+get numeroPagineUtenti() {
+  return Math.max(1, Math.ceil(this.utentiFiltrati.length / this.utentiPerPagina));
+}
+
+cambiaPaginaUtenti(pagina: number) {
+  if (pagina < 1 || pagina > this.numeroPagineUtenti) return;
+  this.paginaUtenti = pagina;
+}
+
+get prodottiPaginati() {
+  const start = (this.paginaProdotti - 1) * this.prodottiPerPagina;
+  return this.prodottiFiltrati.slice(start, start + this.prodottiPerPagina);
+}
+
+ get numeroPagineProdotti() {
+  return Math.max(1, Math.ceil(this.prodottiFiltrati.length / this.prodottiPerPagina));
+}
+
+  cambiaPaginaProdotti(pagina: number) {
+    this.paginaProdotti = pagina;
+  }
+  
+
+get utentiFiltrati() {
+  let utenti = this.users;
+
+  // Filtro per ruolo se selezionato
+  if (this.ruoloUtenteSelezionato) {
+    utenti = utenti.filter(u => u.ruolo === this.ruoloUtenteSelezionato);
+  }
+
+  // Filtro per ricerca testuale
+  if (this.queryUtente?.trim()) {
+    const q = this.queryUtente.trim().toLowerCase();
+    utenti = utenti.filter(u =>
+      u.nome.toLowerCase().includes(q) ||
+      u.cognome.toLowerCase().includes(q) ||
+      u.email.toLowerCase().includes(q)
+    );
+  }
+  return utenti;
 }
 
 get prodottiFiltrati() {
   let prodotti = this.prodotti;
+
   if (this.categoriaSelezionata) {
-    prodotti = prodotti.filter(p => String(p.id_categoria) === String(this.categoriaSelezionata));
+    prodotti = prodotti.filter(p => p.id_categoria == this.categoriaSelezionata);
   }
   if (this.brandSelezionato) {
-    prodotti = prodotti.filter(p => String(p.id_marchio) === String(this.brandSelezionato));
+    prodotti = prodotti.filter(p => p.id_marchio == this.brandSelezionato);
   }
   if (this.prodottoQuery?.trim()) {
     const q = this.prodottoQuery.trim().toLowerCase();
     prodotti = prodotti.filter(p =>
-      p.nome.toLowerCase().includes(q) ||
-      (p.descrizione && p.descrizione.toLowerCase().includes(q))
+      p.nome?.toLowerCase().includes(q) ||
+      p.descrizione?.toLowerCase().includes(q) ||
+      p.nome_categoria?.toLowerCase().includes(q) ||
+      p.nome_marchio?.toLowerCase().includes(q)
     );
   }
   return prodotti;
@@ -247,7 +298,7 @@ onFileSelected(event: any) {
   loadProdotti() {
   this.http.get<any[]>(`${this.baseUrl}/products/load`).subscribe({
     next: prodotti => this.prodotti = prodotti,
-    error: err => { /* gestione errore */ }
+    error: err => {  console.error(err); }
   });
 }
 
@@ -255,7 +306,7 @@ onFileSelected(event: any) {
 loadCategorie() {
   this.http.get<any[]>(`${this.baseUrl}/catalogo/prodotti`).subscribe({
     next: categorie => this.categorie = categorie,
-    error: err => { /* gestione errore */ }
+    error: err => {  console.error(err); }
   });
 }
 
@@ -270,7 +321,16 @@ loadBrand() {
 modificaProdotto(prodotto: any) {
   this.prodottoForm = { ...prodotto, id: prodotto.id_prodotto };
   this.mostraFormProdotto = true;
+  setTimeout(() => {
+    const el = document.getElementById('form-prodotto');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, 100);
+
 }
+
+
 
 bloccaProdotto(prodotto: any) {
   this.http.patch(`${this.baseUrl}/products/${prodotto.id}/blocco`, { bloccato: !prodotto.bloccato }).subscribe({

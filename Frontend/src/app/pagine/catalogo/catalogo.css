@@ -133,7 +133,7 @@
   gap: 15px;
   margin: 25px 0;
   padding: 15px 20px;
-  color: #ffffff;
+  color: #ff3d00;
 }
 
 .filtro-marca select {
@@ -144,9 +144,9 @@
   font-size: 1.2rem; /* Font più grande anche per il select */
   font-weight: 600; /* Peso leggermente aumentato */
   min-width: 160px; /* Larghezza leggermente aumentata */
-  color: #ffffff; /* Colore testo bianco */
+  color: #f35b03; /* Colore testo bianco */
   /* Transizioni */
-  background: linear-gradient(135deg, #ff3d00 0%, #ffd2b0 100%);
+ 
 }
 
 .filtro-marca label {

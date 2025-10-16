@@ -23,7 +23,7 @@ router.patch('/users/:id/admin', authenticateToken,async (req, res) => {
 router.get('/statistiche-utenti',  authenticateToken,async (req, res) => {
   const userId = req.user.id;
   try {
-    console.log('Richiesta statistiche utenti admin');
+    
     
     const result = await pool.query(`
       SELECT 
@@ -43,10 +43,10 @@ router.get('/statistiche-utenti',  authenticateToken,async (req, res) => {
       ORDER BY numero_ordini DESC, totale_speso DESC
     `, [userId]);
     
-    console.log('Statistiche trovate:', result.rows.length, 'utenti');
+    
     res.json(result.rows);
   } catch (err) {
-    console.error('Errore nel recupero statistiche utenti:', err);
+    
     res.status(500).json({ error: 'Errore del server' });
   }
 });
