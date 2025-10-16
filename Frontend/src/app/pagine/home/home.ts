@@ -4,6 +4,7 @@ import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { CatalogoService } from '../../services/catalogo.service';
 import { PacchettiService, Pacchetto } from '../../services/pacchetti.service';
+import { CarrelloService } from '../../services/carrello.service';
 
 @Component({
   selector: 'app-home',
@@ -26,6 +27,7 @@ export class Home implements OnInit {
     public auth: AuthService,
     private catalogoService: CatalogoService,
     private pacchettiService: PacchettiService,
+    private carrelloService: CarrelloService,
     private router: Router
   ) {
     this.user = this.auth.getUser();
@@ -39,9 +41,33 @@ export class Home implements OnInit {
   }
 
   vaiADettaglioPacchetto(pacchetto: Pacchetto) {
-    // Per ora naviga al catalogo, in futuro si può creare una pagina dedicata
-    console.log('Navigazione a pacchetto:', pacchetto.nome);
-    // this.router.navigate(['/pacchetti', pacchetto.id_pacchetto]);
+    // Recupera i prodotti del pacchetto e li aggiunge al carrello
+    this.pacchettiService.getPacchettoDettaglio(pacchetto.id_pacchetto).subscribe({
+      next: (dettaglio) => {
+        if (dettaglio && dettaglio.prodotti && dettaglio.prodotti.length > 0) {
+          let aggiunti = 0;
+          dettaglio.prodotti.forEach(prodotto => {
+            this.carrelloService.aggiungiAlCarrello(prodotto.id_prodotto, prodotto.quantita).subscribe({ // Aggiunge ogni prodotto al carrello (chiama funzione in carrkello.service.ts)
+              next: () => {
+                aggiunti++;
+                if (aggiunti === dettaglio.prodotti.length) {
+                  alert('Tutti i prodotti del pacchetto sono stati aggiunti al carrello!');
+                }
+              },
+              error: (err) => {
+                console.error('Errore aggiunta prodotto al carrello:', err);
+              }
+            });
+          });
+        } else {
+          alert('Nessun prodotto trovato nel pacchetto.');
+        }
+      },
+      error: (err) => {
+        console.error('Errore nel recupero dettagli pacchetto:', err);
+        alert('Errore nel recupero dei prodotti del pacchetto.');
+      }
+    });
   }
   
   ngOnInit() {

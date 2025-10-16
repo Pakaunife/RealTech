@@ -398,6 +398,69 @@ export class Catalogo {
 
 ## 🔧 Modifiche Tecniche Implementate
 
+---
+
+## 📝 Modifiche recenti (16 Ottobre 2025)
+
+Questa sezione riepiloga le modifiche implementate di recente durante lo sviluppo della feature "pacchetti offerte" e alcune modifiche al comportamento del carrello e al layout della homepage.
+
+Per ogni file indico il percorso e le funzioni/metodi principali toccati; usare questi riferimenti per navigare velocemente il codice.
+
+### Backend (aggiunta route pacchetti)
+- File: `Backend/routes/pacchetti.js`
+  - GET `/api/pacchetti` -> ritorna lista pacchetti tematici con `immagine_url` e `numero_prodotti`.
+  - GET `/api/pacchetti/:id` -> ritorna dettaglio del pacchetto e lista prodotti associati.
+
+### Frontend: servizi e componenti
+- File: `Frontend/src/app/services/pacchetti.service.ts`
+  - getPacchetti(): Observable<Pacchetto[]> — chiama `GET /api/pacchetti`.
+  - getPacchettoDettaglio(id): Observable<any> — chiama `GET /api/pacchetti/:id`.
+
+- File: `Frontend/src/app/pagine/home/home.ts`
+  - loadPacchetti(): carica i pacchetti e popola `this.pacchetti`.
+  - vaiADettaglioPacchetto(pacchetto: Pacchetto): ora INVIA i prodotti del pacchetto al carrello chiamando `CarrelloService.aggiungiAlCarrello(...)` per ogni prodotto.
+    - Nota: aggiunta lato UI del pulsante "Aggiungi al carrello" nella sezione OFFERTE SPECIALI (solo il pulsante esegue l'azione; clic sulla card non la attiva).
+
+- File: `Frontend/src/app/services/carrello.service.ts`
+  - getIdUtente(): legge l'utente dal `AuthService` e ritorna `id` oppure `null`.
+  - aggiungiAlCarrello(idProdotto, quantita):
+    - comportamento utenti autenticati: POST al backend `/api/carrello/aggiungi` e poi `caricaCarrello()`.
+    - comportamento guest (semplice, in-memory): mantiene un array temporaneo in memoria e aggiorna `carrelloSubject` (non persistente).
+  - rimuoviDalCarrello(idProdotto): supporta rimozione sia per utenti autenticati (backend) sia per guest (in-memory).
+  - aggiornaQuantita(idProdotto, quantita): supporto sia backend (auth) sia in-memory (guest); se `quantita <= 0` rimuove l'item per guest.
+  - ottieniCarrello(): Observable<any[]> — espone `carrello$` (BehaviorSubject) per la UI.
+  - isLoggedIn(): helper che ritorna boolean (utile per bloccare il checkout se non loggati).
+
+### Frontend: template e CSS
+- File: `Frontend/src/app/pagine/home/home.html`
+  - Sezione OFFERTE SPECIALI: le card `.package-card` non hanno più il `(click)` globale — solo il bottone "Aggiungi al carrello" lancia `vaiADettaglioPacchetto(pacchetto)`.
+
+- File: `Frontend/src/app/pagine/home/home.css`
+  - `.film-card`: ora ha background semi-trasparente (rgba) + `backdrop-filter: blur(4px)` per effetto glass.
+  - `.news-container`: immagine di sfondo spostata in `::before` per permettere opacità controllata (es. `opacity: 0.45`).
+  - `.offers-row`: gap ridotto (da 2rem → 0.8rem) e margin-bottom ridotto per avvicinare le card.
+  - `.package-card` e `.films-row`: margini verticali ridotti per avvicinare le righe.
+
+### Come testare velocemente
+1. Avvia il backend (cartella `Backend`) e assicurati che ascolti su `http://localhost:3000`.
+2. Avvia il frontend (`npm start` o `ng serve`) e apri `http://localhost:4200`.
+3. Homepage:
+   - Controlla la sezione "Prodotti più visualizzati" (prima riga): prodotti dovrebbero essere cliccabili per il dettaglio.
+   - Nella sezione "Offerte speciali" clicca soltanto sul pulsante "Aggiungi al carrello" per aggiungere i prodotti del pacchetto al carrello.
+4. Carrello:
+   - Se sei loggato: le modifiche vengono salvate sul backend e ricaricate.
+   - Se non sei loggato: puoi aggiungere/rimuovere/aggiornare in memoria (non persistente). Usa `CarrelloService.isLoggedIn()` per bloccare il checkout nel UI.
+5. CSS:
+   - Verifica l'effetto semi-trasparente sulle card (`.film-card`) e l'opacità dello sfondo in `.news-container`.
+
+### Note e prossimi miglioramenti consigliati
+- Migliorare il comportamento guest: persistenza (localStorage) o merge guest→user al login.
+- Creare un endpoint backend per batch fetch prodotti per id (es. `/api/products?ids=1,2,3`) per arricchire il carrello guest in modo efficiente.
+- Sostituire gli alert JS con snackbar/toast e disabilitare i bottoni durante le chiamate API.
+
+Se vuoi, posso aprire una PR con queste modifiche o riportare lo stesso riepilogo anche nel `README.md` principale (root) del repository.
+
+
 ### 🛒 CarrelloService (`carrello.service.ts`)
 
 #### **Cambiamento Principale:**
