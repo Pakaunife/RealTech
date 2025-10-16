@@ -37,6 +37,7 @@ router.post('/aggiungi', async (req, res) => {
 
 // Aggiungi pacchetto al carrello (salvato nella tabella carrello_pacchetto)
 router.post('/aggiungiPacchetto', async (req, res) => {
+  console.log('Richiesta di aggiunta pacchetto al carrello:', req.body);
   const { id_utente, id_pacchetto, quantita } = req.body;
 
   try {
@@ -112,6 +113,19 @@ router.get('/:id_utente', async (req, res) => {
     const carrello = [...prodotti, ...pacchetti];
 
     res.json(carrello);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Errore del server' });
+  }
+});
+
+router.delete('/rimuovi-pacchetto/:id_utente/:id_pacchetto', async (req, res) => {
+  try {
+    await pool.query(
+      'DELETE FROM carrello_pacchetto WHERE id_utente = $1 AND id_pacchetto = $2',
+      [req.params.id_utente, req.params.id_pacchetto]
+    );
+    res.json({ success: true, message: 'Pacchetto rimosso dal carrello' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Errore del server' });
