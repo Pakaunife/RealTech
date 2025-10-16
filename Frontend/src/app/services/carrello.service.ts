@@ -66,6 +66,34 @@ export class CarrelloService {
     );
   }
 
+  // Rimuovi un pacchetto dal carrello
+  rimuoviPacchetto(idPacchetto: number): Observable<any> {
+    const idUtente = this.getIdUtente();
+    if (!idUtente) {
+      throw new Error('Utente non autenticato. Effettua il login per gestire il carrello.');
+    }
+
+    return this.http.delete(`${this.baseUrl}/rimuoviPacchetto/${idUtente}/${idPacchetto}`).pipe(
+      tap(() => this.caricaCarrello())
+    );
+  }
+
+  // Aggiorna quantità di un pacchetto
+  aggiornaPacchetto(idPacchetto: number, quantita: number): Observable<any> {
+    const idUtente = this.getIdUtente();
+    if (!idUtente) {
+      throw new Error('Utente non autenticato. Effettua il login per gestire il carrello.');
+    }
+
+    return this.http.put(`${this.baseUrl}/aggiornaPacchetto`, {
+      id_utente: idUtente,
+      id_pacchetto: idPacchetto,
+      quantita: quantita
+    }).pipe(
+      tap(() => this.caricaCarrello())
+    );
+  }
+
   aggiornaQuantita(idProdotto: number, quantita: number): Observable<any> {
     const idUtente = this.getIdUtente();
     if (!idUtente) {

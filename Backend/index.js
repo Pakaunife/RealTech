@@ -17,6 +17,7 @@ const AdminRoutes = require('./routes/admin');
 const immagineRoutes = require('./routes/immagine');
 const WishListRoutes = require('./routes/wishlist');
 const couponRoutes = require('./routes/coupon');
+const PacchettiRoutes = require('./routes/pacchetti');
 const app = express();
 const PORT = process.env.PORT;
 
@@ -52,6 +53,7 @@ app.use('/api/admin', AdminRoutes);
 app.use('/api/immagine', immagineRoutes);
 app.use('/api/wishlist', WishListRoutes);
 app.use('/api/coupon', couponRoutes);
+app.use('/api/pacchetti', PacchettiRoutes);
 
 app.use((err, _req, res, _next) => {
   const status = err.status || 500;

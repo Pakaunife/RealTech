@@ -15,13 +15,13 @@
       <p class="carrello-text">Prezzo: €{{ item.prezzo }}</p>
       <div class="quantity-control">
         <label class="carrello-label">Quantità: </label>
-        <input type="number" 
-               [value]="item.quantita" 
-               min="1" 
-               (change)="aggiornaQuantita(item.id_prodotto, $event)">
+        <input type="number"
+               [value]="item.quantita"
+               min="1"
+               (change)="aggiornaQuantitaItem(item, $event)">
       </div>
       <p class="carrello-text"><strong>Subtotale: €{{ item.prezzo * item.quantita }}</strong></p>
-      <button (click)="rimuoviProdotto(item.id_prodotto)" class="btn-remove">
+      <button (click)="rimuoviItem(item)" class="btn-remove">
         Rimuovi
       </button>
     </div>
