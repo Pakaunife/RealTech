@@ -147,6 +147,47 @@ router.delete('/rimuovi/:id_utente/:id_prodotto', async (req, res) => {
   }
 });
 
+// Rimuovi pacchetto dal carrello
+router.delete('/rimuoviPacchetto/:id_utente/:id_pacchetto', async (req, res) => {
+  try {
+    await pool.query(
+      'DELETE FROM carrello_pacchetto WHERE id_utente = $1 AND id_pacchetto = $2',
+      [req.params.id_utente, req.params.id_pacchetto]
+    );
+
+    res.json({ success: true, message: 'Pacchetto rimosso dal carrello' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Errore del server' });
+  }
+});
+
+// Aggiorna quantità pacchetto
+router.put('/aggiornaPacchetto', async (req, res) => {
+  const { id_utente, id_pacchetto, quantita } = req.body;
+
+  try {
+    if (quantita <= 0) {
+      // Se quantità <= 0, rimuovi il pacchetto
+      await pool.query(
+        'DELETE FROM carrello_pacchetto WHERE id_utente = $1 AND id_pacchetto = $2',
+        [id_utente, id_pacchetto]
+      );
+    } else {
+      // Aggiorna quantità
+      await pool.query(
+        'UPDATE carrello_pacchetto SET quantita = $1 WHERE id_utente = $2 AND id_pacchetto = $3',
+        [quantita, id_utente, id_pacchetto]
+      );
+    }
+
+    res.json({ success: true, message: 'Pacchetto aggiornato' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Errore del server' });
+  }
+});
+
 // Aggiorna quantità
 router.put('/aggiorna', async (req, res) => {
   const { id_utente, id_prodotto, quantita } = req.body;
