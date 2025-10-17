@@ -40,7 +40,7 @@ export class Login {
             
             this.router.navigate(['/home']);
           },
-          error: err => alert('Errore nel login: ' + (err.error?.message || ''))
+          error: err => alert('Errore nel login: ' + (err.error?.message || err.error?.error || 'Errore sconosciuto'))
         });
     }
   }

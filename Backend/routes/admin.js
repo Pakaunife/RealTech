@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../connection/DBconnect');
 const authenticateToken = require('./auth');
+const fs = require('fs');
+const path = require('path');
 
 
 router.patch('/users/:id/block', authenticateToken,async (req, res) => {
@@ -120,8 +122,18 @@ router.delete('/prodotti/:id', authenticateToken, async (req, res) => {
       'DELETE FROM prodotto WHERE id_prodotto = $1 RETURNING *',
       [prodottoId]
     );
+     const prodotto = deleteResult.rows[0];
+    console.log('Prodotto eliminato:', prodotto);
+
+     if (prodotto && prodotto.immagine) {
+      const filePath = path.join(__dirname, '..', 'uploads', 'prodotti', prodotto.immagine);
+      fs.unlink(filePath, (err) => {
+        if (err && err.code !== 'ENOENT') {
+          console.warn('Impossibile eliminare immagine:', filePath, err.message);
+        }
+      });
+    }
     
-    console.log('Prodotto eliminato:', deleteResult.rows[0]);
     
     res.json({ 
       message: 'Prodotto eliminato con successo',
@@ -204,6 +216,16 @@ router.patch('/ordini/:ordineId/stato', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Errore del server' });
   }
 });
+
+router.delete('/utenti/:id', authenticateToken, async (req, res) => {
+  try {
+    await pool.query('DELETE FROM utenti WHERE id = $1', [req.params.id]);
+    res.json({ success: true, message: 'Utente rimosso' });
+  } catch (err) {
+    res.status(500).json({ error: 'Errore nella rimozione utente' });
+  }
+});
+
 
 
 module.exports = router;

@@ -17,6 +17,12 @@ router.post('/login', async (req, res) => {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(401).json({ message: 'Credenziali non valide' });
 
+    if (user.is_blocked) 
+      {
+        return res.status(403).json({ error: 'Account bloccato, Contatta l\'amministratore.' });
+      }
+
+
     // Genera JWT
     const token = jwt.sign({ id: user.id, nome: user.nome, email: user.email, ruolo: user.ruolo }, process.env.JWT_SECRET, { expiresIn: '2h' });
     res.json({ token, user: { id: user.id, nome: user.nome, email: user.email, ruolo: user.ruolo } });
