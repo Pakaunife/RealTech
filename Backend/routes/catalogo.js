@@ -59,7 +59,7 @@ router.get('/prodotti/categoria/:nome', async (req, res) => {   //Riceve il nome
 // Prodotti più acquistati (top N) — aggrega la tabella `acquisti`
 router.get('/popular', async (req, res) => {
   try {
-    // default a 3 prodotti come richiesto
+    
     const { limit = 3 } = req.query;
 
     // Semplice: prendi i product_id più acquistati (somma delle quantità) e uniscili ai dettagli prodotto
