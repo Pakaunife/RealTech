@@ -7,6 +7,7 @@ import { CarrelloService } from '../../services/carrello.service';
 
 @Component({
   selector: 'app-catalogo',
+  standalone: true,
   imports: [CommonModule, NgIf, NgFor, FormsModule],
   templateUrl: './catalogo.html',
   styleUrls: ['./catalogo.css']

@@ -4,9 +4,10 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-sicurezza-pagamenti',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './sicurezza-pagamenti.html',
-  styleUrl: './sicurezza-pagamenti.css'
+  styleUrls: ['./sicurezza-pagamenti.css']
 })
 export class SicurezzaPagamenti {
 

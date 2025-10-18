@@ -7,9 +7,10 @@ import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-admin',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './admin.html',
-  styleUrl: './admin.css'
+  styleUrls: ['./admin.css']
 })
 export class Admin implements OnInit {
 

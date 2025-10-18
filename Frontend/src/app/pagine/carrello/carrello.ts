@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CarrelloService } from '../../services/carrello.service';
 import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-carrello',
-  imports: [CommonModule],
+  standalone: true,
+  imports: [CommonModule, RouterModule],
   templateUrl: './carrello.html',
-  styleUrl: './carrello.css'
+  styleUrls: ['./carrello.css']
 })
 export class Carrello implements OnInit {
   carrello$: Observable<any[]>;  //carrello$ ha i dati del carrello
