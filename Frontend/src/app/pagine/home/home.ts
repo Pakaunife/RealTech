@@ -8,9 +8,10 @@ import { CarrelloService } from '../../services/carrello.service';
 
 @Component({
   selector: 'app-home',
+  standalone: true,
   imports: [ CommonModule, RouterModule],
   templateUrl: './home.html',
-  styleUrl: './home.css'
+  styleUrls: ['./home.css']
 })
 export class Home implements OnInit {
 

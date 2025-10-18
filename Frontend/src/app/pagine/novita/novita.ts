@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-novita',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './novita.html',
   styleUrls: ['./novita.css']

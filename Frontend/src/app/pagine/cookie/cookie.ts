@@ -4,9 +4,10 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-cookie',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './cookie.html',
-  styleUrl: './cookie.css'
+  styleUrls: ['./cookie.css']
 })
 export class Cookie {
 

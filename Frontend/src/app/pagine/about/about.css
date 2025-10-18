@@ -5,6 +5,7 @@
   color: #fff;
   text-align: center;
   letter-spacing: 0.04em;
+  margin-bottom: 60px;
   text-shadow:
     0 0 8px #b6b6b6,
     0 0 16px #fff,
@@ -19,30 +20,4 @@
   font-size: 1.15rem;
   line-height: 1.6;
   padding: 0 2rem;
-}
-
-.about-gallery {
-    
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  gap: 10px;
-  max-width: 1100px;
-  margin: 0 auto 2rem auto;
-}
-
-.about-gallery img {
-  margin-top: 6rem;
-  width: 100%;
-  height: 260px;
-  object-fit: cover;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px #0008;
-}
-.about-content p:first-child {
-  margin-top: 3.5rem;
-}
-
-.about-gallery {
-  margin-bottom: 15rem; /* aumenta lo spazio sotto le immagini */
 }

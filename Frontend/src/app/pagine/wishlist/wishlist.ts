@@ -7,6 +7,7 @@ import { CurrencyPipe, NgFor, NgIf } from '@angular/common';
   selector: 'app-wishlist',
   templateUrl: './wishlist.html',
   styleUrls: ['./wishlist.css'],
+  standalone: true,
   imports: [CurrencyPipe, NgFor, NgIf]
 })
 export class Wishlist implements OnInit {

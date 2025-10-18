@@ -11,6 +11,7 @@ import { CouponService, CouponResponse } from '../../services/coupon.service';
 
 @Component({
   selector: 'app-checkout',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './checkout.html',
   styleUrls: ['./checkout.css']

@@ -1,0 +1,23 @@
+.about-title {
+  margin-top: 4rem;
+  font-size: 4rem;
+  font-weight: 800;
+  color: #fff;
+  text-align: center;
+  letter-spacing: 0.04em;
+  margin-bottom: 60px;
+  text-shadow:
+    0 0 8px #b6b6b6,
+    0 0 16px #fff,
+    0 0 32px #ff3d00,
+    0 0 48px #ff3d00;
+}
+
+.about-content {
+  max-width: 1100px;
+  margin: 0 auto 2rem auto;
+  color: #fff;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  padding: 0 2rem;
+}
