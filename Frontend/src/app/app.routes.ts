@@ -18,6 +18,7 @@ import { Novita } from './pagine/novita/novita';
 import { Ordini } from './pagine/ordini/ordini';
 import { DettagliOrdine } from './pagine/dettagli-ordine/dettagli-ordine';
 import { Wishlist } from './pagine/wishlist/wishlist';
+import { TrackingOrdine } from './pagine/tracking-ordine/tracking-ordine';
 
 
 export const routes = [
@@ -40,5 +41,6 @@ export const routes = [
   { path: 'novita/:articolo', component: Novita },
   { path: 'ordini', component: Ordini, canActivate: [AuthGuard] },
   { path: 'dettagli-ordine/:id', component: DettagliOrdine, canActivate: [AuthGuard] },
-  { path: 'wishlist', component: Wishlist, canActivate: [AuthGuard] }
+  { path: 'wishlist', component: Wishlist, canActivate: [AuthGuard] },
+  { path: 'tracking-ordine/:id', component: TrackingOrdine, canActivate: [AuthGuard] }
 ];

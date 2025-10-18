@@ -221,7 +221,28 @@ onFileSelected(event: any) {
   cambiaStatoOrdine(ordine: any, nuovoStato: string) {
     console.log(`Cambio stato ordine ${ordine.id} da ${ordine.stato} a ${nuovoStato}`);
     
-    this.adminService.aggiornaStatoOrdine(ordine.id, nuovoStato).subscribe({
+    let body: any = { stato: nuovoStato };
+
+     if (nuovoStato.trim().toLowerCase() === 'spedito') {
+    // Chiedi i dati tramite prompt (puoi sostituire con un form modale se vuoi)
+    const corriere = prompt('Inserisci il nome del corriere:');
+    const codice_spedizione = prompt('Inserisci il codice spedizione:');
+    const dettagli_pacco = prompt('Inserisci i dettagli del pacco:');
+    body = { ...body, corriere, codice_spedizione, dettagli_pacco };
+  }else if (
+    ['in transito', 'in consegna', 'consegnato'].includes(nuovoStato.trim().toLowerCase())
+  ) {
+        const dettaglioAttuale = ordine?.dettagli_pacco || '';
+        const nuovoDettaglio = prompt('Aggiungi una nota di avanzamento per il pacco:', '');
+        // Appendi la nuova nota
+        const dettagli_pacco = dettaglioAttuale
+          ? `${dettaglioAttuale}\n${nuovoDettaglio}`
+          : nuovoDettaglio;
+        body = { ...body, dettagli_pacco };
+  }
+      
+
+    this.adminService.aggiornaStatoOrdine(ordine.id, body).subscribe({
       next: (response) => {
         console.log('Stato ordine aggiornato:', response);
         ordine.stato = nuovoStato;

@@ -43,10 +43,11 @@ export class AdminService {
     return this.http.get<any>(`${this.baseUrl}/admin/ordini/${ordineId}/dettaglio`);
   }
 
-  aggiornaStatoOrdine(ordineId: number, nuovoStato: string): Observable<any> {
-    console.log('Chiamata API per aggiornare stato ordine ID:', ordineId, 'nuovo stato:', nuovoStato);
-    return this.http.patch(`${this.baseUrl}/admin/ordini/${ordineId}/stato`, { stato: nuovoStato });
+  aggiornaStatoOrdine(ordineId: number, body: any): Observable<any> {
+    console.log('Chiamata API per aggiornare stato ordine ID:', ordineId, 'nuovo stato:', body.stato);
+    return this.http.patch(`${this.baseUrl}/admin/ordini/${ordineId}/stato`, body);
   }
+
 
   rimuoviProdotto(prodottoId: number): Observable<any> {
     console.log('Chiamata API per rimuovere prodotto ID:', prodottoId);

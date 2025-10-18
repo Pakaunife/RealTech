@@ -307,13 +307,15 @@ input, select { /* applichiamo ai pulsatti input(dove metti testo) e sulle casel
 }
 
 .indirizzo-card:hover {
-  border-color: rgba(20, 20, 20, 0.7);
+  border-color: #1976d2;
+  box-shadow: 0 0 8px #1976d233;
 }
 
 .indirizzo-card.selected {
   border-color: rgba(255, 102, 1, 0.7);
   background: rgba(20, 20, 20, 0.7);
 }
+
 
 .indirizzo-info {
   margin-bottom: 10px;
@@ -353,6 +355,19 @@ input, select { /* applichiamo ai pulsatti input(dove metti testo) e sulle casel
   font-weight: 500;
   margin-bottom: 20px;
 }
+.btn-scegli-altro
+{
+   background: #ff7504;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-bottom: 20px;
+  
+
+}
 
 .form-actions {
   display: flex;
@@ -385,5 +400,15 @@ input, select { /* applichiamo ai pulsatti input(dove metti testo) e sulle casel
   padding: 24px;
   margin-bottom: 24px;
   border: 1px solid rgba(20, 20, 20, 0.7);
+}
+
+.selezionato-label {
+  color: #1976d2;
+  font-weight: bold;
+  margin-right: 12px;
+}
+.indirizzo-selezionato {
+  border: 2px solid rgba(255, 102, 1, 0.7);;
+  
 }
 

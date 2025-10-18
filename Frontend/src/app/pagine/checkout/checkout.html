@@ -78,40 +78,50 @@
         <h3>Indirizzo di Consegna</h3>
         
         <!-- Selezione indirizzo esistente -->
-        <div *ngIf="indirizzi.length > 0" class="indirizzi-esistenti">
-          <h4>Seleziona un indirizzo salvato:</h4>
-          <div class="indirizzi-lista">
-            <div *ngFor="let indirizzo of indirizzi; let i = index" 
-                 class="indirizzo-card"
-                 [class.selected]="indirizzoSelezionato === indirizzo.id"
-                 (click)="selezionaIndirizzo(indirizzo)">
-              <div class="indirizzo-info">
-                <strong>{{ indirizzo.nome }}</strong><br>
-                {{ indirizzo.indirizzo }}<br>
-                {{ indirizzo.citta }}, {{ indirizzo.cap }} ({{ indirizzo.provincia }})<br>
-                <small>Tel: {{ indirizzo.telefono }}</small>
-              </div>
-              <div class="indirizzo-actions">
-                <button type="button" 
-                        class="btn-modifica" 
-                        (click)="modificaIndirizzo(indirizzo, $event)">
-                  Modifica
-                </button>
-                <button type="button" 
-                        class="btn-elimina" 
-                        (click)="eliminaIndirizzo(indirizzo.id, $event)">
-                  Elimina
-                </button>
-              </div>
-            </div>
+       <div *ngIf="indirizzoSelezionato && !mostraAltriIndirizzi" class="indirizzo-card indirizzo-selezionato">
+  <div class="indirizzo-info">
+    <strong>{{ indirizzoSelezionato.destinatario }}</strong><br>
+    {{ indirizzoSelezionato.indirizzo }}<br>
+    {{ indirizzoSelezionato.citta }}, {{ indirizzoSelezionato.cap }}, {{indirizzoSelezionato.paese}}({{ indirizzoSelezionato.provincia }})<br>
+    <small>Tel: {{ indirizzoSelezionato.telefono }}</small>
+  </div>
+          <div class="indirizzo-actions">
+            <button type="button" class="btn-modifica" (click)="modificaIndirizzo(indirizzoSelezionato, $event)">Modifica</button>
+            <button type="button" class="btn-elimina" (click)="eliminaIndirizzo(indirizzoSelezionato.id, $event)">Elimina</button>
           </div>
           
-          <button type="button" 
-                  class="btn-nuovo-indirizzo" 
-                  (click)="mostraNuovoIndirizzo()">
-            + Aggiungi nuovo indirizzo
-          </button>
         </div>
+  <div>
+  <button type="button" class="btn-nuovo-indirizzo" (click)="mostraNuovoIndirizzo()">
+    + Aggiungi nuovo indirizzo
+  </button>
+  <button type="button" class="btn-scegli-altro" 
+        *ngIf="!mostraAltriIndirizzi"
+        (click)="mostraAltriIndirizzi = true">
+  altri indirizzi salvati
+</button>
+</div>
+<div *ngIf="indirizzi.length > 0 && mostraAltriIndirizzi" class="indirizzi-esistenti">
+  <h4>Scegli un indirizzo salvato:</h4>
+  <div class="indirizzi-lista">
+    <div *ngFor="let indirizzo of indirizzi" 
+         class="indirizzo-card"
+         [class.selected]="indirizzoSelezionato?.id === indirizzo.id"
+         (click)="selezionaIndirizzo(indirizzo)">
+      <div class="indirizzo-info">
+        <strong>{{ indirizzo.destinatario }}</strong><br>
+        {{ indirizzo.indirizzo }}<br>
+        {{ indirizzo.citta }}, {{ indirizzo.cap }} ({{ indirizzo.provincia }})<br>
+        <small>Tel: {{ indirizzo.telefono }}</small>
+      </div>
+      <div class="indirizzo-actions">
+        <button type="button" class="btn-modifica" (click)="modificaIndirizzo(indirizzo, $event)">Modifica</button>
+        <button type="button" class="btn-elimina" (click)="eliminaIndirizzo(indirizzo.id, $event)">Elimina</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
         <!-- Form nuovo indirizzo -->
         <div *ngIf="indirizzi.length === 0 || mostraFormNuovoIndirizzo" class="nuovo-indirizzo">
@@ -122,7 +132,7 @@
             <label for="nome_destinatario">Nome Destinatario:</label>
             <input type="text" 
                    id="nome_destinatario"
-                   [(ngModel)]="nuovoIndirizzo.nome"
+                   [(ngModel)]="nuovoIndirizzo.destinatario"
                    name="nome_destinatario"
                    placeholder="Nome e Cognome"
                    required>
@@ -148,6 +158,17 @@
                      placeholder="Città"
                      required>
             </div>
+
+            <div class="form-group">
+              <label for="paese">Paese:</label>
+              <select id="paese"
+                      [(ngModel)]="nuovoIndirizzo.paese"
+                      name="paese"
+                      required>
+                <option value="Italia">Italia</option>
+              </select>
+            </div>
+            
             <div class="form-group">
               <label for="cap">CAP:</label>
               <input type="text" 

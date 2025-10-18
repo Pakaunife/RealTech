@@ -125,6 +125,11 @@ export class DettagliOrdine implements OnInit {
   return risultato;
 }
 
+vaiAlTrackingOrdine() {
+  this.router.navigate(['/tracking-ordine', this.ordine.id]);
+}
+
+
 tornaAListaOrdini() {
   this.router.navigate(['/ordini']); 
 }

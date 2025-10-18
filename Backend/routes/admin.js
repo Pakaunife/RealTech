@@ -193,22 +193,59 @@ router.get('/ordini/:ordineId/dettaglio', authenticateToken, async (req, res) =>
 // AGGIUNGI endpoint per aggiornare stato ordine
 router.patch('/ordini/:ordineId/stato', authenticateToken, async (req, res) => {
   const ordineId = req.params.ordineId;
-  const { stato } = req.body;
+  const { stato, corriere, codice_spedizione, dettagli_pacco } = req.body;
   
   try {
     console.log('Aggiornamento stato ordine ID:', ordineId, 'nuovo stato:', stato);
-    
+
     const result = await pool.query(`
       UPDATE ordini 
       SET stato = $1 
       WHERE id = $2 
       RETURNING *
     `, [stato, ordineId]);
+     console.log('Ordine aggiornato:', result.rows);
     
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Ordine non trovato' });
     }
-    
+
+    if (stato.trim().toLowerCase() === "spedito") 
+      {
+          const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
+          const dettaglioConData = dettagli_pacco ? `${now} ${dettagli_pacco}` : null;
+          const ordineResult = await pool.query(
+            `SELECT  indirizzo_consegna FROM ordini WHERE id = $1`,
+            [ordineId]
+          );
+            const ordine = ordineResult.rows[0];
+  
+      await pool.query(`
+        INSERT INTO tracking_ordine 
+          (id_ordine, stato, corriere, codice_spedizione, dettagli_pacco, indirizzo_spedizione, data_aggiornamento)
+        VALUES ($1, $2, $3, $4, $5, $6, NOW())
+        ON CONFLICT (id_ordine) DO NOTHING
+      `, [
+        ordineId, 
+        stato, 
+        corriere || null, 
+        codice_spedizione || null, 
+        dettaglioConData,
+        ordine?.indirizzo_consegna || null
+      ]);
+      console.log('Tracking ordine inserito per ordine ID:', ordineId);
+    } else {
+
+        const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+       const dettaglioConData = dettagli_pacco ? `${now} ${dettagli_pacco}` : null;
+      await pool.query(`
+      UPDATE tracking_ordine 
+      SET stato = $1, dettagli_pacco = COALESCE(dettagli_pacco, '') || E'\n' || $2, data_aggiornamento = NOW() 
+      WHERE id_ordine = $3
+`, [stato, dettaglioConData || null, ordineId]);
+    }
+
     console.log('Stato ordine aggiornato:', result.rows[0]);
     res.json({ message: 'Stato aggiornato con successo', ordine: result.rows[0] });
   } catch (err) {

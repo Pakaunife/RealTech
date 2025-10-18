@@ -3,10 +3,10 @@ const pool = require('../connection/DBconnect');
 const authenticateToken = require('./auth');
 const router = express.Router();
 
-// Aggiungi un indirizzo
+
 router.post('/', authenticateToken, async (req, res) => {
   const userId = req.user.id;
-  const { indirizzo, citta, cap, provincia, paese, predefinito } = req.body;
+  const { indirizzo, citta, cap, provincia, paese, predefinito, destinatario, telefono } = req.body;
   try {
 
     const checkDuplicate = await pool.query(
@@ -29,10 +29,10 @@ router.post('/', authenticateToken, async (req, res) => {
       );
     }
     const result = await pool.query(
-      `INSERT INTO indirizzi (user_id, indirizzo, citta, cap, provincia, paese, predefinito)
-       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-      [userId, indirizzo, citta, cap, provincia, paese, predefinito || false]
-    );
+  `INSERT INTO indirizzi (user_id, indirizzo, citta, cap, provincia, paese, predefinito, destinatario, telefono)
+   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+  [userId, indirizzo, citta, cap, provincia, paese, predefinito || false, destinatario, telefono || null]
+);
     res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -112,13 +112,13 @@ router.put('/:id', authenticateToken, async (req, res) => {
     }
 
     // Aggiorna l'indirizzo
-    const result = await pool.query(
-      `UPDATE indirizzi 
-       SET indirizzo = $1, citta = $2, cap = $3, provincia = $4, paese = $5, predefinito = $6
-       WHERE id = $7 AND user_id = $8
-       RETURNING *`,
-      [indirizzo, citta, cap, provincia, paese, predefinito || false, indirizzoId, userId]
-    );
+   const result = await pool.query(
+  `UPDATE indirizzi 
+   SET indirizzo = $1, citta = $2, cap = $3, provincia = $4, paese = $5, predefinito = $6, destinatario = $7, telefono = $8
+   WHERE id = $9 AND user_id = $10
+   RETURNING *`,
+  [indirizzo, citta, cap, provincia, paese, predefinito || false, destinatario, telefono || null, indirizzoId, userId]
+);
 
     res.json(result.rows[0]);
   } catch (err) {
