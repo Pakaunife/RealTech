@@ -56,47 +56,48 @@ router.get('/prodotti/categoria/:nome', async (req, res) => {   //Riceve il nome
   }
 });
 
-// Versione semplificata per prodotti più visti (solo basata su visualizzazioni)
+// Prodotti più acquistati (top N) — aggrega la tabella `acquisti`
 router.get('/popular', async (req, res) => {
   try {
-  const { limit = 4 } = req.query; 
-    
+    // default a 3 prodotti come richiesto
+    const { limit = 3 } = req.query;
+
+    // Aggrega gli acquisti per prodotto (somma delle quantità) e ordina per quantità totale
     const result = await pool.query(`
       SELECT 
-        p.id_prodotto, 
-        p.nome, 
+        p.id_prodotto,
+        p.nome,
         p.prezzo,
         p.descrizione,
         p.immagine,
         p.quantita_disponibile,
         m.nome AS marchio,
         c.nome AS categoria,
-        COALESCE(v.total_views, 0) as total_views
+        COALESCE(a.total_purchased, 0) as total_purchased
       FROM prodotto p
       LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
       LEFT JOIN marchio m ON p.id_marchio = m.id_marchio
       LEFT JOIN (
         SELECT 
-          prodotto_id, 
-          COUNT(*) as total_views
-        FROM visualizzazioni 
-        GROUP BY prodotto_id
-      ) v ON p.id_prodotto = v.prodotto_id
-      WHERE p.quantita_disponibile > 0 
+          id_prodotto as prodotto_id,
+          SUM(quantita) as total_purchased
+        FROM acquisti
+        GROUP BY id_prodotto
+      ) a ON p.id_prodotto = a.prodotto_id
+      WHERE p.quantita_disponibile > 0
       AND p.bloccato = false
-      ORDER BY total_views DESC NULLS LAST, p.nome
+      ORDER BY total_purchased DESC NULLS LAST, p.nome
       LIMIT $1
     `, [limit]);
-    
-    // Aggiungi URL completo dell'immagine a ogni prodotto
+
     const prodottiPopular = result.rows.map(prodotto => ({
       ...prodotto,
       immagine_url: prodotto.immagine ? `http://localhost:3000/api/images/prodotti/${prodotto.immagine}` : 'http://localhost:3000/api/images/prodotti/default.jpg'
     }));
-    
+
     res.json(prodottiPopular);
   } catch (err) {
-    console.error('Errore popular:', err);
+    console.error('Errore popular (acquisti):', err);
     res.status(500).json({ error: 'Errore DB' });
   }
 });
