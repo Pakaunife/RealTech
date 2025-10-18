@@ -3,11 +3,12 @@ import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { Header } from './header/header';
 import { Footer } from './footer/footer';
+import { HeaderSemplificato } from "./header-semplificato/header-semplificato";
 
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Header, Footer],
+  imports: [RouterOutlet, Header, Footer, HeaderSemplificato],
 
   templateUrl: './app.html',
   styleUrl: './app.css'
