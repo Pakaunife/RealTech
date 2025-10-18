@@ -8,9 +8,10 @@ import { CarrelloService } from '../../services/carrello.service';
 
 @Component({
   selector: 'app-home',
+  standalone: true,
   imports: [ CommonModule, RouterModule],
   templateUrl: './home.html',
-  styleUrl: './home.css'
+  styleUrls: ['./home.css']
 })
 export class Home implements OnInit {
 
@@ -71,7 +72,7 @@ export class Home implements OnInit {
 
   loadProdottiPopular() {
     this.loading = true;
-    this.catalogoService.getProdottiPopular(6).subscribe({
+  this.catalogoService.getProdottiPopular(3).subscribe({ // Prende 3 prodotti più aquistati da backend
       next: (prodotti) => {
         this.prodottiInEvidenza = prodotti;
         this.loading = false;

@@ -244,6 +244,7 @@
                 Vai ai dettagli
               </button>
               <button 
+              [ngClass]="{'btn-sblocca': user.is_blocked, 'btn-blocca': !user.is_blocked}"
                 *ngIf="user.ruolo !== 'owner' && (currentUser?.ruolo === 'owner' || (currentUser?.ruolo === 'admin' && user.ruolo === 'user'))"
                 (click)="toggleBlock(user)">
                 {{ user.is_blocked ? 'Sblocca' : 'Blocca' }}
@@ -251,6 +252,7 @@
 
               <!-- Pulsante Rendi Admin (solo se user e chi guarda è owner o admin) -->
               <button 
+                
                 *ngIf="user.ruolo === 'user' && (currentUser?.ruolo === 'owner' || currentUser?.ruolo === 'admin')" 
                 (click)="toggleAdmin(user)">
                 Rendi Admin
@@ -258,10 +260,17 @@
 
               <!-- Pulsante Rimuovi Admin (solo se user è admin e chi guarda è owner) -->
               <button 
+                [ngClass]="{'btn-rimuovi-admin': user.ruolo === 'admin'}"
                 *ngIf="user.ruolo === 'admin' && currentUser?.ruolo === 'owner'" 
                 (click)="toggleAdmin(user)">
                 Rimuovi Admin
               </button>
+              <button
+              class="btn-rimuovi-utente"
+              *ngIf="user.is_blocked"
+              (click)="rimuoviUtente(user)">
+              Rimuovi Utente
+            </button>
             </td>
           </tr>
         </tbody>
@@ -333,7 +342,7 @@
         <input type="checkbox" [(ngModel)]="prodottoForm.bloccato" name="bloccato">
         Bloccato
       </label>
-      <button type="submit">{{ prodottoForm.id ? 'Salva Modifica' : 'Aggiungi Prodotto' }}</button>
+      <button class = "btn-gestione" type="submit">{{ prodottoForm.id ? 'Salva Modifica' : 'Aggiungi Prodotto' }}</button>
     </form>
 
     <!-- Tabella prodotti -->

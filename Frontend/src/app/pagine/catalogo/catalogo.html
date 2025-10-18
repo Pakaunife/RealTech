@@ -39,15 +39,15 @@
   <!-- Vista Prodotti -->
   <div *ngIf="mostraProdotti">
     <!-- Pulsante torna alle categorie -->
-    <div class="categoria-card" (click)="tornaAlleCategorie()" style="margin-bottom: 30px;">
+    <div class="categoria-card back-card" (click)="tornaAlleCategorie()">
       <h3>← Torna alle Categorie</h3>
       <p>Clicca per tornare alla selezione categorie</p>
     </div>
     
     <!-- Filtro per marca -->
-    <div class="filtro-marca" *ngIf="marcheDisponibili.length > 0" style="margin-bottom: 20px; text-align: center;">
-      <label for="marca" style="color: white;  margin-right: 10px;">Filtra per marca:</label>
-      <select id="marca" [(ngModel)]="marcaSelezionata" style="padding: 10px; background: #ff3d00; color: #fff; border: none;">
+    <div class="filtro-marca" *ngIf="marcheDisponibili.length > 0">
+      <label for="marca">Filtra per marca:</label>
+      <select id="marca" [(ngModel)]="marcaSelezionata">
         <option value="">Tutte le marche</option>
         <option *ngFor="let marca of marcheDisponibili" [value]="marca">{{ marca }}</option>
       </select>
@@ -61,7 +61,7 @@
                class="prodotto-immagine">
           <h3>{{ prodotto.nome }}</h3>
           <p>{{ prodotto.marchio || 'Marchio non specificato' }}</p>
-          <p style="font-weight: bold;">€{{ prodotto.prezzo }}</p>
+          <p class="prezzo">€{{ prodotto.prezzo }}</p>
           <p>Disponibili: {{ prodotto.quantita_disponibile }}</p>
         </div>
         <!-- PULSANTE CARRELLO -->

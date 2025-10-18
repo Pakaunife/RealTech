@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CarrelloService } from '../../services/carrello.service';
 import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-carrello',
-  imports: [CommonModule],
+  standalone: true,
+  imports: [CommonModule, RouterModule],
   templateUrl: './carrello.html',
-  styleUrl: './carrello.css'
+  styleUrls: ['./carrello.css']
 })
 export class Carrello implements OnInit {
   carrello$: Observable<any[]>;  //carrello$ ha i dati del carrello
@@ -35,12 +36,47 @@ export class Carrello implements OnInit {
     }
   }
 
+  // Nuovo: rimuove item (prodotto o pacchetto) in base al tipo
+  rimuoviItem(item: any): void {
+    if (!confirm('Vuoi rimuovere questo elemento dal carrello?')) return;
+
+    if (item.tipo === 'pacchetto') {
+      this.carrelloService.rimuoviPacchetto(item.id_pacchetto).subscribe({
+        next: () => console.log('Pacchetto rimosso'),
+        error: (err) => console.error('Errore rimozione pacchetto:', err)
+      });
+    } else {
+      this.carrelloService.rimuoviDalCarrello(item.id_prodotto).subscribe({
+        next: () => console.log('Prodotto rimosso'),
+        error: (err) => console.error('Errore rimozione prodotto:', err)
+      });
+    }
+  }
+
   aggiornaQuantita(idProdotto: number, event: any): void {
     const nuovaQuantita = parseInt(event.target.value);
     if (nuovaQuantita > 0) {
       this.carrelloService.aggiornaQuantita(idProdotto, nuovaQuantita).subscribe({
         next: () => console.log('Quantità aggiornata'),
         error: (err) => console.error('Errore:', err)
+      });
+    }
+  }
+
+  // Nuovo: aggiorna quantità per prodotto o pacchetto
+  aggiornaQuantitaItem(item: any, event: any): void {
+    const nuovaQuantita = parseInt(event.target.value);
+    if (nuovaQuantita <= 0) return;
+
+    if (item.tipo === 'pacchetto') {
+      this.carrelloService.aggiornaPacchetto(item.id_pacchetto, nuovaQuantita).subscribe({
+        next: () => console.log('Quantità pacchetto aggiornata'),
+        error: (err) => console.error('Errore aggiornamento pacchetto:', err)
+      });
+    } else {
+      this.carrelloService.aggiornaQuantita(item.id_prodotto, nuovaQuantita).subscribe({
+        next: () => console.log('Quantità prodotto aggiornata'),
+        error: (err) => console.error('Errore aggiornamento prodotto:', err)
       });
     }
   }

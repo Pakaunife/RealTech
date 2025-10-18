@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { NgIf } from '@angular/common';
-import { Router } from '@angular/router';
+import { NgIf, CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
 @Component({
   selector: 'app-registrazione',
-  imports: [ ReactiveFormsModule, NgIf ],
+  standalone: true,
+  imports: [ CommonModule, ReactiveFormsModule, RouterModule, NgIf ],
   templateUrl: './registrazione.html',
-  styleUrl: './registrazione.css'
+  styleUrls: ['./registrazione.css']
 })
 export class Registrazione {
 

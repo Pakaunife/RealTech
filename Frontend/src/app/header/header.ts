@@ -10,9 +10,10 @@ import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-header',
+  standalone: true,
   imports: [RouterModule, CommonModule, FormsModule],
   templateUrl: './header.html',
-  styleUrl: './header.css'
+  styleUrls: ['./header.css']
 })
 export class Header {
   user: any;

@@ -4,9 +4,10 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-policy',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './policy.html',
-  styleUrl: './policy.css'
+  styleUrls: ['./policy.css']
 })
 export class Policy {
 

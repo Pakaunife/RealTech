@@ -11,6 +11,7 @@ import { CouponService, CouponResponse } from '../../services/coupon.service';
 
 @Component({
   selector: 'app-checkout',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './checkout.html',
   styleUrls: ['./checkout.css']
@@ -34,12 +35,14 @@ export class Checkout implements OnInit {
   
   // Indirizzi
   indirizzi: any[] = [];
-  indirizzoSelezionato: number | null = null;
+ indirizzoSelezionato: any = null;
   mostraFormNuovoIndirizzo = false;
+  mostraAltriIndirizzi: boolean = false;
   nuovoIndirizzo = {
-    nome: '',
+    destinatario: '',
     indirizzo: '',
     citta: '',
+    paese: '',
     cap: '',
     provincia: '',
     telefono: ''
@@ -85,6 +88,10 @@ export class Checkout implements OnInit {
     this.caricaIndirizzi();
   }
 
+  get indirizzoPredefinito() {
+  return this.indirizzi.find(i => i.predefinito);
+  }
+  
   caricaIndirizzi(): void {
     this.userService.getAddresses().subscribe({
       next: (indirizzi: any[]) => {
@@ -93,15 +100,24 @@ export class Checkout implements OnInit {
         if (this.indirizzi.length === 1) {
           this.selezionaIndirizzo(this.indirizzi[0]);
         }
+        else {
+        // Se c'è un indirizzo predefinito, selezionalo
+        const predefinito = this.indirizzi.find(i => i.predefinito);
+        if (predefinito) {
+          this.selezionaIndirizzo(predefinito);
+        }
+      }
+
       },
       error: (err: any) => console.error('Errore caricamento indirizzi:', err)
     });
   }
 
-  selezionaIndirizzo(indirizzo: any): void {
-    this.indirizzoSelezionato = indirizzo.id;
-    this.mostraFormNuovoIndirizzo = false;
-  }
+ selezionaIndirizzo(indirizzo: any): void {
+  this.indirizzoSelezionato = indirizzo;
+  this.mostraFormNuovoIndirizzo = false;
+  this.mostraAltriIndirizzi = false;
+}
 
   mostraNuovoIndirizzo(): void {
     this.mostraFormNuovoIndirizzo = true;
@@ -115,9 +131,10 @@ export class Checkout implements OnInit {
 
   validaNuovoIndirizzo(): boolean {
     return !!(
-      this.nuovoIndirizzo.nome.trim() &&
+      this.nuovoIndirizzo.destinatario.trim() &&
       this.nuovoIndirizzo.indirizzo.trim() &&
       this.nuovoIndirizzo.citta.trim() &&
+      this.nuovoIndirizzo.paese.trim() &&
       this.nuovoIndirizzo.cap.trim() &&
       this.nuovoIndirizzo.provincia.trim() &&
       this.nuovoIndirizzo.telefono.trim()
@@ -155,9 +172,9 @@ export class Checkout implements OnInit {
       this.userService.deleteAddress(indirizzoId).subscribe({
         next: () => {
           this.indirizzi = this.indirizzi.filter(i => i.id !== indirizzoId);
-          if (this.indirizzoSelezionato === indirizzoId) {
-            this.indirizzoSelezionato = null;
-          }
+          if (this.indirizzoSelezionato && this.indirizzoSelezionato.id === indirizzoId) {
+          this.indirizzoSelezionato = this.indirizzi.find(i => i.predefinito) || null;
+        }
           alert('Indirizzo eliminato con successo!');
         },
         error: (err: any) => {
@@ -174,26 +191,24 @@ export class Checkout implements OnInit {
 
   private resetNuovoIndirizzo(): void {
     this.nuovoIndirizzo = {
-      nome: '',
+      destinatario: '',
       indirizzo: '',
       citta: '',
+      paese: '',
       cap: '',
       provincia: '',
       telefono: ''
     };
   }
 
-  private getIndirizzoCompleto(): string {
-    if (this.indirizzoSelezionato) {
-      const indirizzo = this.indirizzi.find(i => i.id === this.indirizzoSelezionato);
-      if (indirizzo) {
-        return `${indirizzo.indirizzo}, ${indirizzo.citta} ${indirizzo.cap}, ${indirizzo.provincia}`;
-      }
-    } else if (this.validaNuovoIndirizzo()) {
-      return `${this.nuovoIndirizzo.indirizzo}, ${this.nuovoIndirizzo.citta} ${this.nuovoIndirizzo.cap}, ${this.nuovoIndirizzo.provincia}`;
-    }
-    return '';
+private getIndirizzoCompleto(): string {
+  if (this.indirizzoSelezionato) {
+    return `${this.indirizzoSelezionato.destinatario}, ${this.indirizzoSelezionato.indirizzo}, ${this.indirizzoSelezionato.citta} ${this.indirizzoSelezionato.cap}, ${this.indirizzoSelezionato.provincia}`;
+  } else if (this.validaNuovoIndirizzo()) {
+    return `${this.nuovoIndirizzo.destinatario}, ${this.nuovoIndirizzo.indirizzo}, ${this.nuovoIndirizzo.citta} ${this.nuovoIndirizzo.cap}, ${this.nuovoIndirizzo.provincia}`;
   }
+  return '';
+}
 
   validaForm(): boolean {
     if (!this.haIndirizzoSelezionato()) {

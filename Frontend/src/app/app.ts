@@ -2,16 +2,17 @@ import { Component, signal } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { Header } from './header/header';
+import { HeaderSemplificato } from './header-semplificato/header-semplificato';
 import { Footer } from './footer/footer';
-import { HeaderSemplificato } from "./header-semplificato/header-semplificato";
 
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Header, Footer, HeaderSemplificato],
+  standalone: true,
+  imports: [RouterOutlet, Footer, HeaderSemplificato],
 
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrls: ['./app.css']
 })
 export class App {
   protected readonly title = signal('project');

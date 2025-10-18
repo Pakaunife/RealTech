@@ -5,7 +5,7 @@
     </div>
     
     <a class="logo" routerLink="/home">
-      <img src="/assets/LOGO_TECH3.png" alt="Logo Real Tech" class="cinema-logo" /> Real Tech
+  <img src="/assets/LOGO_TECH3.png" alt="Logo Real Tech" class="realtech-logo" /> Real Tech
     </a>
     
     <div class="nav-items">
@@ -29,7 +29,6 @@
       <li><a routerLink="/catalogo" (click)="pulisciParametriCatalogo()">Catalogo</a></li>
       <li><a routerLink="/carrello">Carrello</a></li>
       <li *ngIf="user && (user.ruolo === 'admin' || user.ruolo === 'owner')"><a routerLink="/admin">Area Admin</a></li>
-      <li><a href="#">Feedback</a></li>
     </div>
 
     <!-- Icona di ricerca in alto a destra -->

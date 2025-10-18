@@ -1,0 +1,27 @@
+<div *ngIf="caricamento" class="tracking-non-disponibile">
+  Caricamento dati ordine...
+</div>
+
+<div *ngIf="trackingNonDisponibile && !caricamento" class="tracking-non-disponibile">
+  Tracking non disponibile
+</div>
+
+<div class="tracking-container" *ngIf="ordine && !trackingNonDisponibile && !caricamento">
+  <h2>Tracking Ordine #{{ ordine.id_ordine }}</h2>
+  <div class="tracking-info">
+    <p><strong>Stato:</strong> {{ statoOrdine }}</p>
+    <p><strong>Corriere:</strong> {{ ordine.corriere }}</p>
+    <p><strong>Codice spedizione:</strong> {{ ordine.codice_spedizione }}</p>
+    <p><strong>Indirizzo spedizione:</strong> {{ ordine.indirizzo_spedizione }}</p>
+   <p><strong>Dettagli pacco:</strong><br><span [innerHTML]="getDettagliPaccoHtml()"></span></p>
+    <p><strong>Ultimo aggiornamento:</strong> {{ ordine.data_aggiornamento | date:'dd/MM/yyyy HH:mm:ss' }}</p>
+  </div>
+  <div class="tracking-progress">
+    <div class="progress-bar">
+      <div class="progress-bar-fill" [style.width.%]="progresso"></div>
+    </div>
+    <div class="progress-labels">
+      <span *ngFor="let stato of statiPossibili" [class.attivo]="stato === statoOrdine">{{ stato }}</span>
+    </div>
+  </div>
+</div>

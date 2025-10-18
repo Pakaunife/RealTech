@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { OrderService } from '../../services/order.service';
-import { DatePipe, NgIf, NgFor, LowerCasePipe, DecimalPipe } from '@angular/common';
-import { Router } from '@angular/router';
+import { DatePipe, NgIf, NgFor, LowerCasePipe, DecimalPipe, CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-dettagli-ordine',
+  standalone: true,
+  imports: [CommonModule, NgIf, NgFor, DatePipe, LowerCasePipe, DecimalPipe, RouterModule],
   templateUrl: './dettagli-ordine.html',
-  styleUrls: ['./dettagli-ordine.css'],
-  imports: [NgIf, NgFor, DatePipe, LowerCasePipe, DecimalPipe] // <-- aggiunto TitleCasePipe
+  styleUrls: ['./dettagli-ordine.css']
 })
 export class DettagliOrdine implements OnInit {
   ordine: any = null;
@@ -124,6 +125,11 @@ export class DettagliOrdine implements OnInit {
   
   return risultato;
 }
+
+vaiAlTrackingOrdine() {
+  this.router.navigate(['/tracking-ordine', this.ordine.id]);
+}
+
 
 tornaAListaOrdini() {
   this.router.navigate(['/ordini']); 

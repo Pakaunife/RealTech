@@ -4,9 +4,10 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-header-minimal',
+  standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './header-minimal.html',
-  styleUrl: './header-minimal.css'
+  styleUrls: ['./header-minimal.css']
 })
 export class HeaderMinimal {
 
