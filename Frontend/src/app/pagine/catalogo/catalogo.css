@@ -136,20 +136,39 @@
   color: #ff3d00;
 }
 
+
 .filtro-marca select {
-  /* Stile select simile all'immagine */
-  padding: 10px 12px;
+  /* Stile select coerente (precedentemente inline) */
+  padding: 10px;
+  background: #ff3d00;
+  color: #fff;
+  border: none;
   border-radius: 6px;
-  font-family: Arial, sans-serif; /* Font coerente con il resto */
-  font-size: 1.2rem; /* Font più grande anche per il select */
-  font-weight: 600; /* Peso leggermente aumentato */
-  min-width: 160px; /* Larghezza leggermente aumentata */
-  color: #f35b03; /* Colore testo bianco */
-  /* Transizioni */
- 
+  font-family: Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  min-width: 160px;
+}
+
+.back-card {
+  margin-bottom: 30px; /* spostato da inline */
+}
+
+.filtro-marca {
+  margin-bottom: 20px; /* mantenuto come prima */
+  text-align: center;
 }
 
 .filtro-marca label {
+  color: white;  
+  margin-right: 10px;
+}
+
+.prezzo {
+  font-weight: bold;
+}
+
+.filtro-marca label { /* Esempio: <label for="marca">Filtra per marca:</label> */
   font-family: Arial, sans-serif;
   font-size: 1.2rem; /* Dimensione più grande per la scritta */
   font-weight: 600;

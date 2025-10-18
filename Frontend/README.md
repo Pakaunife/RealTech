@@ -178,43 +178,38 @@ router.get('/search/suggestions', async (req, res) => {
 
 ---
 
-## �🔥 **Aggiornamenti 9 Ottobre 2025 - Sistema Prodotti Più Visualizzati**
+## �🔥 **Aggiornamenti 9 Ottobre 2025 - Top prodotti acquistati**
 
-### 🏠 **Homepage - Prodotti Trending**
-- **Query Database**: Nuova API `/api/catalogo/popular` per prodotti più visualizzati
-- **Servizio Catalogo**: Creato `CatalogoService` per gestire endpoint catalogo
-- **UI Dinamica**: Homepage mostra i primi 3 prodotti più visti dal database
+### 🏠 **Homepage - Top Acquisti**
+- **Query Database**: L'API `/api/catalogo/popular` ora restituisce i prodotti più acquistati (top N), non i più visualizzati
+- **Servizio Catalogo**: `CatalogoService.getProdottiPopular(limit)` continua a gestire l'endpoint
+- **UI Dinamica**: Homepage mostra i primi 3 prodotti più acquistati (default)
 - **Fallback**: Sistema di prodotti fittizi in caso di errore DB
-- **CSS Ottimizzato**: Immagini ridimensionate (220px altezza) con `object-fit: contain`
+- **CSS**: nessuna modifica richiesta rispetto alla visualizzazione precedente
 
 ### 🎯 **Navigazione Prodotti**
 - **Click-to-Detail**: Prodotti homepage cliccabili per dettaglio
 - **URL Parametrizzato**: Navigazione via `?prodottoId=X` per link diretti
-- **UX Intelligente**: 
-  - Da home → Dettaglio pulito (no pulsante "Torna ai Prodotti")
-  - Da catalogo → Dettaglio completo (con navigazione standard)
 
-### 🔧 **Backend API Enhancement**
+### 🔧 **Backend - Query semplificata per prodotti più acquistati**
 ```sql
--- Nuova query prodotti più visualizzati
-SELECT p.*, c.nome AS categoria, m.nome AS marchio, 
-       COUNT(v.id) as total_views
-FROM prodotto p
-LEFT JOIN visualizzazioni v ON p.id_prodotto = v.prodotto_id
-GROUP BY p.id_prodotto
-ORDER BY total_views DESC NULLS LAST
-LIMIT 3
+-- Top N prodotti più acquistati (somma delle quantità in `acquisti`)
+SELECT p.*, c.nome AS categoria, m.nome AS marchio, a.total_purchased
+FROM (
+  SELECT id_prodotto, SUM(quantita) AS total_purchased
+  FROM acquisti
+  GROUP BY id_prodotto
+  ORDER BY total_purchased DESC
+  LIMIT 3
+) a
+JOIN prodotto p ON p.id_prodotto = a.id_prodotto
+LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
+LEFT JOIN marchio m ON p.id_marchio = m.id_marchio;
 ```
 
-### 🖼️ **Sistema Immagini Migliorato**
+### 🖼️ **Sistema Immagini**
 - **URL Dinamici**: `http://localhost:3000/api/images/prodotti/{immagine}`
 - **Fallback Automatico**: Immagine default se prodotto senza foto
-- **Costruzione Automatica**: URL immagini generati server-side
-
-### 🎨 **UX Dettaglio Prodotto**
-- **Modalità Pulita**: Da home nasconde elementi ridondanti
-- **Informazioni Smart**: Disponibilità e titolo secondario nascosti quando appropriato
-- **Marchio Corretto**: Risolto problema "Non specificato" usando endpoint catalogo
 
 ---
 

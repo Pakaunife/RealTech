@@ -29,7 +29,6 @@
       <li><a routerLink="/catalogo" (click)="pulisciParametriCatalogo()">Catalogo</a></li>
       <li><a routerLink="/carrello">Carrello</a></li>
       <li *ngIf="user && (user.ruolo === 'admin' || user.ruolo === 'owner')"><a routerLink="/admin">Area Admin</a></li>
-      <li><a href="#">Feedback</a></li>
     </div>
 
     <!-- Icona di ricerca in alto a destra -->
