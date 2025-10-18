@@ -62,32 +62,21 @@ router.get('/popular', async (req, res) => {
     // default a 3 prodotti come richiesto
     const { limit = 3 } = req.query;
 
-    // Aggrega gli acquisti per prodotto (somma delle quantità) e ordina per quantità totale
+    // Semplice: prendi i product_id più acquistati (somma delle quantità) e uniscili ai dettagli prodotto
     const result = await pool.query(`
-      SELECT 
-        p.id_prodotto,
-        p.nome,
-        p.prezzo,
-        p.descrizione,
-        p.immagine,
-        p.quantita_disponibile,
-        m.nome AS marchio,
-        c.nome AS categoria,
-        COALESCE(a.total_purchased, 0) as total_purchased
-      FROM prodotto p
-      LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
-      LEFT JOIN marchio m ON p.id_marchio = m.id_marchio
-      LEFT JOIN (
-        SELECT 
-          id_prodotto as prodotto_id,
-          SUM(quantita) as total_purchased
+      SELECT p.id_prodotto, p.nome, p.prezzo, p.descrizione, p.immagine, p.quantita_disponibile, m.nome AS marchio, c.nome AS categoria, COALESCE(a.total_purchased, 0) as total_purchased
+      FROM (
+        SELECT id_prodotto, SUM(quantita) AS total_purchased
         FROM acquisti
         GROUP BY id_prodotto
-      ) a ON p.id_prodotto = a.prodotto_id
-      WHERE p.quantita_disponibile > 0
-      AND p.bloccato = false
-      ORDER BY total_purchased DESC NULLS LAST, p.nome
-      LIMIT $1
+        ORDER BY total_purchased DESC
+        LIMIT $1
+      ) a
+      JOIN prodotto p ON p.id_prodotto = a.id_prodotto
+      LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
+      LEFT JOIN marchio m ON p.id_marchio = m.id_marchio
+      WHERE p.quantita_disponibile > 0 AND p.bloccato = false
+      ORDER BY a.total_purchased DESC, p.nome
     `, [limit]);
 
     const prodottiPopular = result.rows.map(prodotto => ({
