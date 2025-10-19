@@ -13,7 +13,8 @@
     <img [src]="item.immagine_url || 'http://localhost:3000/api/images/prodotti/default.jpg'" [alt]="item.nome" width="100">
     <div class="item-details">
       <h4 class="carrello-text">{{ item.nome }}</h4>
-      <p class="carrello-text">Prezzo: €{{ item.prezzo }}</p>
+      <!-- per prezzo in caso promo fosse true -->
+        <p class="carrello-text">Prezzo: €{{ item.prezzo_scontato != null ? item.prezzo_scontato : item.prezzo }}</p>
       <div class="quantity-control">
         <label class="carrello-label">Quantità: </label>
         <input type="number"
@@ -21,7 +22,7 @@
                min="1"
                (change)="aggiornaQuantitaItem(item, $event)">
       </div>
-      <p class="carrello-text"><strong>Subtotale: €{{ item.prezzo * item.quantita }}</strong></p>
+  <!-- Subtotale rimosso per evitare duplicati; mostriamo solo il prezzo unitario -->
       <button (click)="rimuoviItem(item)" class="btn-remove">
         Rimuovi
       </button>

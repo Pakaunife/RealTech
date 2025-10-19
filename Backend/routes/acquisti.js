@@ -11,6 +11,8 @@ function mascheraNumeroCarta(numeroCompleto) {
 }
 
 // Processa acquisto dal carrello
+//Il frontend invia tutti i dati dell’ordine (utente, prodotti, pagamento, indirizzo, ecc.) tramite una richiesta POST a /checkout.
+//Il backend riceve questi dati, verifica il carrello, controlla la disponibilità dei prodotti, applica eventuali sconti/coupon, registra l’ordine e svuota il carrello.
 router.post('/checkout', async (req, res) => {
   console.log('Dati ricevuti:', req.body); // Per debug
     const { 
@@ -18,14 +20,13 @@ router.post('/checkout', async (req, res) => {
     metodo_pagamento, 
     nome_intestatario, 
     numero_carta,
-    scadenza,
-    cvv,
+    scadenza, //non mettiamoli nel database perchè sensibili
+    cvv, //non mettiamoli nel database perchè sensibili
     totale,
     totale_originale,  
     sconto_applicato,  
     coupon_applicato,
     indirizzo_consegna
-    
   } = req.body;
   
   if (!id_utente) {

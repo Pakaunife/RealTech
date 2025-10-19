@@ -5,12 +5,17 @@ const router = express.Router();
 const path = require('path');
 const fs = require('fs');
 
+// Ensure prezzo_scontato column exists so we can store discounted prices separately from the original price
+pool.query('ALTER TABLE prodotto ADD COLUMN IF NOT EXISTS prezzo_scontato numeric;').catch(err => {
+  console.error('Could not ensure prezzo_scontato column exists:', err.message || err);
+});
+
 // Imposta prodotto in vetrina o promo
 router.put('/:id/vetrina', authenticateToken, async (req, res) => {
   const { in_vetrina, promo } = req.body;
   try {
     const result = await pool.query(
-      'UPDATE prodotti SET in_vetrina = $1, promo = $2 WHERE id = $3 RETURNING *',
+      'UPDATE prodotto SET in_vetrina = $1, promo = $2 WHERE id_prodotto = $3 RETURNING *',
       [in_vetrina, promo, req.params.id]
     );
     res.json(result.rows[0]);
@@ -22,7 +27,7 @@ router.put('/:id/vetrina', authenticateToken, async (req, res) => {
 // Ottieni prodotti in vetrina
 router.get('/vetrina', async (_req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM prodotti WHERE in_vetrina = TRUE');
+    const result = await pool.query('SELECT * FROM prodotto WHERE in_vetrina = TRUE');
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -32,7 +37,7 @@ router.get('/vetrina', async (_req, res) => {
 // Ottieni prodotti in promo
 router.get('/promo', async (_req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM prodotti WHERE promo = TRUE');
+    const result = await pool.query('SELECT * FROM prodotto WHERE promo = TRUE');
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -64,13 +69,25 @@ router.post('/:id/view', authenticateToken, async (req, res) => {
 router.post('/insert', authenticateToken, async (req, res) => {
   try
   {
+    // Insert: prezzo is the original price; prezzo_scontato stores a discounted price (nullable)
+    const prezzoOriginal = Number(req.body.prezzo);
+    let prezzoScontatoForInsert = null;
+    if (req.body.promo) {
+      if (req.body.prezzo_scontato != null) {
+        prezzoScontatoForInsert = Number(req.body.prezzo_scontato);
+      } else if (req.body.sconto != null) {
+        const raw = prezzoOriginal * (1 - Number(req.body.sconto) / 100);
+        prezzoScontatoForInsert = Math.round((raw + Number.EPSILON) * 100) / 100;
+      }
+    }
     await pool.query(
-      `INSERT INTO prodotto (nome, descrizione, prezzo, quantita_disponibile, id_categoria, id_marchio, immagine, in_vetrina, promo, bloccato) 
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+      `INSERT INTO prodotto (nome, descrizione, prezzo, prezzo_scontato, quantita_disponibile, id_categoria, id_marchio, immagine, in_vetrina, promo, bloccato) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
       [
         req.body.nome,
         req.body.descrizione,
-        req.body.prezzo,
+        prezzoOriginal,
+        prezzoScontatoForInsert,
         req.body.quantita_disponibile,
         req.body.id_categoria,
         req.body.id_marchio,
@@ -88,23 +105,56 @@ router.post('/insert', authenticateToken, async (req, res) => {
 
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
+  console.log('PUT /products/' + req.params.id + ' body:', req.body);
+  // fetch existing product to determine prezzo (original) and prezzo_scontato
+  const existingRes = await pool.query('SELECT * FROM prodotto WHERE id_prodotto = $1', [req.params.id]);
+    if (existingRes.rowCount === 0) {
+      return res.status(404).json({ message: 'Prodotto non trovato' });
+    }
+    const existing = existingRes.rows[0];
+
+    // For this schema we keep `prezzo` as the original price and `prezzo_scontato` as an optional discounted price.
+    // Determine the base original price (prefer body.prezzo if provided, otherwise existing.prezzo)
+    const baseOriginalPrice = req.body.prezzo != null ? Number(req.body.prezzo) : Number(existing.prezzo);
+
+    let prezzoScontatoToPersist = existing.prezzo_scontato != null ? Number(existing.prezzo_scontato) : null;
+
+    if (req.body.promo) {
+      // If admin provided prezzo_scontato explicitly, use it.
+      if (req.body.prezzo_scontato != null) {
+        prezzoScontatoToPersist = Number(req.body.prezzo_scontato);
+      } else if (req.body.sconto != null) {
+        // Always compute sconto from the original price (baseOriginalPrice) to avoid compounding discounts
+        const raw = baseOriginalPrice * (1 - Number(req.body.sconto) / 100);
+        prezzoScontatoToPersist = Math.round((raw + Number.EPSILON) * 100) / 100;
+      } else {
+        // promo true but no sconto provided: keep existing prezzo_scontato if any, otherwise null
+        prezzoScontatoToPersist = prezzoScontatoToPersist;
+      }
+    } else {
+      // promo removed: clear prezzo_scontato
+      prezzoScontatoToPersist = null;
+    }
+
     const result = await pool.query(
       `UPDATE prodotto
        SET nome = $1,
            prezzo = $2,
-           descrizione = $3,
-           immagine = $4,
-           quantita_disponibile = $5,
-           id_categoria = $6,
-           id_marchio = $7,
-           in_vetrina = $8,
-           promo = $9,
-           bloccato = $10
-       WHERE id_prodotto = $11
+           prezzo_scontato = $3,
+           descrizione = $4,
+           immagine = $5,
+           quantita_disponibile = $6,
+           id_categoria = $7,
+           id_marchio = $8,
+           in_vetrina = $9,
+           promo = $10,
+           bloccato = $11
+       WHERE id_prodotto = $12
        RETURNING *`,
       [
         req.body.nome,
-        req.body.prezzo,
+        baseOriginalPrice,
+        prezzoScontatoToPersist,
         req.body.descrizione,
         req.body.immagine,
         req.body.quantita_disponibile,

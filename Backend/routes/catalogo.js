@@ -5,19 +5,21 @@ const pool = require('../connection/DBconnect');
 const router = express.Router();
 // ...existing code...
 
-// Ricerca prodotti per nome, marchio o categoria (dopo l'inizializzazione di router)
+// Ricerca prodotti per nome, marchio o categoria
 router.get('/prodotti/ricerca', async (req, res) => {
   try {
-    const { q } = req.query;
-    if (!q || q.trim().length < 2) {
+    const { q } = req.query; // es. asus 
+    if (!q || q.trim().length < 2) { //controlla se esiste e ha almeno 2 caratteri
       return res.json([]);
     }
-    const searchTerm = `%${q.trim().toLowerCase()}%`;
+    //usiamo searchTerm, rende la ricerca flessibile e permette di trovare risultati anche se la stringa cercata è solo una parte del nome.
+    const searchTerm = `%${q.trim().toLowerCase()}%`; //Prende la stringa cercata dall’utente (q), la trasforma in minuscolo e toglie gli spazi all’inizio/fine. Aggiunge i simboli % prima e dopo: questo serve per la ricerca "LIKE" in SQL, cioè trova tutti i valori che contengono la stringa cercata, non solo quelli che la iniziano o finiscono.
     const result = await pool.query(`
-      SELECT 
-        p.id_prodotto, 
-        p.nome, 
-        p.prezzo,
+  SELECT 
+    p.id_prodotto, 
+    p.nome, 
+  CASE WHEN p.promo = TRUE AND p.prezzo_scontato IS NOT NULL THEN p.prezzo_scontato ELSE p.prezzo END AS prezzo,
+  p.prezzo_scontato,
         p.descrizione,
         p.immagine,
         p.quantita_disponibile,
@@ -32,7 +34,7 @@ router.get('/prodotti/ricerca', async (req, res) => {
       ORDER BY p.nome
     `, [searchTerm]);
     const prodotti = result.rows.map(prodotto => ({
-      ...prodotto,
+      ...prodotto, // serve per creare un nuovo oggetto che contiene tutte le proprietà di prodotto, più eventuali proprietà aggiuntive o modificate.
       immagine_url: prodotto.immagine ? `http://localhost:3000/api/images/prodotti/${prodotto.immagine}` : 'http://localhost:3000/api/images/prodotti/default.jpg'
     }));
     res.json(prodotti);
@@ -67,10 +69,11 @@ router.get('/prodotti/categoria/:nome', async (req, res) => {   //Riceve il nome
   try {
     const nomeCategoria = req.params.nome;
     const result = await pool.query(`
-      SELECT 
-        p.id_prodotto, 
-        p.nome, 
-        p.prezzo,
+  SELECT 
+    p.id_prodotto, 
+    p.nome, 
+  CASE WHEN p.promo = TRUE AND p.prezzo_scontato IS NOT NULL THEN p.prezzo_scontato ELSE p.prezzo END AS prezzo,
+  p.prezzo_scontato,
         p.descrizione,
         p.immagine,
         p.quantita_disponibile,
@@ -99,10 +102,11 @@ router.get('/popular', async (req, res) => {
   try {
     // prende i prodotti più acquistati (somma delle quantità)
     const result = await pool.query(`
-      SELECT 
-        p.id_prodotto, 
-        p.nome, 
-        p.prezzo, 
+  SELECT 
+    p.id_prodotto, 
+    p.nome, 
+  CASE WHEN p.promo = TRUE AND p.prezzo_scontato IS NOT NULL THEN p.prezzo_scontato ELSE p.prezzo END AS prezzo,
+  p.prezzo_scontato,
         p.descrizione, 
         p.immagine, 
         p.quantita_disponibile,
@@ -152,10 +156,11 @@ router.get('/search/suggestions', async (req, res) => {
     const searchTerm = `%${q.trim().toLowerCase()}%`;
     
     const result = await pool.query(`
-      SELECT 
-        p.id_prodotto, 
-        p.nome, 
-        p.prezzo,
+  SELECT 
+    p.id_prodotto, 
+    p.nome, 
+  CASE WHEN p.promo = TRUE AND p.prezzo_scontato IS NOT NULL THEN p.prezzo_scontato ELSE p.prezzo END AS prezzo,
+  p.prezzo_scontato,
         p.immagine,
         m.nome AS marchio,
         c.nome AS categoria
@@ -223,7 +228,7 @@ router.get('/prodotti/ricerca', async (req, res) => {
     res.status(500).json({ error: 'Errore DB' });
   }
 });
-// Endpoint per ottenere un singolo prodotto tramite id, usato per aprire il dettaglio prodotto
+// Endpoint per ottenere un singolo prodotto tramite id, usato per aprire il dettaglio prodotto. parte di prodotti piu acquistati
 router.get('/prodotto/:id', async (req, res) => {
   try {
     const id = req.params.id;
@@ -231,7 +236,8 @@ router.get('/prodotto/:id', async (req, res) => {
       SELECT 
         p.id_prodotto,
         p.nome,
-        p.prezzo,
+        CASE WHEN p.promo = TRUE AND p.prezzo_scontato IS NOT NULL THEN p.prezzo_scontato ELSE p.prezzo END AS prezzo,
+        p.prezzo_scontato,
         p.descrizione,
         p.immagine,
         p.quantita_disponibile,

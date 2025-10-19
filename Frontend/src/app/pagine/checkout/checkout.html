@@ -14,8 +14,9 @@
         <div>
           <h4>{{ prodotto.nome }}</h4>
           <p>Quantità: {{ prodotto.quantita }}</p>
-          <p>Prezzo: {{ prodotto.prezzo }}€</p>
-          <p><strong>Subtotale: {{ prodotto.prezzo * prodotto.quantita }}€</strong></p>
+          <!-- per prezzo in caso promo fosse true -->
+            <p>Prezzo: {{ (prodotto.prezzo_scontato != null ? prodotto.prezzo_scontato : prodotto.prezzo) }}€</p>
+            <p><strong>Subtotale: {{ (prodotto.prezzo_scontato != null ? prodotto.prezzo_scontato : prodotto.prezzo) * prodotto.quantita }}€</strong></p>
         </div>
       </div>
     </div>

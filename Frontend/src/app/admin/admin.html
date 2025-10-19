@@ -338,6 +338,15 @@
         <input type="checkbox" [(ngModel)]="prodottoForm.promo" name="promo">
         Promo
       </label>
+      <div *ngIf="prodottoForm.promo" class="promo-sconto">
+        <label for="sconto">Sconto %</label>
+        <select id="sconto" [(ngModel)]="prodottoForm.sconto" name="sconto">
+          <option [ngValue]="10">10%</option>
+          <option [ngValue]="20">20%</option>
+          <option [ngValue]="30">30%</option>
+          <option [ngValue]="50">50%</option>
+        </select>
+      </div>
       <label>
         <input type="checkbox" [(ngModel)]="prodottoForm.bloccato" name="bloccato">
         Bloccato

@@ -56,7 +56,8 @@ export class DettagliOrdine implements OnInit {
   private calcolaRiepilogo() {
     // Calcola il subtotale dai prodotti
     this.subtotale = this.prodotti.reduce((total, prodotto) => {
-      const prezzoUnitario = prodotto.prezzo || prodotto.prezzo_unitario || 0;
+      // per prezzo in caso promo fosse true 
+      const prezzoUnitario = prodotto.prezzo_scontato != null ? Number(prodotto.prezzo_scontato) : (prodotto.prezzo || prodotto.prezzo_unitario || 0);
       const quantita = prodotto.quantita || 1;
       return total + (prezzoUnitario * quantita);
     }, 0);
@@ -81,7 +82,7 @@ export class DettagliOrdine implements OnInit {
   
   // Metodo helper per ottenere il prezzo unitario
   getPrezzoUnitario(prodotto: any): number {
-    return prodotto.prezzo || prodotto.prezzo_unitario || 0;
+    return prodotto.prezzo_scontato != null ? Number(prodotto.prezzo_scontato) : (prodotto.prezzo || prodotto.prezzo_unitario || 0);
   }
   
   // Metodo helper per calcolare il subtotale di un prodotto

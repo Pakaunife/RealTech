@@ -135,6 +135,7 @@ apriFormProdotto() {
     id_marchio: '',
     in_vetrina: false,
     promo: false,
+    sconto: 10,
     bloccato: false
   };
   this.mostraFormProdotto = true;
@@ -342,6 +343,20 @@ loadBrand() {
 
 modificaProdotto(prodotto: any) {
   this.prodottoForm = { ...prodotto, id: prodotto.id_prodotto };
+  //salva percetuale usata precedentemente nel menu a tendina
+  // se non c'è uno sconto esplicito, prova a derivarlo da prezzo/prezzo_scontato, altrimenti usa 10
+  if (this.prodottoForm.sconto == null) {
+    const p = Number(this.prodottoForm.prezzo);
+    const ps = Number(this.prodottoForm.prezzo_scontato);
+    if (!isNaN(p) && p > 0 && !isNaN(ps)) {
+      const derived = Math.round((1 - ps / p) * 100);
+      this.prodottoForm.sconto = [10, 20, 30, 50].includes(derived) ? derived : 10;
+    } else {
+      this.prodottoForm.sconto = 10;
+    }
+  }
+  // assicurati che il prezzo sia un numero
+  if (this.prodottoForm.prezzo != null) this.prodottoForm.prezzo = Number(this.prodottoForm.prezzo);
   this.mostraFormProdotto = true;
   setTimeout(() => {
     const el = document.getElementById('form-prodotto');
@@ -414,11 +429,20 @@ salvaProdotto() {
   }
 }
 
-
-
-
-
 inviaProdotto() {
+
+  // Se promo attiva, calcola il prezzo scontato da inviare al backend
+  if (this.prodottoForm.promo && this.prodottoForm.prezzo != null) {
+    const percent = this.prodottoForm.sconto || 0;
+    const prezzoOriginale = Number(this.prodottoForm.prezzo);
+    const prezzoScontato = Math.round((prezzoOriginale * (1 - percent / 100)) * 100) / 100;
+    // Aggiungi campi utili al backend
+    this.prodottoForm.prezzo_scontato = prezzoScontato;
+    this.prodottoForm.sconto = percent;
+  } else {
+    this.prodottoForm.prezzo_scontato = null;
+  }
+
 
   if (this.prodottoForm.id) {
     // MODIFICA
