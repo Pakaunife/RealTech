@@ -55,11 +55,11 @@
           </div>
           <div class="riepilogo-item">
             <span class="riepilogo-label">Totale Speso:</span>
-            <span class="riepilogo-valore stat-totale">€ {{ calcolaTotaleSpeso() | number:'1.2-2' }}</span>
+            <span class="riepilogo-valore stat-totale"> {{ calcolaTotaleSpeso() | number:'1.2-2' }} €</span>
           </div>
           <div class="riepilogo-item">
             <span class="riepilogo-label">Ordine Medio:</span>
-            <span class="riepilogo-valore">€ {{ calcolaOrdineMedio() | number:'1.2-2' }}</span>
+            <span class="riepilogo-valore"> {{ calcolaOrdineMedio() | number:'1.2-2' }} €</span>
           </div>
           <div class="riepilogo-item">
             <span class="riepilogo-label">Ultimo Ordine:</span>
@@ -421,7 +421,7 @@
   </span>
 </div>
   </div>
-
+</section>
 
 <div *ngIf="mostraConfermaRimozione" class="modal-overlay" (click)="annullaRimozione()">
   <div class="modal-content modal-conferma" (click)="$event.stopPropagation()">
@@ -451,4 +451,11 @@
       </button>
     </div>
   </div>
+</div>
+<section>
+  <div class="admin-table-container">
+  <h3> Gestione Coupon</h3>
+    <button class="btn-gestione" >
+    Aggiungi Coupon
+  </button>
 </div>

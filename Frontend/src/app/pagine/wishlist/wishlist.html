@@ -1,17 +1,40 @@
-<section class="wishlist-section">
-  <h2>La mia Wishlist</h2>
-  <div *ngIf="loading">Caricamento...</div>
-  <div *ngIf="!loading && wishlist.length === 0" class="empty-state">
-    <p>La tua wishlist è vuota</p>
+
+
+  <div class="wishlist-list">
+    <div *ngIf="wishlist.length === 0" class="wishlist-empty">
+    Nessun prodotto nella wishlist
   </div>
-  <div class="wishlist-grid">
-    <div *ngFor="let prodotto of wishlist" class="wishlist-card">
-      <img [src]="prodotto.immagine" [alt]="prodotto.nome">
-      <h4>{{ prodotto.nome }}</h4>
-      <p class="prezzo">{{ prodotto.prezzo | currency:'EUR' }}</p>
-      <button (click)="remove(prodotto.id)" class="btn-rimuovi">
-        Rimuovi
+  <div *ngFor="let prodotto of wishlist" class="wishlist-row">
+    <div class="wishlist-img">
+      <img [src]="'http://localhost:3000/uploads/prodotti/' + prodotto.immagine" alt="{{ prodotto.nome }}" (click)= "mostraProdotto(prodotto.id)">
+    </div>
+    
+    <div class="wishlist-info">
+      <div (click)="mostraProdotto(prodotto.id)" style ="cursor: pointer;"><strong>{{ prodotto.nome }}</strong></div>
+      <div><strong>Marchio:</strong> {{ prodotto.marchio }}</div>
+      <div><strong>Categoria:</strong> {{ prodotto.categoria }}</div>
+      <div><strong>Quantità disponibile:</strong> {{ prodotto.quantita_disponibile }}</div>
+      <div class="wishlist-articolo"><strong>ID:</strong> {{ prodotto.id }}</div>
+      <button class="wishlist-remove" (click)="remove(prodotto.id)">
+        <img  src="assets/trash1.svg" alt="Rimuovi" class="icon-trash">Rimuovi
       </button>
     </div>
+    
+    <div class="wishlist-prezzi">
+      <div class="wishlist-prezzo">
+         {{ prodotto.prezzo | number:'1.2-2' }} €
+      </div>
+      
+      <button *ngIf="prodotto.quantita_disponibile > 0" class="wishlist-add-cart" (click)="aggiungiAlCarrello(prodotto.id)">
+        AGGIUNGI AL CARRELLO 
+      </button>
+      <button *ngIf="prodotto.quantita_disponibile == 0" class="wishlist-non-disponibile">
+        Prodotto non disponibile
+      </button>
+      
+    </div>
+    
   </div>
-</section>
+</div>
+  
+

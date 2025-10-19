@@ -61,13 +61,16 @@
                class="prodotto-immagine">
           <h3>{{ prodotto.nome }}</h3>
           <p>{{ prodotto.marchio || 'Marchio non specificato' }}</p>
-          <p class="prezzo">€{{ prodotto.prezzo }}</p>
+          <p class="prezzo">{{ prodotto.prezzo }}€</p>
           <p>Disponibili: {{ prodotto.quantita_disponibile }}</p>
         </div>
         <!-- PULSANTE CARRELLO -->
         <button (click)="aggiungiAlCarrello(prodotto)" 
                 [disabled]="prodotto.quantita_disponibile <= 0">
           {{ prodotto.quantita_disponibile > 0 ? 'Aggiungi al carrello' : 'Non disponibile' }}
+        </button>
+        <button class="wishlist-btn" (click)="aggiungiAWishlist(prodotto)">
+        <span class="cuore">&#10084;</span>
         </button>
       </div>
     </div>
