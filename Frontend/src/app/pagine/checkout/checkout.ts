@@ -76,7 +76,8 @@ export class Checkout implements OnInit {
       }
       
       this.totaleOriginale = carrello.reduce((total, prodotto) => {
-        return total + (prodotto.prezzo * prodotto.quantita);
+        const unit = prodotto.prezzo_scontato != null ? prodotto.prezzo_scontato : prodotto.prezzo;
+        return total + (unit * prodotto.quantita);
       }, 0);
       
       if (!this.couponApplicato) {

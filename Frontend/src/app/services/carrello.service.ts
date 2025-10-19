@@ -130,7 +130,11 @@ export class CarrelloService {
 
   calcolaTotale(): Observable<number> {
     return this.carrello$.pipe(
-      map(carrello => carrello.reduce((total, item) => total + (item.prezzo * item.quantita), 0))
+      // per prezzo in caso promo fosse true
+      map(carrello => carrello.reduce((total, item) => {
+        const unit = item.prezzo_scontato != null ? item.prezzo_scontato : item.prezzo;
+        return total + (unit * item.quantita);
+      }, 0))
     );
   }
 

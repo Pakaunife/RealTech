@@ -8,7 +8,8 @@
     <div *ngFor="let prodotto of wishlist" class="wishlist-card">
       <img [src]="prodotto.immagine" [alt]="prodotto.nome">
       <h4>{{ prodotto.nome }}</h4>
-      <p class="prezzo">{{ prodotto.prezzo | currency:'EUR' }}</p>
+      <!-- per prezzo in caso promo fosse true -->
+  <p class="prezzo">{{ (prodotto.prezzo_scontato != null ? prodotto.prezzo_scontato : prodotto.prezzo) | currency:'EUR' }}</p>
       <button (click)="remove(prodotto.id)" class="btn-rimuovi">
         Rimuovi
       </button>

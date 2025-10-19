@@ -61,7 +61,8 @@
                class="prodotto-immagine">
           <h3>{{ prodotto.nome }}</h3>
           <p>{{ prodotto.marchio || 'Marchio non specificato' }}</p>
-          <p class="prezzo">€{{ prodotto.prezzo }}</p>
+          <!-- per prezzo in caso promo fosse true -->
+           <p class="prezzo">€{{ prodotto.prezzo_scontato != null ? prodotto.prezzo_scontato : prodotto.prezzo }}</p>
           <p>Disponibili: {{ prodotto.quantita_disponibile }}</p>
         </div>
         <!-- PULSANTE CARRELLO -->
