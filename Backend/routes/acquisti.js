@@ -5,14 +5,14 @@ const pool = require('../connection/DBconnect');
 // Funzione per mascherare il numero carta
 function mascheraNumeroCarta(numeroCompleto) {
   if (!numeroCompleto) return null;
-  const numero = numeroCompleto.replace(/\s/g, ''); // Rimuovi spazi
+  const numero = numeroCompleto.replace(/\s/g, ''); 
   if (numero.length < 4) return '****';
   return '**** **** **** ' + numero.slice(-4);
 }
 
 // Processa acquisto dal carrello
 router.post('/checkout', async (req, res) => {
-  console.log('Dati ricevuti:', req.body); // Per debug
+  console.log('Dati ricevuti:', req.body); 
   
     const { 
     id_utente, 
@@ -22,8 +22,8 @@ router.post('/checkout', async (req, res) => {
     scadenza,
     cvv,
     totale,
-    totale_originale,  // <-- aggiungi questo
-    sconto_applicato,  // <-- aggiungi questo
+    totale_originale,  
+    sconto_applicato,  
     coupon_applicato,
     indirizzo_consegna
   } = req.body;
@@ -92,8 +92,8 @@ router.post('/checkout', async (req, res) => {
     `, [
       id_utente,
       indirizzo_consegna,
-      totaleOriginaleFinale,  // <-- usa il valore estratto
-      scontoFinale,           // <-- usa il valore estratto
+      totaleOriginaleFinale,  
+      scontoFinale,           
       totaleFinale,
       'In lavorazione',
       new Date(),
