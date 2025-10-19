@@ -15,6 +15,12 @@ export class Carrello implements OnInit {
   carrello$: Observable<any[]>;  //carrello$ ha i dati del carrello
   totale: number = 0;
 
+  // trackBy function per mantenere gli elementi stabili nel DOM
+  trackByItem(index: number, item: any) {
+    // usa id_prodotto o id_pacchetto a seconda del tipo
+    return item.tipo === 'pacchetto' ? `pacchetto-${item.id_pacchetto}` : `prodotto-${item.id_prodotto}`;
+  }
+
   constructor(private carrelloService: CarrelloService, private router: Router) {
     this.carrello$ = this.carrelloService.ottieniCarrello();
   }

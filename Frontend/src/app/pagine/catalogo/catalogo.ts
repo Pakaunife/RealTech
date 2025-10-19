@@ -49,12 +49,11 @@ export class Catalogo {
       }
     });
   }
-  caricaProdottoDettaglio(id: number) {
-    this.http.get<any[]>(`http://localhost:3000/api/catalogo/popular?limit=1000`).subscribe(
-      prodotti => {
-        const prodotto = prodotti.find(p => p.id_prodotto == id);
+  caricaProdottoDettaglio(id: number) { //da barra di ricerca entra dentro i prodotti
+    // Richiedi direttamente il prodotto dal backend per garantire che il dettaglio venga mostrato
+    this.http.get<any>(`http://localhost:3000/api/catalogo/prodotto/${id}`).subscribe(
+      prodotto => {
         if (prodotto) {
-          // L'URL dell'immagine è già costruito nell'endpoint catalogo
           this.prodottoSelezionato = prodotto;
           this.mostraCategorie = false;
           this.mostraProdotti = false;

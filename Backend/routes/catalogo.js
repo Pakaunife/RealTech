@@ -59,7 +59,7 @@ router.get('/prodotti/categoria/:nome', async (req, res) => {   //Riceve il nome
 // Prodotti più acquistati (top N) — aggrega la tabella `acquisti`
 router.get('/popular', async (req, res) => {
   try {
-    // default a 3 prodotti come richiesto
+    
     const { limit = 3 } = req.query;
 
     // Semplice: prendi i product_id più acquistati (somma delle quantità) e uniscili ai dettagli prodotto
@@ -149,6 +149,44 @@ router.get('/search/suggestions', async (req, res) => {
     res.json(suggestions);
   } catch (err) {
     console.error('Errore suggestions:', err);
+    res.status(500).json({ error: 'Errore DB' });
+  }
+});
+
+// Endpoint per ottenere un singolo prodotto tramite id, usato per aprire il dettaglio prodotto
+router.get('/prodotto/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const result = await pool.query(`
+      SELECT 
+        p.id_prodotto,
+        p.nome,
+        p.prezzo,
+        p.descrizione,
+        p.immagine,
+        p.quantita_disponibile,
+        m.nome AS marchio,
+        c.nome AS categoria
+      FROM prodotto p
+      LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
+      LEFT JOIN marchio m ON p.id_marchio = m.id_marchio
+      WHERE p.id_prodotto = $1
+      LIMIT 1
+    `, [id]);
+
+    if (!result.rows || result.rows.length === 0) {
+      return res.status(404).json({ error: 'Prodotto non trovato' });
+    }
+
+    const prodotto = result.rows[0];
+    const prodottoConUrl = {
+      ...prodotto,
+      immagine_url: prodotto.immagine ? `http://localhost:3000/api/images/prodotti/${prodotto.immagine}` : 'http://localhost:3000/api/images/prodotti/default.jpg'
+    };
+
+    res.json(prodottoConUrl);
+  } catch (err) {
+    console.error('Errore get prodotto by id:', err);
     res.status(500).json({ error: 'Errore DB' });
   }
 });
