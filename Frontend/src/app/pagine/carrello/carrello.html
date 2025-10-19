@@ -3,12 +3,13 @@
 <div class="carrello">
   <h2 class="carrello-text">Il tuo carrello</h2>
   
-  <div *ngIf="(carrello$ | async)?.length === 0" class="carrello-vuoto">
+  <ng-container *ngIf="carrello$ | async as carrello">
+    <div *ngIf="carrello.length === 0" class="carrello-vuoto">
     <p class="carrello-text">Il carrello è vuoto</p>
     <a href="/catalogo">Continua gli acquisti</a>
   </div>
   
-  <div *ngFor="let item of carrello$ | async" class="carrello-item">  <!-- item.nome preso da carrello$ che sta in carrello.ts -->
+    <div *ngFor="let item of carrello; trackBy: trackByItem" class="carrello-item">  <!-- item.nome preso da carrello$ che sta in carrello.ts -->
     <img [src]="item.immagine_url || 'http://localhost:3000/api/images/prodotti/default.jpg'" [alt]="item.nome" width="100">
     <div class="item-details">
       <h4 class="carrello-text">{{ item.nome }}</h4>
@@ -25,12 +26,13 @@
         Rimuovi
       </button>
     </div>
-  </div>
-  
-  <div *ngIf="(carrello$ | async) && (carrello$ | async)!.length > 0" class="totale">
+    </div>
+
+    <div *ngIf="carrello && carrello.length > 0" class="totale">
     <h3 class="carrello-text">Totale: {{ totale }}€</h3>
     <button class="btn-checkout" (click)="procediAlCheckout()">Procedi al checkout</button>
   </div>
+  </ng-container>
 </div>
 
 
