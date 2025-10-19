@@ -122,18 +122,13 @@ export class Catalogo {
     this.mostraProdotti = true;
     this.mostraDettaglio = false;
     this.categoriaSelezionata = `Risultati per: "${query}"`;
-    
-    // Usa l'endpoint popular per ottenere tutti i prodotti e filtrarli
-    this.http.get<any[]>(`http://localhost:3000/api/catalogo/popular?limit=1000`).subscribe(
-      prodotti => {
-        // Filtra i prodotti in base alla query di ricerca
-        this.prodotti = prodotti.filter(prodotto => 
-          prodotto.nome.toLowerCase().includes(query.toLowerCase()) ||
-          (prodotto.descrizione && prodotto.descrizione.toLowerCase().includes(query.toLowerCase())) ||
-          (prodotto.marchio && prodotto.marchio.toLowerCase().includes(query.toLowerCase()))
-        );
-        
-        // Estrai marche disponibili dai risultati filtrati
+
+    // Usa il nuovo endpoint di ricerca prodotti
+    this.http.get<any[]>(`http://localhost:3000/api/catalogo/prodotti/ricerca?q=${encodeURIComponent(query)}`).subscribe( //encodeURIComponent(query): serve per avere url sicuri (es. non avere spazi)
+      //Salva nell’array prodotti tutti i prodotti restituiti dalla ricerca (quelli che corrispondono alla query).
+      prodotti => {  
+        this.prodotti = prodotti;
+        // Estrai marche disponibili dai risultati
         this.marcheDisponibili = Array.from(new Set(this.prodotti.map(p => p.marchio).filter(m => !!m)));
         this.marcaSelezionata = '';
         this.caricamento = false;
@@ -146,7 +141,7 @@ export class Catalogo {
   }
   
   selezionaProdotto(prodotto: any) {
-    this.prodottoSelezionato = prodotto;
+    this.prodottoSelezionato = prodotto; //mostra solo il dettaglio del prodotto selezionato
     this.mostraCategorie = false;
     this.mostraProdotti = false;
     this.mostraDettaglio = true;
