@@ -12,8 +12,7 @@ function mascheraNumeroCarta(numeroCompleto) {
 
 // Processa acquisto dal carrello
 router.post('/checkout', async (req, res) => {
-  console.log('Dati ricevuti:', req.body); 
-  
+  console.log('Dati ricevuti:', req.body); // Per debug
     const { 
     id_utente, 
     metodo_pagamento, 
@@ -26,6 +25,7 @@ router.post('/checkout', async (req, res) => {
     sconto_applicato,  
     coupon_applicato,
     indirizzo_consegna
+    
   } = req.body;
   
   if (!id_utente) {
