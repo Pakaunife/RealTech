@@ -79,6 +79,7 @@ router.get('/:id_utente', async (req, res) => {
       FROM carrello c
       JOIN prodotto p ON c.id_prodotto = p.id_prodotto
       WHERE c.id_utente = $1
+      ORDER BY c.id_prodotto
     `, [idUtente]);
 
     const prodotti = prodottiRes.rows.map(item => ({
@@ -97,6 +98,7 @@ router.get('/:id_utente', async (req, res) => {
       FROM carrello_pacchetto cp
       JOIN pacchetto_tematico pt ON cp.id_pacchetto = pt.id_pacchetto
       WHERE cp.id_utente = $1
+      ORDER BY cp.id_pacchetto
     `, [idUtente]);
 
     const pacchetti = pacchettiRes.rows.map(item => ({

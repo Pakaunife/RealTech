@@ -153,4 +153,42 @@ router.get('/search/suggestions', async (req, res) => {
   }
 });
 
+// Endpoint per ottenere un singolo prodotto tramite id, usato per aprire il dettaglio prodotto
+router.get('/prodotto/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const result = await pool.query(`
+      SELECT 
+        p.id_prodotto,
+        p.nome,
+        p.prezzo,
+        p.descrizione,
+        p.immagine,
+        p.quantita_disponibile,
+        m.nome AS marchio,
+        c.nome AS categoria
+      FROM prodotto p
+      LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
+      LEFT JOIN marchio m ON p.id_marchio = m.id_marchio
+      WHERE p.id_prodotto = $1
+      LIMIT 1
+    `, [id]);
+
+    if (!result.rows || result.rows.length === 0) {
+      return res.status(404).json({ error: 'Prodotto non trovato' });
+    }
+
+    const prodotto = result.rows[0];
+    const prodottoConUrl = {
+      ...prodotto,
+      immagine_url: prodotto.immagine ? `http://localhost:3000/api/images/prodotti/${prodotto.immagine}` : 'http://localhost:3000/api/images/prodotti/default.jpg'
+    };
+
+    res.json(prodottoConUrl);
+  } catch (err) {
+    console.error('Errore get prodotto by id:', err);
+    res.status(500).json({ error: 'Errore DB' });
+  }
+});
+
 module.exports = router;
