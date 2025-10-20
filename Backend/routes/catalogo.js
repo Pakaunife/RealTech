@@ -131,6 +131,8 @@ router.get('/popular', async (req, res) => {
   }
 });
 
+// vetrina endpoint moved to routes/vetrina.js
+
 router.get('/brand', async (req, res) => {
   try {
     const result = await pool.query(`
