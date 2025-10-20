@@ -36,6 +36,7 @@ export class Login {
         .subscribe({
           next: (res: any) => {
            this.auth.login(res.token);
+           this.carrelloService.sincronizzaCarrelloGuestConUtente();
             
             // Ricarica il carrello con i dati dell'utente loggato
             this.carrelloService.ricaricaCarrello();

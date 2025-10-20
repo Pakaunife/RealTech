@@ -9,7 +9,7 @@ export class CatalogoService {
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   // Ottieni prodotti più acquistati (per la home)
-  getProdottiPopular(limit: number = 3): Observable<any[]> {
+  getProdottiPopular(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/popular`);
   }
 
