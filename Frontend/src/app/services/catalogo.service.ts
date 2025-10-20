@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import { AuthService } from './auth.service';
 @Injectable({ providedIn: 'root' })
 export class CatalogoService {
   private apiUrl = 'http://localhost:3000/api/catalogo';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   // Ottieni prodotti più acquistati (per la home)
   getProdottiPopular(limit: number = 3): Observable<any[]> {
@@ -42,4 +42,32 @@ export class CatalogoService {
   getProdottiVetrina(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/vetrina`);
   }
+  
+private getIdUtente(): number | null {
+    const user = this.authService.getUser();  //chiama getUser di authService
+    return user ? user.id : null;
+  }
+  
+  aggiungiAWishlist(prodotto: any): void {
+  const idUtente = this.getIdUtente();
+  if (!idUtente) {
+    alert('Devi essere autenticato per aggiungere alla wishlist!');
+    return;
+  }
+  this.http.post('http://localhost:3000/api/wishlist', {
+    user_id: idUtente,
+    prodotto_id: prodotto.id_prodotto
+  }).subscribe({
+    next: () => {
+      alert('Prodotto aggiunto alla wishlist!');
+    },
+    error: (err) => {
+      console.error('Errore wishlist:', err);
+      alert('Errore nell\'aggiungere il prodotto alla wishlist');
+    }
+  });
+}
+  
+
+
 }
