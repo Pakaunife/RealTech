@@ -37,4 +37,9 @@ export class CatalogoService {
       params: { q: query.trim(), limit: limit.toString() } //params: serve a passare i parametri alla richiesta HTTP GET. (inviati come stringa senza spazi come un link)
     });
   }
+
+  // Ottieni prodotti in vetrina (selezionati dall'admin)
+  getProdottiVetrina(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/vetrina`);
+  }
 }

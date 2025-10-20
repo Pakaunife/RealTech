@@ -18,10 +18,13 @@ export class Home implements OnInit {
     user: any;
     showWelcome = false;
     prodottiInEvidenza: any[] = [];
+    prodottiInVetrina: any[] = [];
     pacchetti: Pacchetto[] = [];
     loading = true;
+    loadingVetrina = true;
     loadingPacchetti = true;
     error = '';
+    errorVetrina = '';
     errorPacchetti = '';
 
   constructor(
@@ -65,9 +68,27 @@ export class Home implements OnInit {
 
     // Carica i prodotti più visualizzati dal database
     this.loadProdottiPopular();
+    // Carica i prodotti selezionati per la vetrina dall'admin
+    this.loadProdottiVetrina();
     
     // Carica i pacchetti tematici dal database
     this.loadPacchetti();
+  }
+
+  loadProdottiVetrina() {
+    this.loadingVetrina = true;
+    this.catalogoService.getProdottiVetrina().subscribe({
+      next: (prodotti) => {
+        this.prodottiInVetrina = prodotti;
+        this.loadingVetrina = false;
+      },
+      error: (err) => {
+        console.error('Errore nel caricamento prodotti in vetrina:', err);
+        this.errorVetrina = 'Errore nel caricamento dei prodotti in vetrina';
+        this.loadingVetrina = false;
+        this.prodottiInVetrina = [];
+      }
+    });
   }
 
   loadProdottiPopular() {
