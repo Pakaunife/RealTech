@@ -56,6 +56,8 @@ app.use('/api/immagine', immagineRoutes);
 app.use('/api/wishlist', WishListRoutes);
 app.use('/api/coupon', couponRoutes);
 app.use('/api/pacchetti', PacchettiRoutes);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 app.use((err, _req, res, _next) => {
   const status = err.status || 500;

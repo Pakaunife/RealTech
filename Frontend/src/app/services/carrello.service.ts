@@ -152,4 +152,5 @@ export class CarrelloService {
   aggiornaDopoAcquisto(): void {
     this.caricaCarrello();
   }
+
 }

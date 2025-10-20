@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CarrelloService } from '../../services/carrello.service';
+import { CatalogoService } from '../../services/catalogo.service';
 
 @Component({
   selector: 'app-catalogo',
@@ -31,7 +32,7 @@ export class Catalogo {
   searchQuery: string = '';
   isSearchMode: boolean = false;
   
-  constructor(private http: HttpClient, private carrelloService: CarrelloService, private route: ActivatedRoute, private router: Router) {
+  constructor(private http: HttpClient, private carrelloService: CarrelloService, private route: ActivatedRoute, private router: Router, private catalogoService: CatalogoService ) {
     this.route.queryParams.subscribe(params => {
       if (params['search']) {
         // Modalità ricerca
@@ -69,6 +70,12 @@ export class Catalogo {
     );
   }
   
+  aggiungiAWishlist(prodotto: any): void {
+
+  this.catalogoService.aggiungiAWishlist(prodotto);
+
+}
+
   caricaCategorie() {
     this.caricamento = true; //bug fix per caricamento footer flash
     this.http.get<any[]>('http://localhost:3000/api/catalogo/prodotti').subscribe(

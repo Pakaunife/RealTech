@@ -5,7 +5,7 @@ const pool = require('../connection/DBconnect');
 // Funzione per mascherare il numero carta
 function mascheraNumeroCarta(numeroCompleto) {
   if (!numeroCompleto) return null;
-  const numero = numeroCompleto.replace(/\s/g, ''); // Rimuovi spazi
+  const numero = numeroCompleto.replace(/\s/g, ''); 
   if (numero.length < 4) return '****';
   return '**** **** **** ' + numero.slice(-4);
 }
