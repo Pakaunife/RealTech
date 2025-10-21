@@ -528,8 +528,7 @@ inviaProdotto() {
   
   rimuoviUtente(user: any) {
   if (confirm(`Vuoi rimuovere definitivamente l'utente ${user.nome} ${user.cognome}?`)) {
-    // AdminService non espone rimuoviUtente: usiamo HttpClient direttamente per eliminare l'utente
-    this.http.delete(`${this.baseUrl}/admin/users/${user.id}`).subscribe({
+    this.http.delete(`${this.baseUrl}/admin/utenti/${user.id}`).subscribe({
       next: () => this.loadUsers(),
       error: err => alert('Errore nella rimozione utente')
     });

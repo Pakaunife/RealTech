@@ -13,6 +13,9 @@ import { Router, RouterModule } from '@angular/router';
 export class Registrazione {
 
   registerForm: FormGroup;
+  showPassword = false;
+  showConfirmPassword = false;
+
 
   constructor(private fb: FormBuilder, private http: HttpClient, private router: Router) {
      this.registerForm = this.fb.group({
@@ -22,9 +25,21 @@ export class Registrazione {
       dataNascita: ['', [Validators.required, this.minAgeValidator(18)]],
       telefono: ['', [Validators.required, Validators.pattern(/^[0-9]{10,15}$/)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required]
-    });
+      password: ['', Validators.required],
+      confirmPassword: ['', [Validators.required]]
+    }, { validators: this.passwordsMatchValidator });
   }
+  passwordsMatchValidator(form: FormGroup) {
+  const password = form.get('password')?.value;
+  const confirmPassword = form.get('confirmPassword')?.value;
+  return password === confirmPassword ? null : { passwordMismatch: true };
+}
+togglePassword() {
+  this.showPassword = !this.showPassword;
+}
+toggleConfirmPassword() {
+  this.showConfirmPassword = !this.showConfirmPassword;
+}
 
    minAgeValidator(minAge: number) {
     return (control: AbstractControl) => {
