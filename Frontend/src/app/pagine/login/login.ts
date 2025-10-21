@@ -15,6 +15,7 @@ import { CommonModule } from '@angular/common';
 })
 export class Login {
   loginForm: FormGroup;
+  showPassword = false;
   
  // Dopo il login, ricarica il carrello con i dati dell'utente loggato
   constructor(
@@ -29,6 +30,10 @@ export class Login {
       password: ['', Validators.required]
     });
   }
+  togglePassword() {
+  this.showPassword = !this.showPassword;
+}
+
 
   onSubmit() {
     if (this.loginForm.valid) {
