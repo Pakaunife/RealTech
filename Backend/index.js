@@ -48,7 +48,7 @@ app.use('/api/orders', OrdersRoutes);
 app.use('/api/indirizzi', AddressesRoutes);
 app.use('/api/profile', ProfileRoutes);
 app.use('/api/catalogo', CatalogoRoutes);
-app.use('/api/catalogo', VetrinaRoutes);
+app.use('/api/catalogo', VetrinaRoutes); 
 app.use('/api/carrello', CarrelloRoutes);
 app.use('/api/acquisti', AcquistiRoutes);
 app.use('/api/admin', AdminRoutes);

@@ -47,6 +47,19 @@
   margin: 1rem 0;
 }
 
+.price-original {
+  text-decoration: line-through;
+  color: rgba(255,255,255,0.7);
+  margin-right: 0.5rem;
+  font-size: 1.4rem;
+}
+
+.price-discount {
+  color: #ffdd57; /* highlight color */
+  font-weight: 700;
+  font-size: 1.6rem;
+}
+
 .package-paragrafo {
   font-size: 1.1rem;
  

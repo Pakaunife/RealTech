@@ -403,7 +403,7 @@ Per ogni file indico il percorso e le funzioni/metodi principali toccati; usare 
 
 ### Backend (aggiunta route pacchetti)
 - File: `Backend/routes/pacchetti.js`
-  - GET `/api/pacchetti` -> ritorna lista pacchetti tematici con `immagine_url` e `numero_prodotti`.
+  - GET `/api/pacchetti` -> ritorna lista pacchetti tematici con `immagine_url`.
   - GET `/api/pacchetti/:id` -> ritorna dettaglio del pacchetto e lista prodotti associati.
 
 ### Frontend: servizi e componenti

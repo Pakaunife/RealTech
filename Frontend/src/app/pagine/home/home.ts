@@ -57,6 +57,11 @@ export class Home implements OnInit {
       }
     });
   }
+
+  // Naviga alla pagina di dettaglio del pacchetto (offerte)
+  apriDettaglioPacchetto(pacchetto: Pacchetto) {
+    this.router.navigate(['/offerte', pacchetto.id_pacchetto]);
+  }
   
   ngOnInit() {
     if (this.user) {

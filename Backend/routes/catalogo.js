@@ -83,6 +83,7 @@ router.get('/prodotti/categoria/:nome', async (req, res) => {   //Riceve il nome
       LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
       LEFT JOIN marchio m ON p.id_marchio = m.id_marchio
       WHERE c.nome = $1
+        AND p.bloccato = false
     `, [nomeCategoria]);
     
     // Aggiungi URL completo dell'immagine a ogni prodotto
@@ -248,7 +249,8 @@ router.get('/prodotto/:id', async (req, res) => {
       FROM prodotto p
       LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
       LEFT JOIN marchio m ON p.id_marchio = m.id_marchio
-      WHERE p.id_prodotto = $1
+  WHERE p.id_prodotto = $1
+  AND p.bloccato = false
       LIMIT 1
     `, [id]);
 

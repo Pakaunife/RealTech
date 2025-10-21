@@ -51,7 +51,6 @@
       <div class="film-info">
         <img [src]="prodotto.immagine_url" [alt]="prodotto.nome" class="prodotto-img" />
         <h2>{{ prodotto.nome }}</h2>
-        <p>{{ prodotto.categoria || 'Categoria' }}</p>
       </div>
     </div>
   </div>
@@ -71,14 +70,16 @@
 
   <!-- Pacchetti dal database -->
   <div class="offers-row" *ngIf="!loadingPacchetti && !errorPacchetti">
-    <div class="package-card" *ngFor="let pacchetto of pacchetti">
+    <div class="package-card" *ngFor="let pacchetto of pacchetti" (click)="apriDettaglioPacchetto(pacchetto)" style="cursor: pointer;">
       <h2>{{ pacchetto.nome }}</h2>
       <div class="package-paragrafo">{{ pacchetto.descrizione }}</div>
-      <div class="package-price">€{{ pacchetto.prezzo_totale }}</div>
-      <div class="package-info" *ngIf="pacchetto.numero_prodotti > 0">
-        <small>{{ pacchetto.numero_prodotti }} prodott{{ pacchetto.numero_prodotti === 1 ? 'o' : 'i' }} inclus{{ pacchetto.numero_prodotti === 1 ? 'o' : 'i' }}</small>
+      <div class="package-price">
+        <span class="price-original">€{{ pacchetto.prezzo_totale }}</span>
+        <span class="price-discount">€{{ pacchetto.prezzo_scontato }}</span>
       </div>
-      <button class="btn-primary" (click)="vaiADettaglioPacchetto(pacchetto)">Aggiungi al carrello</button>
+      <div class="package-actions">
+        <button class="btn-primary" (click)="vaiADettaglioPacchetto(pacchetto); $event.stopPropagation()">Aggiungi al carrello</button>
+      </div>
     </div>
   </div>
 </div>
