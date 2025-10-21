@@ -15,10 +15,12 @@ router.get('/', async (req, res) => {
         -- Somma delle quantità * prezzo effettivo (prezzo_scontato se promo, altrimenti prezzo)
         COALESCE(SUM(pp.quantita * (CASE WHEN p.promo = TRUE AND p.prezzo_scontato IS NOT NULL THEN p.prezzo_scontato ELSE p.prezzo END)), 0) AS prezzo_totale,
         pt.immagine,
-        COUNT(pp.id_prodotto) as numero_prodotti
+         -- Conta solo i prodotti non bloccati associati al pacchetto
+        COUNT(p.id_prodotto) as numero_prodotti
       FROM pacchetto_tematico pt
       LEFT JOIN prodotto_pacchetto pp ON pt.id_pacchetto = pp.id_pacchetto
-      LEFT JOIN prodotto p ON pp.id_prodotto = p.id_prodotto
+      -- join prodotto ma escludendo quelli bloccati: i prodotti bloccati non contribuiscono al prezzo_totale
+      LEFT JOIN prodotto p ON pp.id_prodotto = p.id_prodotto AND p.bloccato = false
       GROUP BY pt.id_pacchetto, pt.nome, pt.descrizione, pt.immagine
       ORDER BY pt.id_pacchetto
     `);
@@ -29,7 +31,13 @@ router.get('/', async (req, res) => {
       immagine_url: pacchetto.immagine ? 
         `http://localhost:3000/api/images/pacchetti/${pacchetto.immagine}` : 
         'http://localhost:3000/api/images/pacchetti/default.jpg'
-    }));
+    })).map(p => {
+      // assicurarsi che prezzo_totale sia numerico
+      const prezzoTot = p.prezzo_totale != null ? Number(p.prezzo_totale) : 0;
+      // applica sconto 15%
+      const prezzoScontato = Math.round((prezzoTot * 0.85) * 100) / 100;
+      return { ...p, prezzo_totale: prezzoTot, prezzo_scontato: prezzoScontato };
+    });
 
     res.json(pacchettiConUrl);
   } catch (err) {
@@ -108,8 +116,12 @@ router.get('/:id', async (req, res) => {
       pacchetto.prezzo_totale = prezzoMemorizzato;
     }
 
+    // Calcola prezzo scontato (15% off) sul totale calcolato/memorizzato
+    const prezzoTotaleFinale = pacchetto.prezzo_totale != null ? Number(pacchetto.prezzo_totale) : prezzoTotaleCalcolato;
+    const prezzoScontato = Math.round((prezzoTotaleFinale * 0.85) * 100) / 100;
+
     res.json({
-      pacchetto: pacchetto,
+      pacchetto: { ...pacchetto, prezzo_totale: prezzoTotaleFinale, prezzo_scontato: prezzoScontato },
       prodotti: prodottiConUrl
     });
   } catch (err) {

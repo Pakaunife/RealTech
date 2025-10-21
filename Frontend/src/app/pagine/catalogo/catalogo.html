@@ -1,15 +1,16 @@
-
-<div class="catalogo">
+<div class="catalogo">  <!-- qua metteremo che se mostraCategorie è true mostriamo come titolo "mostraCategorie", altrimenti se mostracategorie e falsa e se mostraDettaglio è vera viene mostrato il nome del prodotto selezionato -->
   <h1 [class.vista-prodotti]="mostraProdotti || mostraDettaglio">{{ mostraCategorie ? 'Categorie Prodotti' : (mostraDettaglio ? prodottoSelezionato?.nome : categoriaSelezionata) }}</h1>
   <!-- Vista Categorie -->
-  <div *ngIf="mostraCategorie" class="categorie-grid">
-    <div class="categoria-card" *ngFor="let categoria of categorie" 
+  <div *ngIf="mostraCategorie" class="categorie-grid">  <!-- viene mostrato il tutto solo se mostraCategorie è true -->
+    <!-- fa ciclo for per ogni categoria, e crea una card per ciascuna. poi Quando clicchi su una card, viene chiamata la funzione selezionaCategoria(categoria.nome)-->
+    <div class="categoria-card" *ngFor="let categoria of categorie"  
          (click)="selezionaCategoria(categoria.nome)"
          [style.background-image]="categoria.immagine_url ? 'url(' + categoria.immagine_url + ')' : 'url(/assets/default-category.jpg)'">
       <h3>{{ categoria.nome }}</h3>
       <p>Esplora la categoria</p>
     </div>
   </div>
+
   <!-- Vista Dettaglio -->
   <div *ngIf="mostraDettaglio" class="categorie-grid">
     <div *ngIf="!arrivoDaHome" class="categoria-card" (click)="tornaProdotti()">
@@ -21,14 +22,13 @@
       <p>Clicca per tornare alla pagina principale</p>
     </div>
     <div class="dettaglio-card">
-      <img [src]="prodottoSelezionato?.immagine_url || 'http://localhost:3000/api/images/prodotti/default.jpg'" 
-           [alt]="prodottoSelezionato?.nome"
-           class="prodotto-immagine-dettaglio">
-      <h2 *ngIf="!arrivoDaHome">{{ prodottoSelezionato?.nome }}</h2>
+   <img [src]="prodottoSelezionato?.immagine_url || 'http://localhost:3000/api/images/prodotti/default.jpg'" 
+     [alt]="prodottoSelezionato?.nome"
+     class="prodotto-immagine-dettaglio">
       <p><strong>Marchio:</strong> {{ prodottoSelezionato?.marchio || 'Non specificato' }}</p>
       <p><strong>Prezzo:</strong> €{{ prodottoSelezionato?.prezzo }}</p>
       <p><strong>Descrizione:</strong> {{ prodottoSelezionato?.descrizione || 'Descrizione non disponibile' }}</p>
-      <p *ngIf="!arrivoDaHome"><strong>Disponibilità:</strong> {{ prodottoSelezionato?.quantita_disponibile }} pezzi</p>
+  <p><strong>Disponibilità:</strong> {{ prodottoSelezionato?.quantita_disponibile }} pezzi</p>
       <!-- PULSANTE CARRELLO NEL DETTAGLIO -->
       <button (click)="aggiungiAlCarrello(prodottoSelezionato)" 
               [disabled]="prodottoSelezionato?.quantita_disponibile <= 0">
@@ -64,6 +64,7 @@
           <p class="prezzo">{{ prodotto.prezzo }}€</p>
           <p>Disponibili: {{ prodotto.quantita_disponibile }}</p>
         </div>
+
         <!-- PULSANTE CARRELLO -->
         <button (click)="aggiungiAlCarrello(prodotto)" 
                 [disabled]="prodotto.quantita_disponibile <= 0">

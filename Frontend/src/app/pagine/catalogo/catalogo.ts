@@ -98,11 +98,12 @@ export class Catalogo {
     this.caricaProdottiCategoria(nomeCategoria);
   }
 
+  //carica tutti i prodotti appartenenti ad una categoria specifica (usa una get al backend)
   caricaProdottiCategoria(categoria: string) {  
     this.caricamento = true; //bug fix per caricamento footer flash
     this.http.get<any[]>(`http://localhost:3000/api/catalogo/prodotti/categoria/${categoria}`).subscribe(
       dati => {
-        this.prodotti = dati;
+        this.prodotti = dati; //Salva nell’array prodotti tutti i prodotti restituiti dal backend per quella categoria.
         // Estrai marche disponibili dai prodotti
         this.marcheDisponibili = Array.from(new Set(dati.map(p => p.marchio).filter(m => !!m)));
         this.marcaSelezionata = ''; // Reset filtro marca

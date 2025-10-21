@@ -1,0 +1,80 @@
+.offerte-container {
+  max-width: 900px;
+  margin: 4rem auto 2rem;
+  padding: 1.5rem;
+  background: #ffffff;
+  border-radius: 8px;
+  color: #222222;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+}
+
+.offerte-header {
+  text-align: left;
+  margin-bottom: 1rem;
+}
+
+.offerte-header h1 {
+  color: #1f2937;
+  font-size: 1.6rem;
+  margin: 0 0 0.3rem 0;
+}
+
+.package-price {
+  color: #059669; /* green */
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.package-paragrafo {
+  color: #374151;
+  margin-bottom: 1rem;
+}
+
+.price-original {
+  text-decoration: line-through;
+  color: #6b7280;
+  margin-right: 0.5rem;
+}
+
+.price-discount {
+  color: #dc2626; /* red for discount */
+  font-weight: 700;
+}
+
+.included-products h3 {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  color: #111827;
+}
+
+.included-products ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.included-products li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.included-products li strong {
+  color: #111827;
+}
+
+.btn-back {
+  background: #ff3d00;
+  color: white;
+  border: none;
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.btn-back:hover {
+  background: #ff531e;
+}
