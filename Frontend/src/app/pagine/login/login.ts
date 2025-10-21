@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { HeaderMinimal} from '../../header-minimal/header-minimal';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
@@ -9,7 +8,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ CommonModule, HeaderMinimal, ReactiveFormsModule, RouterModule ],
+  imports: [ CommonModule,ReactiveFormsModule, RouterModule ],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })

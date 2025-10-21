@@ -35,6 +35,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+
 }
 
 .form-group label {
@@ -56,6 +57,12 @@
   transition: all 0.3s ease;
 }
 
+input[type="date"]::-webkit-calendar-picker-indicator {
+ color-scheme: dark;
+ cursor: pointer;
+ 
+}
+
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
@@ -71,6 +78,7 @@
  width: 100%;
 
 }
+
 
 .eye-icon {
   position: absolute;
