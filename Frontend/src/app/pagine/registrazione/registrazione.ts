@@ -15,6 +15,9 @@ export class Registrazione {
   registerForm: FormGroup;
   showPassword = false;
   showConfirmPassword = false;
+  dataMax: string = ''; // Data massima (18 anni fa)
+  dataMin: string = ''; 
+
 
 
   constructor(private fb: FormBuilder, private http: HttpClient, private router: Router) {
@@ -39,6 +42,19 @@ togglePassword() {
 }
 toggleConfirmPassword() {
   this.showConfirmPassword = !this.showConfirmPassword;
+}
+
+ngOnInit() {
+  // Calcola data massima (18 anni fa per maggiorenni)
+  const oggi = new Date();
+  const annoMax = oggi.getFullYear() - 18;
+  const meseMax = String(oggi.getMonth() + 1).padStart(2, '0');
+  const giornoMax = String(oggi.getDate()).padStart(2, '0');
+  this.dataMax = `${annoMax}-${meseMax}-${giornoMax}`;
+
+  // Calcola data minima (es: 100 anni fa)
+  const annoMin = oggi.getFullYear() - 100;
+  this.dataMin = `${annoMin}-${meseMax}-${giornoMax}`;
 }
 
    minAgeValidator(minAge: number) {
