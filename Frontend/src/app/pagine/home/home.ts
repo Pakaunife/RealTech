@@ -28,6 +28,7 @@ export class Home implements OnInit {
     errorVetrina = '';
     errorPacchetti = '';
     prodottiSuggeriti: any[] = [];
+    isLoggedIn: boolean = false;
 
   constructor(
     public auth: AuthService,
@@ -73,6 +74,9 @@ export class Home implements OnInit {
   
   ngOnInit() {
 
+    this.isLoggedIn = this.auth.isLoggedIn();
+
+if (this.isLoggedIn) {
     this.loading = true;
     this.suggestedService.getProdottiSuggeriti().subscribe({
       next: prodotti => {
@@ -84,6 +88,7 @@ export class Home implements OnInit {
         this.loading = false;
       }
     });
+}
   
     // Carica i prodotti più visualizzati dal database
     this.loadProdottiPopular();

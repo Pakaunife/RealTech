@@ -12,7 +12,8 @@ import { CommonModule } from '@angular/common';
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
-export class Login {
+export class Login 
+{
   loginForm: FormGroup;
   showPassword = false;
   
@@ -29,6 +30,8 @@ export class Login {
       password: ['', Validators.required]
     });
   }
+
+  
   togglePassword() {
   this.showPassword = !this.showPassword;
 }

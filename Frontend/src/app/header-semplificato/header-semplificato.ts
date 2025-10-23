@@ -6,6 +6,8 @@ import { AuthService } from '../services/auth.service';
 import { CatalogoService } from '../services/catalogo.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { CarrelloService } from '../services/carrello.service';
+
 
 @Component({
   selector: 'app-header-semplificato',
@@ -21,14 +23,22 @@ export class HeaderSemplificato {
   showSuggestions = false;
   showSearchOverlay = false;
   showSignInMenu = false;
+  carrelloCount = 0;  
+
 
   private searchSubject = new Subject<string>();
 
   constructor(
+    private carrelloService: CarrelloService,
     public auth: AuthService,
     private router: Router,
     private catalogoService: CatalogoService
   ) {
+     
+     this.carrelloService.carrello$.subscribe(carrello => {
+    this.carrelloCount = carrello.reduce((totale, prodotto) => totale + (prodotto.quantita || 1), 0);
+  });
+
     this.user = this.auth.getUser();
 
     this.searchSubject.pipe(
