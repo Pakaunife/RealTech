@@ -13,6 +13,12 @@ import { Router, RouterModule } from '@angular/router';
 export class Registrazione {
 
   registerForm: FormGroup;
+  showPassword = false;
+  showConfirmPassword = false;
+  dataMax: string = ''; // Data massima (18 anni fa)
+  dataMin: string = ''; 
+
+
 
   constructor(private fb: FormBuilder, private http: HttpClient, private router: Router) {
      this.registerForm = this.fb.group({
@@ -22,9 +28,34 @@ export class Registrazione {
       dataNascita: ['', [Validators.required, this.minAgeValidator(18)]],
       telefono: ['', [Validators.required, Validators.pattern(/^[0-9]{10,15}$/)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required]
-    });
+      password: ['', Validators.required],
+      confirmPassword: ['', [Validators.required]]
+    }, { validators: this.passwordsMatchValidator });
   }
+  passwordsMatchValidator(form: FormGroup) {
+  const password = form.get('password')?.value;
+  const confirmPassword = form.get('confirmPassword')?.value;
+  return password === confirmPassword ? null : { passwordMismatch: true };
+}
+togglePassword() {
+  this.showPassword = !this.showPassword;
+}
+toggleConfirmPassword() {
+  this.showConfirmPassword = !this.showConfirmPassword;
+}
+
+ngOnInit() {
+  // Calcola data massima (18 anni fa per maggiorenni)
+  const oggi = new Date();
+  const annoMax = oggi.getFullYear() - 18;
+  const meseMax = String(oggi.getMonth() + 1).padStart(2, '0');
+  const giornoMax = String(oggi.getDate()).padStart(2, '0');
+  this.dataMax = `${annoMax}-${meseMax}-${giornoMax}`;
+
+  // Calcola data minima (es: 100 anni fa)
+  const annoMin = oggi.getFullYear() - 100;
+  this.dataMin = `${annoMin}-${meseMax}-${giornoMax}`;
+}
 
    minAgeValidator(minAge: number) {
     return (control: AbstractControl) => {

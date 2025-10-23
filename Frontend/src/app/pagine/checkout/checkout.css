@@ -272,7 +272,9 @@ input, select { /* applichiamo ai pulsatti input(dove metti testo) e sulle casel
   border: 1px solid #e9ecef;
 }
 
-.riga-sconto, .riga-totale {
+.riga-sconto {
+  color: #000000;
+  font-weight: 450;
   display: flex;
   justify-content: space-between;
   margin-bottom: 8px;
@@ -284,6 +286,7 @@ input, select { /* applichiamo ai pulsatti input(dove metti testo) e sulle casel
 }
 
 .riga-totale {
+  color: #070707;
   border-top: 2px solid #1a237e;
   padding-top: 12px;
   margin-top: 12px;

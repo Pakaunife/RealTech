@@ -46,6 +46,11 @@ export class Home implements OnInit {
 
   vaiADettaglioPacchetto(pacchetto: Pacchetto) { //Effetto funzionale: dal frontend ora si aggiunge un singolo item “pacchetto” al carrello (con quantità 1), invece di inserire i prodotti singoli nel carrello.
     // Ora aggiungiamo il pacchetto come singolo item nel carrello
+    if (!this.auth.isLoggedIn()) {
+    this.router.navigate(['/login']);
+    alert('Devi essere loggato per aggiungere un pacchetto al carrello.');
+    return;
+  }
     const quantitaPacchetto = 1;
     this.carrelloService.aggiungiPacchettoAlCarrello(pacchetto.id_pacchetto, quantitaPacchetto).subscribe({
       next: () => {
@@ -64,12 +69,6 @@ export class Home implements OnInit {
   }
   
   ngOnInit() {
-    if (this.user) {
-      this.showWelcome = true;
-      setTimeout(() => {
-        this.showWelcome = false;
-      }, 3000); // 3 secondi
-    }
 
     // Carica i prodotti più visualizzati dal database
     this.loadProdottiPopular();
@@ -98,7 +97,7 @@ export class Home implements OnInit {
 
   loadProdottiPopular() {
     this.loading = true;
-  this.catalogoService.getProdottiPopular(3).subscribe({ // Prende 3 prodotti più aquistati da backend
+  this.catalogoService.getProdottiPopular().subscribe({ // Prende 3 prodotti più aquistati da backend
       next: (prodotti) => {
         this.prodottiInEvidenza = prodotti;
         this.loading = false;
@@ -145,9 +144,6 @@ export class Home implements OnInit {
     });
   }
 
-  logout() {
-    this.auth.logout();
-    window.location.reload(); 
-  }
+  
 }
 

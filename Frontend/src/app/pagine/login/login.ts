@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { HeaderMinimal} from '../../header-minimal/header-minimal';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
@@ -9,12 +8,13 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ CommonModule, HeaderMinimal, ReactiveFormsModule, RouterModule ],
+  imports: [ CommonModule,ReactiveFormsModule, RouterModule ],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
 export class Login {
   loginForm: FormGroup;
+  showPassword = false;
   
  // Dopo il login, ricarica il carrello con i dati dell'utente loggato
   constructor(
@@ -29,6 +29,10 @@ export class Login {
       password: ['', Validators.required]
     });
   }
+  togglePassword() {
+  this.showPassword = !this.showPassword;
+}
+
 
   onSubmit() {
     if (this.loginForm.valid) {
@@ -36,6 +40,7 @@ export class Login {
         .subscribe({
           next: (res: any) => {
            this.auth.login(res.token);
+           this.carrelloService.sincronizzaCarrelloGuestConUtente();
             
             // Ricarica il carrello con i dati dell'utente loggato
             this.carrelloService.ricaricaCarrello();

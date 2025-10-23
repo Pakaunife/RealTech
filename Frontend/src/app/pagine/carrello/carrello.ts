@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { CarrelloService } from '../../services/carrello.service';
 import { Observable } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-carrello',
@@ -14,6 +15,7 @@ import { Observable } from 'rxjs';
 export class Carrello implements OnInit {
   carrello$: Observable<any[]>;  //carrello$ ha i dati del carrello
   totale: number = 0;
+  carrelloGuest: any[] = [];
 
   // trackBy function per mantenere gli elementi stabili nel DOM
   trackByItem(index: number, item: any) {
@@ -21,17 +23,26 @@ export class Carrello implements OnInit {
     return item.tipo === 'pacchetto' ? `pacchetto-${item.id_pacchetto}` : `prodotto-${item.id_prodotto}`;
   }
 
-  constructor(private carrelloService: CarrelloService, private router: Router) {
+  constructor(private carrelloService: CarrelloService, private router: Router, public auth: AuthService) {
     this.carrello$ = this.carrelloService.ottieniCarrello();
   }
 
   ngOnInit(): void {
+  if (!this.auth.isLoggedIn()) {
+    // Guest: carica dal localStorage
+    this.carrelloGuest = this.carrelloService.getCarrelloGuest();
+    this.totale = Math.round(
+      this.carrelloGuest.reduce((total, item) => total + (item.prezzo * item.quantita), 0) * 100
+    ) / 100;
+  } else {
+    // Utente loggato: carica dal backend
     this.carrello$.subscribe(carrello => {
-     this.totale = Math.round(
-  carrello.reduce((total, item) => total + (item.prezzo * item.quantita), 0) * 100
-) / 100;
+      this.totale = Math.round(
+        carrello.reduce((total, item) => total + (item.prezzo * item.quantita), 0) * 100
+      ) / 100;
     });
   }
+}
 
   rimuoviProdotto(idProdotto: number): void {
     if (confirm('Vuoi rimuovere questo prodotto dal carrello?')) {
@@ -86,8 +97,33 @@ export class Carrello implements OnInit {
       });
     }
   }
+  rimuoviProdottoGuest(idProdotto: number): void {
+  this.carrelloGuest = this.carrelloGuest.filter(item => item.id_prodotto !== idProdotto);
+  this.carrelloService.setCarrelloGuest(this.carrelloGuest);
+  this.totale = Math.round(
+    this.carrelloGuest.reduce((total, item) => total + (item.prezzo * item.quantita), 0) * 100
+  ) / 100;
+}
+
+aggiornaQuantitaGuest(idProdotto: number, event: any): void {
+  const nuovaQuantita = parseInt(event.target.value);
+  if (nuovaQuantita > 0) {
+    const item = this.carrelloGuest.find(i => i.id_prodotto === idProdotto);
+    if (item) item.quantita = nuovaQuantita;
+    this.carrelloService.setCarrelloGuest(this.carrelloGuest);
+    this.totale = Math.round(
+      this.carrelloGuest.reduce((total, item) => total + (item.prezzo * item.quantita), 0) * 100
+    ) / 100;
+  }
+}
+
 
   procediAlCheckout(): void {
+    if (!this.auth.isLoggedIn()) {
+      alert('Devi essere loggato per procedere al checkout.');
+    this.router.navigate(['/login'], { queryParams: { redirect: '/checkout' } });
+  } else {
     this.router.navigate(['/checkout']);
   }
+}
 }

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../connection/DBconnect');
-const authenticateToken = require('./auth');
+const authenticateToken = require('../middleware/auth');
 const fs = require('fs');
 const path = require('path');
 

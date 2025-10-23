@@ -1,48 +1,86 @@
+<div class="registration-container">
+  <div class="registration-card">
+    <h2 class="registration-title">Registrazione</h2>
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="nome">NOME:</label>
+          <input type="text" id="nome" formControlName="nome" required>
+        </div>
+        <div class="form-group">
+          <label for="cognome">COGNOME:</label>
+          <input type="text" id="cognome" formControlName="cognome" required>
+        </div>
+      </div>
 
+      <div class="form-row">
+        <div class="form-group">
+          <label for="email">EMAIL:</label>
+          <input type="email" id="email" formControlName="email" required>
+        </div>
+        <div class="form-group">
+          <label for="sesso">SESSO:</label>
+          <select id="sesso" formControlName="sesso" required>
+            <option value="">Seleziona...</option>
+            <option value="M">Maschio</option>
+            <option value="F">Femmina</option>
+            <option value="Altro">Altro</option>
+          </select>
+        </div>
+      </div>
 
-<div class="container mt-4">
-  <h2>Registrazione</h2>
-  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-    <div class="mb-3">
-      <label for="nome" class="form-label">Nome</label>
-      <input type="text" id="nome" class="form-control" formControlName="nome" required>
-    </div>
-    <div class="mb-3">
-      <label for="cognome" class="form-label">Cognome</label>
-      <input type="text" id="cognome" class="form-control" formControlName="cognome" required>
-    </div>
-    <div class="mb-3">
-      <label for="email" class="form-label">Email</label>
-      <input type="email" id="email" class="form-control" formControlName="email" required>
-    </div>
-    <div class="mb-3">
-  <label for="sesso" class="form-label">Sesso</label>
-  <select id="sesso" class="form-control" formControlName="sesso" required>
-    <option value="">Seleziona...</option>
-    <option value="M">Maschio</option>
-    <option value="F">Femmina</option>
-    <option value="Altro">Altro</option>
-  </select>
-</div>
-<div class="mb-3">
-  <label for="dataNascita" class="form-label">Data di nascita</label>
-  <input type="date" id="dataNascita" class="form-control" formControlName="dataNascita" required>
-  <div *ngIf="registerForm.get('dataNascita')?.touched && registerForm.get('dataNascita')?.errors?.['minAge']" class="text-danger">
-  Devi essere maggiorenne per registrarti.
-</div>
-</div>
-<div class="mb-3">
-  <label for="telefono" class="form-label">Numero di telefono</label>
-  <input type="tel" id="telefono" class="form-control" formControlName="telefono" required pattern="^[0-9]{10,15}$">
-  <div *ngIf="registerForm.get('telefono')?.touched && registerForm.get('telefono')?.invalid" class="text-danger">
-    Inserisci un numero di telefono valido.
+      <div class="form-row">
+        <div class="form-group">
+          <label for="telefono">TELEFONO:</label>
+          <input type="tel" id="telefono" formControlName="telefono" required pattern="^[0-9]{10,15}$">
+          <div *ngIf="registerForm.get('telefono')?.touched && registerForm.get('telefono')?.invalid" class="error-message">
+            Inserisci un numero valido.
+          </div>
+        </div>
+        <div class="form-group">
+  <label for="dataNascita">DATA DI NASCITA:</label>
+  <input type="date" 
+         id="dataNascita" 
+         formControlName="dataNascita" 
+         [max]="dataMax" 
+         [min]="dataMin"
+         required>
+  <div *ngIf="registerForm.get('dataNascita')?.touched && registerForm.get('dataNascita')?.errors?.['minAge']" class="error-message">
+    Devi essere maggiorenne.
   </div>
 </div>
-    <div class="mb-3">
-      <label for="password" class="form-label">Password</label>
-      <input type="password" id="password" class="form-control" formControlName="password" required>
-    </div>
-    <button type="submit" class="btn btn-primary" [disabled]="registerForm.invalid">Registrati</button>
-  </form>
-</div>
+      </div>
 
+      <div class="form-row">
+        <div class="form-group">
+          <label for="password">PASSWORD:</label>
+          <div class="input-with-icon">
+            <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password" required>
+            <span class="eye-icon" (click)="togglePassword()">
+              <img [src]="showPassword ? 'assets/eye.svg' : 'assets/eyeclosed.svg'" alt="Toggle">
+            </span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">CONFERMA PASSWORD:</label>
+          <div class="input-with-icon">
+            <input [type]="showConfirmPassword ? 'text' : 'password'" id="confirmPassword" formControlName="confirmPassword" required>
+            <span class="eye-icon" (click)="toggleConfirmPassword()">
+              <img [src]="showConfirmPassword ? 'assets/eye.svg' : 'assets/eyeclosed.svg'" alt="Toggle">
+            </span>
+          </div>
+          <div *ngIf="registerForm.get('confirmPassword')?.touched && registerForm.hasError('passwordMismatch')" class="error-message">
+            Le password non coincidono.
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-register" [disabled]="registerForm.invalid">REGISTRATI</button>
+    </form>
+
+    <div class="login-link">
+      <p>Hai già un account? <a routerLink="/login">Accedi qui</a></p>
+    </div>
+  </div>
+</div>

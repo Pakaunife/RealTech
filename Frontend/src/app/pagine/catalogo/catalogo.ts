@@ -203,6 +203,19 @@ export class Catalogo {
       alert('Prodotto non disponibile!');
       return;
     }
+    if (!this.carrelloService.isLoggedIn()) {
+    // Guest: salva nel localStorage
+    let carrello = this.carrelloService.getCarrelloGuest();
+    const esiste = carrello.find(item => item.id_prodotto === prodotto.id_prodotto);
+    if (esiste) {
+      esiste.quantita += 1;
+    } else {
+      carrello.push({ id_prodotto: prodotto.id_prodotto, quantita: 1, ...prodotto });
+    }
+    this.carrelloService.setCarrelloGuest(carrello);
+    alert('Prodotto aggiunto al carrello!');
+    return;
+  }
     
     this.carrelloService.aggiungiAlCarrello(prodotto.id_prodotto, 1).subscribe({ //aggungi 1 unità del prodotto al carrello
       next: () => {

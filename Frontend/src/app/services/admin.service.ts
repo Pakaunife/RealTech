@@ -53,4 +53,21 @@ export class AdminService {
     console.log('Chiamata API per rimuovere prodotto ID:', prodottoId);
     return this.http.delete(`${this.baseUrl}/admin/prodotti/${prodottoId}`);
   }
+
+
+  getAllCoupon(): Observable<any[]> {
+  return this.http.get<any[]>(`${this.baseUrl}/coupon`);
+}
+
+createCoupon(coupon: any): Observable<any> {
+  return this.http.post(`${this.baseUrl}/coupon`, coupon);
+}
+
+updateCoupon(coupon: any): Observable<any> {
+  return this.http.put(`${this.baseUrl}/coupon/${coupon.id}`, coupon);
+}
+
+deleteCoupon(id: number): Observable<any> {
+  return this.http.delete(`${this.baseUrl}/coupon/${id}`);
+}
 }

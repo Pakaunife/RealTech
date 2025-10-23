@@ -153,4 +153,30 @@ export class CarrelloService {
     this.caricaCarrello();
   }
 
+  getCarrelloGuest(): any[] {
+  const dati = localStorage.getItem('carrelloGuest');
+  return dati ? JSON.parse(dati) : [];
+}
+
+setCarrelloGuest(carrello: any[]): void {
+  localStorage.setItem('carrelloGuest', JSON.stringify(carrello));
+}
+
+// Sincronizza il carrello guest con quello utente dopo il login
+sincronizzaCarrelloGuestConUtente(): void {
+  const carrelloGuest = this.getCarrelloGuest();
+  if (carrelloGuest.length > 0 && this.isLoggedIn()) {
+    carrelloGuest.forEach(item => {
+      this.aggiungiAlCarrello(item.id_prodotto, item.quantita).subscribe(); 
+    });
+    
+    localStorage.removeItem('carrelloGuest');
+  }
+}
+
+isLoggedIn(): boolean {
+  return !!this.getIdUtente();
+}
+
+
 }

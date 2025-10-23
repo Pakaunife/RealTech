@@ -253,9 +253,7 @@ private getIndirizzoCompleto(): string {
 
     this.processing = true;
 
-    if (this.couponApplicato) {
-      this.couponService.usaCoupon(this.couponCorrente.id).subscribe();
-    }
+   
 
 
    const datiCompleti = {
@@ -269,6 +267,9 @@ private getIndirizzoCompleto(): string {
 
     this.acquistiService.processaCheckout(datiCompleti).subscribe({
       next: (risultato: any) => {
+         if (this.couponApplicato) {
+      this.couponService.usaCoupon(this.couponCorrente.id).subscribe();
+    }
         this.processing = false;
         if (risultato.success) {
           this.carrelloService.aggiornaDopoAcquisto();
