@@ -5,6 +5,7 @@ import { AuthService } from '../../services/auth.service';
 import { CatalogoService } from '../../services/catalogo.service';
 import { PacchettiService, Pacchetto } from '../../services/pacchetti.service';
 import { CarrelloService } from '../../services/carrello.service';
+import { SuggestedService } from '../../services/suggested.service';
 
 @Component({
   selector: 'app-home',
@@ -26,13 +27,15 @@ export class Home implements OnInit {
     error = '';
     errorVetrina = '';
     errorPacchetti = '';
+    prodottiSuggeriti: any[] = [];
 
   constructor(
     public auth: AuthService,
     private catalogoService: CatalogoService,
     private pacchettiService: PacchettiService,
     private carrelloService: CarrelloService,
-    private router: Router
+    private router: Router,
+    private suggestedService: SuggestedService
   ) {
     this.user = this.auth.getUser();
   }
@@ -70,6 +73,18 @@ export class Home implements OnInit {
   
   ngOnInit() {
 
+    this.loading = true;
+    this.suggestedService.getProdottiSuggeriti().subscribe({
+      next: prodotti => {
+        this.prodottiSuggeriti = prodotti;
+        this.loading = false;
+      },
+      error: err => {
+        console.error('Errore suggeriti:', err);
+        this.loading = false;
+      }
+    });
+  
     // Carica i prodotti più visualizzati dal database
     this.loadProdottiPopular();
     // Carica i prodotti selezionati per la vetrina dall'admin

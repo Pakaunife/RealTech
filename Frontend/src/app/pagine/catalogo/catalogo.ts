@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CarrelloService } from '../../services/carrello.service';
 import { CatalogoService } from '../../services/catalogo.service';
+import { SuggestedService } from '../../services/suggested.service';
 
 @Component({
   selector: 'app-catalogo',
@@ -32,7 +33,14 @@ export class Catalogo {
   searchQuery: string = '';
   isSearchMode: boolean = false;
   
-  constructor(private http: HttpClient, private carrelloService: CarrelloService, private route: ActivatedRoute, private router: Router, private catalogoService: CatalogoService ) {
+  constructor(
+    private http: HttpClient, 
+    private carrelloService: CarrelloService, 
+    private route: ActivatedRoute, 
+    private router: Router, 
+    private catalogoService: CatalogoService, 
+    private suggestedService: SuggestedService )
+     {
     this.route.queryParams.subscribe(params => {
       if (params['search']) {
         // Modalità ricerca
@@ -55,10 +63,15 @@ export class Catalogo {
     this.http.get<any>(`http://localhost:3000/api/catalogo/prodotto/${id}`).subscribe(
       prodotto => {
         if (prodotto) {
+      
           this.prodottoSelezionato = prodotto;
           this.mostraCategorie = false;
           this.mostraProdotti = false;
           this.mostraDettaglio = true;
+          this.suggestedService.salvaVisualizzazione(id).subscribe({
+          next: () => {},
+          error: (err) => console.error('Errore salvataggio visualizzazione:', err)
+        });
         } else {
           this.caricaCategorie();
         }
@@ -146,6 +159,11 @@ export class Catalogo {
     this.mostraCategorie = false;
     this.mostraProdotti = false;
     this.mostraDettaglio = true;
+    this.suggestedService.salvaVisualizzazione(this.prodottoSelezionato.id_prodotto).subscribe({
+          next: () => {},
+          error: (err) => console.error('Errore salvataggio visualizzazione:', err)
+        });
+    
   }
   
   tornaProdotti() {

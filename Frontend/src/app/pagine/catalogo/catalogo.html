@@ -13,7 +13,7 @@
 
   <!-- Vista Dettaglio -->
   <div *ngIf="mostraDettaglio" class="categorie-grid">
-    <div *ngIf="!arrivoDaHome" class="categoria-card" (click)="tornaProdotti()">
+    <div *ngIf="!arrivoDaHome" class="back-card-dettaglio" (click)="tornaProdotti()">
       <h3>← Torna ai Prodotti</h3>
       <p>Clicca per tornare alla lista</p>
     </div>
@@ -39,7 +39,7 @@
   <!-- Vista Prodotti -->
   <div *ngIf="mostraProdotti">
     <!-- Pulsante torna alle categorie -->
-    <div class="categoria-card back-card" (click)="tornaAlleCategorie()">
+    <div class="back-card" (click)="tornaAlleCategorie()">
       <h3>← Torna alle Categorie</h3>
       <p>Clicca per tornare alla selezione categorie</p>
     </div>
