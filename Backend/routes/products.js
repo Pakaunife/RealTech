@@ -1,6 +1,7 @@
 const express = require('express');
 const pool = require('../connection/DBconnect');
-const authenticateToken = require('./auth');
+const authenticateToken = require('../middleware/auth');
+const verifyAdmin = require('../middleware/verifyadmin');
 const router = express.Router();
 const path = require('path');
 const fs = require('fs');
@@ -11,7 +12,7 @@ pool.query('ALTER TABLE prodotto ADD COLUMN IF NOT EXISTS prezzo_scontato numeri
 });
 
 // Imposta prodotto in vetrina o promo
-router.put('/:id/vetrina', authenticateToken, async (req, res) => {
+router.put('/:id/vetrina', authenticateToken, verifyAdmin, async (req, res) => {
   const { in_vetrina, promo } = req.body;
   try {
     const result = await pool.query(

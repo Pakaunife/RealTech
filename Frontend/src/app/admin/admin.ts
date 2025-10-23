@@ -49,6 +49,34 @@ export class Admin implements OnInit {
   
   currentUser: any = null;
 
+coupon: any[] = [];
+couponFiltrati: any[] = [];
+couponPaginati: any[] = [];
+couponQuery: string = '';
+mostraFormCoupon: boolean = false;
+paginaCoupon: number = 1;
+numeroPagineCoupon: number = 1;
+itemsPerPageCoupon: number = 10;
+mostraConfermaRimozioneCoupon: boolean = false;
+couponDaRimuovere: any = null;
+erroreDate: boolean = false;
+
+couponForm: any = {
+  id: null,
+  codice: '',
+  descrizione: '',
+  tipo_sconto: '',
+  valore_sconto: 0,
+  importo_minimo: 0,
+  data_inizio: '',
+  data_scadenza: '',
+  usi_massimi: 1,
+  attivo: true,
+  uso_singolo: false
+};
+
+  
+
   constructor(private http: HttpClient, private adminService: AdminService, private authService: AuthService) {}
 
 
@@ -157,7 +185,181 @@ onFileSelected(event: any) {
     this.loadProdotti();
     this.loadCategorie();
     this.loadBrand();
+    this.loadCoupon();
   }
+
+
+  loadCoupon() {
+  this.adminService.getAllCoupon().subscribe({
+    next: (data) => {
+      this.coupon = data;
+      this.filtraCoupon();
+    },
+    error: (err) => console.error('Errore caricamento coupon:', err)
+  });
+}
+
+filtraCoupon() {
+  if (!this.couponQuery.trim()) {
+    this.couponFiltrati = [...this.coupon];
+  } else {
+    const query = this.couponQuery.toLowerCase();
+    this.couponFiltrati = this.coupon.filter(c =>
+      c.codice.toLowerCase().includes(query));
+  }
+  this.numeroPagineCoupon = Math.ceil(this.couponFiltrati.length / this.itemsPerPageCoupon);
+  this.paginaCoupon = 1;
+  this.aggiornaCouponPaginati();
+}
+
+aggiornaCouponPaginati() {
+  const start = (this.paginaCoupon - 1) * this.itemsPerPageCoupon;
+  const end = start + this.itemsPerPageCoupon;
+  this.couponPaginati = this.couponFiltrati.slice(start, end);
+}
+
+cambiaPaginaCoupon(nuovaPagina: number) {
+  if (nuovaPagina >= 1 && nuovaPagina <= this.numeroPagineCoupon) {
+    this.paginaCoupon = nuovaPagina;
+    this.aggiornaCouponPaginati();
+  }
+}
+
+apriFormCoupon() {
+  this.mostraFormCoupon = true;
+  this.resetFormCoupon();
+}
+
+chiudiFormCoupon() {
+  this.mostraFormCoupon = false;
+  this.resetFormCoupon();
+}
+
+resetFormCoupon() {
+  this.couponForm = {
+    id: null,
+    codice: '',
+    descrizione: '',
+    tipo_sconto: '',
+    valore_sconto: 0,
+    importo_minimo: 0,
+    data_inizio: '',
+    data_scadenza: '',
+    usi_massimi: 1,
+    attivo: true
+  };
+}
+
+salvaCoupon() {
+  // Controllo tipo sconto
+  if (!this.couponForm.tipo_sconto) {
+    alert('⚠️ Seleziona un tipo di sconto');
+    return;
+  }
+  
+  // Controllo valore sconto
+  if (!this.couponForm.valore_sconto || this.couponForm.valore_sconto <= 0) {
+    alert('⚠️ Il valore sconto deve essere maggiore di 0');
+    return;
+  }
+  
+  // Controllo percentuale
+  if (this.couponForm.tipo_sconto === 'percentuale' && this.couponForm.valore_sconto > 100) {
+    alert('⚠️ Il valore percentuale non può superare 100');
+    return;
+  }
+  
+  // Controllo date
+  if (!this.couponForm.data_inizio || !this.couponForm.data_scadenza) {
+    alert('⚠️ Inserisci sia la data di inizio che la data di scadenza');
+    return;
+  }
+  
+  // Validazione date
+  if (this.couponForm.data_scadenza <= this.couponForm.data_inizio) {
+    alert('⚠️ La data di scadenza deve essere successiva alla data di inizio');
+    return;
+  }
+  
+  // Salvataggio
+  if (this.couponForm.id) {
+    // Modifica coupon esistente
+    this.adminService.updateCoupon(this.couponForm).subscribe({
+      next: () => {
+        alert('✅ Coupon aggiornato con successo!');
+        this.loadCoupon();
+        this.chiudiFormCoupon();
+      },
+      error: (err) => {
+        console.error('Errore completo:', err);
+        alert(`❌ Errore: ${err.error?.error || err.message || 'Errore sconosciuto'}`);
+      }
+    });
+  } else {
+    // Crea nuovo coupon
+    this.adminService.createCoupon(this.couponForm).subscribe({
+      next: () => {
+        alert('✅ Coupon aggiunto con successo!');
+        this.loadCoupon();
+        this.chiudiFormCoupon();
+      },
+      error: (err) => {
+        // Se il coupon esiste già (status 409)
+        if (err.status === 409 && err.error.exists) {
+          const conferma = confirm(
+            `⚠️ Il coupon "${this.couponForm.codice}" esiste già.\n\n` +
+            `Vuoi modificarlo?`
+          );
+          
+          if (conferma) {
+            // Carica i dati del coupon esistente nel form
+            this.couponForm = { ...err.error.coupon };
+            alert('✏️ Puoi ora modificare il coupon esistente');
+            // Scroll al form
+            document.getElementById('form-coupon')?.scrollIntoView({ behavior: 'smooth' });
+          }
+        } else {
+          console.error('Errore completo:', err);
+          alert(`❌ Errore: ${err.error?.error || err.message || 'Errore sconosciuto'}`);
+        }
+      }
+    });
+  }
+}
+
+modificaCoupon(coupon: any) {
+  this.couponForm = { ...coupon };
+  this.mostraFormCoupon = true;
+  document.getElementById('form-coupon')?.scrollIntoView({ behavior: 'smooth' });
+}
+
+rimuoviCoupon(coupon: any) {
+  this.couponDaRimuovere = coupon;
+  this.mostraConfermaRimozioneCoupon = true;
+}
+
+confermaRimozioneCoupon() {
+  if (this.couponDaRimuovere) {
+    this.adminService.deleteCoupon(this.couponDaRimuovere.id).subscribe({
+      next: () => {
+        alert('Coupon rimosso con successo!');
+        this.loadCoupon();
+        this.annullaRimozioneCoupon();
+      },
+      error: (err) => {
+        console.error('Errore rimozione coupon:', err);
+        alert('Errore durante la rimozione del coupon');
+      }
+    });
+  }
+}
+
+annullaRimozioneCoupon() {
+  this.mostraConfermaRimozioneCoupon = false;
+  this.couponDaRimuovere = null;
+}
+
+
 
   visualizzaOrdiniUtente(utente: any) {
     console.log('Visualizzazione ordini per utente:', utente);

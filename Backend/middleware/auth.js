@@ -6,7 +6,6 @@ function authenticateToken(req, res, next) {
   
   if (!token) 
   {
-    console.log('ENTRATO NEL BLOCCO IF - Token mancante, invio 401'); 
     return res.status(401).json({ message: 'Token mancante' });
   }
   
@@ -16,6 +15,10 @@ function authenticateToken(req, res, next) {
     next();
   
   });
+
 }
+
+
+
 
 module.exports = authenticateToken;

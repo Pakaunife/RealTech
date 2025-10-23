@@ -511,3 +511,47 @@ select.admin-user-search option {
   margin: 18px 0;
   letter-spacing: 0.5px;
 }
+
+/* Contenitore per label + input inline */
+.label-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.label-container label {
+  white-space: nowrap;
+  min-width: auto;
+}
+
+/* Campi più piccoli */
+.small-field {
+  max-width: 250px;
+}
+
+.input-small {
+  max-width: 150px;
+}
+
+/* Checkbox inline */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+
+
+
+.attivo-si {
+  color: #4caf50;
+  font-weight: 600;
+}
+
+.attivo-no {
+  color: #f44336;
+  font-weight: 600;
+}
