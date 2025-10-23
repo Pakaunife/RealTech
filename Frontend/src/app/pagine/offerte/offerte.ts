@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule, NgIf, NgForOf, Location } from '@angular/common';
 import { PacchettiService, PacchettoDettaglio } from '../../services/pacchetti.service';
+import { CarrelloService } from '../../services/carrello.service';
 
 @Component({
   selector: 'app-offerte',
@@ -15,7 +16,25 @@ export class Offerte implements OnInit {
   loading = true;
   error = '';
 
-  constructor(private route: ActivatedRoute, private pacchettiService: PacchettiService, private location: Location) {}
+  constructor(
+    private route: ActivatedRoute,
+    private pacchettiService: PacchettiService,
+    private carrelloService: CarrelloService,
+    private location: Location
+  ) {}
+  aggiungiAlCarrello() {
+    if (!this.pacchettoDettaglio) return;
+    const idPacchetto = this.pacchettoDettaglio.pacchetto.id_pacchetto;
+    this.carrelloService.aggiungiPacchettoAlCarrello(idPacchetto, 1).subscribe({
+      next: () => {
+        // Puoi mostrare una notifica di successo qui
+        alert('Pacchetto aggiunto al carrello!');
+      },
+      error: (err) => {
+        alert('Errore nell\'aggiunta al carrello: ' + err.message);
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {

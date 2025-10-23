@@ -2,51 +2,61 @@ const express = require('express');
 const pool = require('../connection/DBconnect');
 const router = express.Router();
 
-// Ottieni tutti i pacchetti tematici con i prodotti associati
+// Ottieni tutti i pacchetti tematici
 router.get('/', async (req, res) => {
-  try {
-    // Query per ottenere i pacchetti con i prodotti associati
-    // Calcola dinamicamente il prezzo totale del pacchetto usando prezzo_scontato quando presente per ogni prodotto
-    const result = await pool.query(`
+  try { //gestisce errori
+    //mettiamo dentro results tutti  i pkt per usarli anche nella query successiva
+    const result = await pool.query(` 
       SELECT 
-        pt.id_pacchetto,
-        pt.nome,
-        pt.descrizione, 
-        -- Somma delle quantità * prezzo effettivo (prezzo_scontato se promo, altrimenti prezzo)
-        COALESCE(SUM(pp.quantita * (CASE WHEN p.promo = TRUE AND p.prezzo_scontato IS NOT NULL THEN p.prezzo_scontato ELSE p.prezzo END)), 0) AS prezzo_totale,
-        pt.immagine,
-         -- Conta solo i prodotti non bloccati associati al pacchetto
-        COUNT(p.id_prodotto) as numero_prodotti
-      FROM pacchetto_tematico pt
-      LEFT JOIN prodotto_pacchetto pp ON pt.id_pacchetto = pp.id_pacchetto
-      -- join prodotto ma escludendo quelli bloccati: i prodotti bloccati non contribuiscono al prezzo_totale
-      LEFT JOIN prodotto p ON pp.id_prodotto = p.id_prodotto AND p.bloccato = false
-      GROUP BY pt.id_pacchetto, pt.nome, pt.descrizione, pt.immagine
-      ORDER BY pt.id_pacchetto
+        id_pacchetto,
+        nome,
+        descrizione,
+        prezzo_totale,
+      FROM pacchetto_tematico
+      ORDER BY id_pacchetto
     `);
 
-    // Aggiungi URL completo dell'immagine a ogni pacchetto
-    const pacchettiConUrl = result.rows.map(pacchetto => ({
-      ...pacchetto,
-      immagine_url: pacchetto.immagine ? 
-        `http://localhost:3000/api/images/pacchetti/${pacchetto.immagine}` : 
-        'http://localhost:3000/api/images/pacchetti/default.jpg'
-    })).map(p => {
-      // assicurarsi che prezzo_totale sia numerico
-      const prezzoTot = p.prezzo_totale != null ? Number(p.prezzo_totale) : 0;
-      // applica sconto 15%
-      const prezzoScontato = Math.round((prezzoTot * 0.85) * 100) / 100;
-      return { ...p, prezzo_totale: prezzoTot, prezzo_scontato: prezzoScontato };
-    });
+    //viene fatta una map +promise all in modo che per ogni pacchetto viene eseguita una query separata con quell'unico id ( $1) in modo parallelo (Promise.all)
+    const pacchetti = await Promise.all(result.rows.map(async pacchetto => { //result.rows è un array di tutti i pacchetti tematici presi dal database. usiamo map per 
+      // Calcola il prezzo effettivo sommando i prezzi scontati dei prodotti (se promo) o i prezzi normali
+      const prodottiResult = await pool.query(`
+        SELECT p.prezzo, p.prezzo_scontato, p.promo, pp.quantita
+        FROM prodotto_pacchetto pp
+        JOIN prodotto p ON pp.id_prodotto = p.id_prodotto
+        WHERE pp.id_pacchetto = $1
+      `, [pacchetto.id_pacchetto]); //pacchetto.id_pacchetto contiene il primo id pacchetto, poi il secondo, ecc. e li manda uno ad uno in $1, presi da result.rows.map
+      let prezzoEffettivoPacchetto = 0;
+      prodottiResult.rows.forEach(prod => {
+        const quantita = prod.quantita || 1;
+        prezzoEffettivoPacchetto += (prod.promo && prod.prezzo_scontato != null ? Number(prod.prezzo_scontato) : Number(prod.prezzo)) * quantita; //Per ogni prodotto del pacchetto controlla se il prodotto è in promo (prod.promo è true) e ha un prezzo scontato (prod.prezzo_scontato non è null), allora usa il prezzo scontato. Altrimenti usa il prezzo normale (prod.prezzo). Moltiplica il prezzo scelto per la quantità di quel prodotto nel pacchetto. Somma questo valore a prezzoEffettivoPacchetto.
+      });
+      /*  Cosa fa:
+        1) Prima recupera tutti i pacchetti (result.rows).
+        2) Poi, per ogni pacchetto, fa una query separata per i prodotti di quel pacchetto.
+        3) Tutte queste query vengono avviate quasi in parallelo (Promise.all).
+        4) Alla fine hai un array di risultati, uno per ogni pacchetto, con tutte le elaborazioni fatte.
+        */
+      prezzoEffettivoPacchetto = Math.round(prezzoEffettivoPacchetto * 100) / 100;
+      const prezzoScontatoPacchetto = Math.round((prezzoEffettivoPacchetto * 0.85) * 100) / 100;
+      return {
+        /*
+        id_pacchetto: pacchetto.id_pacchetto,
+        nome: pacchetto.nome,
+        descrizione: pacchetto.descrizione*/
+        ...pacchetto,
+        prezzo_originale: pacchetto.prezzo_totale,
+        prezzo_scontato: prezzoScontatoPacchetto
+      };
+    }));
 
-    res.json(pacchettiConUrl);
+    res.json(pacchetti);
   } catch (err) {
     console.error('Errore nel recupero pacchetti:', err);
     res.status(500).json({ error: 'Errore nel recupero dei pacchetti' });
   }
 });
 
-// Ottieni dettagli di un singolo pacchetto con tutti i prodotti
+// Ottieni dettagli di un singolo pacchetto con tutti i prodotti 
 router.get('/:id', async (req, res) => {
   try {
     const pacchetto_id = req.params.id;
@@ -61,7 +71,7 @@ router.get('/:id', async (req, res) => {
     }
 
     const pacchetto = pacchettoResult.rows[0];
-
+    const prezzoTotale = pacchetto.prezzo_totale != null ? Number(pacchetto.prezzo_totale) : 0;
     // Prodotti del pacchetto
     const prodottiResult = await pool.query(`
       SELECT 
@@ -71,12 +81,9 @@ router.get('/:id', async (req, res) => {
         p.prezzo,
         p.prezzo_scontato,
         p.promo,
-        p.immagine,
         pp.quantita,
         m.nome as marchio,
-        c.nome as categoria,
-        -- prezzo effettivo per questo prodotto nel pacchetto
-        CASE WHEN p.promo = TRUE AND p.prezzo_scontato IS NOT NULL THEN p.prezzo_scontato ELSE p.prezzo END AS prezzo_effettivo
+        c.nome as categoria
       FROM prodotto_pacchetto pp
       JOIN prodotto p ON pp.id_prodotto = p.id_prodotto
       LEFT JOIN marchio m ON p.id_marchio = m.id_marchio 
@@ -84,45 +91,25 @@ router.get('/:id', async (req, res) => {
       WHERE pp.id_pacchetto = $1
     `, [pacchetto_id]);
 
-    // Aggiungi URL immagini ai prodotti
-    const prodottiConUrl = prodottiResult.rows.map(prodotto => ({
-      ...prodotto,
-      immagine_url: prodotto.immagine ? 
-        `http://localhost:3000/api/images/prodotti/${prodotto.immagine}` : 
-        'http://localhost:3000/api/images/prodotti/default.jpg'
+    const prodotti = prodottiResult.rows.map(prodotto => ({
+      ...prodotto //rende tutte le proprietà dell’oggetto prodotto
     }));
-
-    // Aggiungi URL immagine al pacchetto
-    pacchetto.immagine_url = pacchetto.immagine ? 
-      `http://localhost:3000/api/images/pacchetti/${pacchetto.immagine}` : 
-      'http://localhost:3000/api/images/pacchetti/default.jpg';
-
-    // Calcola il prezzo totale lato server (sommando prezzo_effettivo * quantita)
-    const prezzoTotaleCalcolato = prodottiConUrl.reduce((sum, p) => sum + (Number(p.prezzo_effettivo || p.prezzo) * Number(p.quantita || 0)), 0);
-
-    // Se almeno un prodotto del pacchetto è in promo o il prezzo calcolato differisce da quello memorizzato, aggiorna la tabella
-    const anyPromo = prodottiConUrl.some(p => p.promo === true);
-    const prezzoMemorizzato = pacchetto.prezzo_totale != null ? Number(pacchetto.prezzo_totale) : null;
-    if (anyPromo || prezzoMemorizzato === null || Number(prezzoTotaleCalcolato) !== prezzoMemorizzato) {
-      try {
-        await pool.query('UPDATE pacchetto_tematico SET prezzo_totale = $1 WHERE id_pacchetto = $2', [prezzoTotaleCalcolato, pacchetto_id]);
-        // aggiorna l'oggetto restituito
-        pacchetto.prezzo_totale = prezzoTotaleCalcolato;
-      } catch (updateErr) {
-        console.error('Errore aggiornamento prezzo_totale pacchetto:', updateErr);
-      }
-    } else {
-      // non cambiare il prezzo memorizzato
-      pacchetto.prezzo_totale = prezzoMemorizzato;
-    }
-
-    // Calcola prezzo scontato (15% off) sul totale calcolato/memorizzato
-    const prezzoTotaleFinale = pacchetto.prezzo_totale != null ? Number(pacchetto.prezzo_totale) : prezzoTotaleCalcolato;
-    const prezzoScontato = Math.round((prezzoTotaleFinale * 0.85) * 100) / 100;
-
+    //fa la stessa cosa di prima ma per un singolo pacchetto
+    // Calcola il prezzo effettivo sommando i prezzi scontati dei prodotti (se promo) o i prezzi normali
+    let prezzoEffettivoDettaglio = 0;
+    prodottiResult.rows.forEach(prod => {
+      const quantita = prod.quantita || 1;
+      prezzoEffettivoDettaglio += (prod.promo && prod.prezzo_scontato != null ? Number(prod.prezzo_scontato) : Number(prod.prezzo)) * quantita;
+    });
+    prezzoEffettivoDettaglio = Math.round(prezzoEffettivoDettaglio * 100) / 100;
+    const prezzoScontatoDettaglio = Math.round((prezzoEffettivoDettaglio * 0.85) * 100) / 100;
     res.json({
-      pacchetto: { ...pacchetto, prezzo_totale: prezzoTotaleFinale, prezzo_scontato: prezzoScontato },
-      prodotti: prodottiConUrl
+      pacchetto: {
+        ...pacchetto,
+        prezzo_originale: prezzoTotale,
+        prezzo_scontato: prezzoScontatoDettaglio
+      },
+      prodotti: prodotti
     });
   } catch (err) {
     console.error('Errore nel recupero dettagli pacchetto:', err);

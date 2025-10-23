@@ -1,4 +1,3 @@
-
 <div class="home-page">
   <div class="package-TitoloParagrafo">PRODOTTI IN VETRINA</div>
 
@@ -13,14 +12,14 @@
   </div>
 
   <!-- Prodotti in vetrina dal database -->
-  <div class="films-row" *ngIf="!loadingVetrina && !errorVetrina">
+  <div class="vetrina-griglia" *ngIf="!loadingVetrina && !errorVetrina">
     <!-- Messaggio quando non ci sono prodotti in vetrina -->
     <div *ngIf="(!prodottiInVetrina || prodottiInVetrina.length === 0)" class="empty-message">
       <p>Al momento non ci sono prodotti in vetrina. Controlla più tardi o visita il catalogo.</p>
     </div>
 
-    <div class="film-card" *ngFor="let prodotto of prodottiInVetrina | slice:0:3" (click)="vaiAlDettaglioProdotto(prodotto)" style="cursor:pointer;">
-      <div class="film-info">
+    <div class="prodotti-card" *ngFor="let prodotto of prodottiInVetrina " (click)="vaiAlDettaglioProdotto(prodotto)" style="cursor:pointer;">
+      <div class="prodotti-info">
         <img [src]="prodotto.immagine_url" [alt]="prodotto.nome" class="prodotto-img" />
         <h2>{{ prodotto.nome }}</h2>
         <p>{{ prodotto.categoria || 'Categoria' }}</p>
@@ -45,10 +44,10 @@
     <p>{{ error }}</p>
   </div>
 
-  <!-- Prodotti dal database -->
-  <div class="films-row" *ngIf="!loading && !error">
-    <div class="film-card" *ngFor="let prodotto of prodottiInEvidenza | slice:0:3" (click)="vaiAlDettaglioProdotto(prodotto)" style="cursor:pointer;">
-      <div class="film-info">
+  <!-- Prodotti dal database più acquistati -->
+  <div class="prodotti-row" *ngIf="!loading && !error">
+    <div class="prodotti-card" *ngFor="let prodotto of prodottiInEvidenza | slice:0:3" (click)="vaiAlDettaglioProdotto(prodotto)" style="cursor:pointer;">
+      <div class="prodotti-info">
         <img [src]="prodotto.immagine_url" [alt]="prodotto.nome" class="prodotto-img" />
         <h2>{{ prodotto.nome }}</h2>
       </div>
@@ -74,8 +73,8 @@
       <h2>{{ pacchetto.nome }}</h2>
       <div class="package-paragrafo">{{ pacchetto.descrizione }}</div>
       <div class="package-price">
-        <span class="price-original">€{{ pacchetto.prezzo_totale }}</span>
-        <span class="price-discount">€{{ pacchetto.prezzo_scontato }}</span>
+  <span class="price-original">€{{ pacchetto.prezzo_originale }}</span>
+  <span class="price-discount">€{{ pacchetto.prezzo_scontato }}</span>
       </div>
       <div class="package-actions">
         <button class="btn-primary" (click)="vaiADettaglioPacchetto(pacchetto); $event.stopPropagation()">Aggiungi al carrello</button>
@@ -102,7 +101,7 @@
       </div>
       
       <div class="news-card" (click)="vaiANovita('rog-phone-9-pro')">
-        <img src="assets/1.jpg" alt="ROG Phone 9 Pro" class="news-img" />
+        <img src="assets/AI.jpg" alt="ROG Phone 9 Pro" class="news-img" />
         <h3>AI gaming con ROG Phone 9 Pro</h3>
         <p>Ecco come il ROG Phone 9 Pro rivoluziona il gaming su mobile c...</p>
       </div>

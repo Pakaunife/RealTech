@@ -6,8 +6,8 @@
     <div class="offerte-header">
       <h1>{{ pacchettoDettaglio.pacchetto.nome }}</h1>
       <div class="package-price">
-        <span class="price-original">€{{ pacchettoDettaglio.pacchetto.prezzo_totale }}</span>
-        <span class="price-discount">€{{ pacchettoDettaglio.pacchetto.prezzo_scontato }}</span>
+  <span class="price-original">€{{ pacchettoDettaglio.pacchetto.prezzo_originale }}</span>
+  <span class="price-discount">€{{ pacchettoDettaglio.pacchetto.prezzo_scontato }}</span>
       </div>
       <div class="package-paragrafo">{{ pacchettoDettaglio.pacchetto.descrizione }}</div>
     </div>
@@ -32,9 +32,12 @@
         <p>Questo pacchetto non contiene prodotti visibili al pubblico.</p>
       </div>
     </div>
-
+    
     <div class="back-button">
       <button (click)="back()" class="btn-back">← Torna indietro</button>
+    </div>
+    <div class="add-to-cart">
+      <button class="btn-primary" (click)="aggiungiAlCarrello()">Aggiungi al carrello</button>
     </div>
   </div>
 </div>

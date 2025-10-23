@@ -6,9 +6,9 @@ export interface Pacchetto { //indica quali "proprietà" ha in questo caso un pa
   nome: string;
   id_pacchetto: number;
   descrizione: string;
-  prezzo_totale: number;
+  prezzo_originale: number;
+  prezzo_effettivo: number;
   prezzo_scontato: number;
-  immagine: string;
 }
 
 export interface PacchettoDettaglio { //ha sia pacchetto come quello sopra più un array di prodotti inclusi

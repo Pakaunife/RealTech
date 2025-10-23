@@ -3,8 +3,8 @@
 }
 .package-card {
   max-width: 600px;        /* Limita la larghezza massima */
-  width: 100%;             /* Occupa tutta la larghezza disponibile */            /* Altezza automatica */
-  /* Effetto semi-trasparente tipo glass, coordinato con .film-card */
+  width: 100%;             /* Occupa tutta la larghezza disponibile */            
+  /* Effetto semi-trasparente */
   background-color: rgba(23, 28, 36, 0.6);
   backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 255, 255, 0.06);
@@ -55,7 +55,7 @@
 }
 
 .price-discount {
-  color: #ffdd57; /* highlight color */
+  color: #ffdd57; 
   font-weight: 700;
   font-size: 1.6rem;
 }
@@ -79,6 +79,7 @@
   color: #fffbe6;
   margin-bottom: 6rem;
   letter-spacing: 0.1em;
+  margin-top: 0;
 }
 
 .btn-primary {
@@ -95,7 +96,7 @@
   background: #ff3d00;           
 }
 
-.films-row {
+.prodotti-row {
   display: flex;
   gap: 2rem;
   overflow-x: auto;
@@ -104,8 +105,7 @@
   margin-bottom: 5rem;
 }
 
-.film-card {
-  border-radius: 18px;
+.prodotti-card {
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -117,13 +117,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 30px;
   /* semi-trasparente per effetto glass */
   background-color: rgba(23, 28, 36, 0.6);
   backdrop-filter: blur(4px);
+  border-radius: 18px;
 }
 
-.film-card:hover {
+.prodotti-card:hover {
   transform: translateY(-5px);
 }
 
@@ -133,13 +133,13 @@
   height: 220px;
   object-fit: contain;
 }
-.film-info {
+.prodotti-info {
   text-align: center;
   margin-bottom: 30px;
   background: none;
 }
 
-.film-card h2 {
+.prodotti-card h2 {
   color: #ffffff;
   font-size: 1.5rem;
   margin: 1rem 0.6rem 0.4rem;
@@ -147,7 +147,7 @@
   letter-spacing: 0.05em;
 }
 
-.film-card p {
+.prodotti-card p {
   color: #b0b8c4;
   font-size: 0.9rem;
   margin: 0 0.8rem 0.8rem;
@@ -175,7 +175,7 @@
   color: #ff3d00;
 }
 
-body, .home-page, .package-card, .film-card, h1, h2, h3, p, button {
+body, .home-page, .package-card, .prodotti-card, h1, h2, h3, p, button {
   font-family: 'Segoe UI', 'Arial', 'Helvetica', 'Verdana', 'Tahoma', sans-serif;
 }
 .home-page {
@@ -183,7 +183,7 @@ body, .home-page, .package-card, .film-card, h1, h2, h3, p, button {
   flex-direction: column;
   align-items: center; /* Centra tutti i contenuti orizzontalmente */
   width: 100%;
-  margin-top: 6rem;
+  margin-top: 2rem;
 }
 
 /* Stili per la sezione novità */
@@ -211,7 +211,6 @@ body, .home-page, .package-card, .film-card, h1, h2, h3, p, button {
   letter-spacing: 0.1em;
 
 }
-
 
 .news-row {
   display: flex;
@@ -286,4 +285,12 @@ body, .home-page, .package-card, .film-card, h1, h2, h3, p, button {
   color: #fffbe6;
   margin-bottom: 6rem;
   letter-spacing: 0.1em;
+}
+
+.vetrina-griglia {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  width: 80%;
+  margin-bottom: 100px;
 }
