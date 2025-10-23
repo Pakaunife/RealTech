@@ -197,14 +197,14 @@ export class Catalogo {
     return this.prodotti.filter(p => p.marchio === this.marcaSelezionata);
   }
 
-  aggiungiAlCarrello(prodotto: any): void {
+  aggiungiAlCarrello(prodotto: any): void { //prodotto contiene tutte le info del prodotto selezionato (vedi caricaProdottiCategoria)
     // Controlla disponibilità prima di aggiungere
     if (prodotto.quantita_disponibile <= 0) {
       alert('Prodotto non disponibile!');
       return;
     }
     
-    this.carrelloService.aggiungiAlCarrello(prodotto.id_prodotto, 1).subscribe({
+    this.carrelloService.aggiungiAlCarrello(prodotto.id_prodotto, 1).subscribe({ //aggungi 1 unità del prodotto al carrello
       next: () => {
         alert('Prodotto aggiunto al carrello!');
       },

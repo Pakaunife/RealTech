@@ -6,12 +6,12 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try { //gestisce errori
     //mettiamo dentro results tutti  i pkt per usarli anche nella query successiva
-    const result = await pool.query(` 
-      SELECT 
+    const result = await pool.query(`
+      SELECT
         id_pacchetto,
         nome,
         descrizione,
-        prezzo_totale,
+        prezzo_totale
       FROM pacchetto_tematico
       ORDER BY id_pacchetto
     `);

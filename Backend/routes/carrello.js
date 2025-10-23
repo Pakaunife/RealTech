@@ -30,8 +30,8 @@ router.post('/aggiungi', async (req, res) => {
     res.json({ success: true, message: 'Prodotto aggiunto al carrello' });
   } catch (err) {
     console.error('Errore in /aggiungiPacchetto:', err.stack || err);
-    // Per debug: ritorna messaggio e stack (rimuovere in produzione)
-    res.status(500).json({ error: err.message || 'Errore del server', stack: err.stack });
+    //debug log
+    res.status(500).json({ error: 'Errore del server' });
   }
 });
 
@@ -73,24 +73,28 @@ router.get('/:id_utente', async (req, res) => {
   try {
     const idUtente = req.params.id_utente;
 
-    // Recupera prodotti nel carrello
+    // Recupera prodotti nel carrello (includi informazioni promo/prezzo_scontato)
     const prodottiRes = await pool.query(`
-      SELECT c.id_prodotto, c.quantita, p.nome, p.prezzo, p.immagine
+      SELECT c.id_prodotto, c.quantita, p.nome, p.prezzo, p.prezzo_scontato, p.promo, p.immagine
       FROM carrello c
       JOIN prodotto p ON c.id_prodotto = p.id_prodotto
       WHERE c.id_utente = $1
       ORDER BY c.id_prodotto
     `, [idUtente]);
 
-    const prodotti = prodottiRes.rows.map(item => ({
-      tipo: 'prodotto',
-      id_prodotto: item.id_prodotto,
-      quantita: item.quantita,
-      nome: item.nome,
-      prezzo: item.prezzo,
-      immagine: item.immagine,
-      immagine_url: item.immagine ? `http://localhost:3000/api/images/prodotti/${item.immagine}` : 'http://localhost:3000/api/images/prodotti/default.jpg'
-    }));
+    const prodotti = prodottiRes.rows.map(item => {
+      // Se il prodotto è in promo e prezzo_scontato è valorizzato, usare quello
+      const prezzoUsato = (item.promo && item.prezzo_scontato != null) ? Number(item.prezzo_scontato) : Number(item.prezzo);
+      return {
+        tipo: 'prodotto',
+        id_prodotto: item.id_prodotto,
+        quantita: item.quantita,
+        nome: item.nome,
+        prezzo: Math.round(prezzoUsato * 100) / 100,
+        immagine: item.immagine,
+        immagine_url: item.immagine ? `http://localhost:3000/api/images/prodotti/${item.immagine}` : 'http://localhost:3000/api/images/prodotti/default.jpg'
+      };
+    });
 
     // Recupera pacchetti nel carrello
     const pacchettiRes = await pool.query(`

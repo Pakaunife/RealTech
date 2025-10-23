@@ -24,19 +24,19 @@ export class CarrelloService {
   }
 
   // qua permette solo utenti autenticati possono gestire il carrello
-  aggiungiAlCarrello(idProdotto: number, quantita: number): Observable<any> {
+  aggiungiAlCarrello(idProdotto: number, quantita: number): Observable<any> { //prepara la chiamata HTTP con i dati necessari
     const idUtente = this.getIdUtente(); //prende id utente da sopra 
     if (!idUtente) {
       throw new Error('Utente non autenticato. Effettua il login per aggiungere prodotti al carrello.');
     }
     
-    return this.http.post(`${this.baseUrl}/aggiungi`, {
+    return this.http.post(`${this.baseUrl}/aggiungi`, { //fa la chiamata al backend post con i dati necessari
       id_utente: idUtente,
       id_prodotto: idProdotto,
       quantita: quantita
     }).pipe(
-      tap(() => this.caricaCarrello())
-    );
+      tap(() => this.caricaCarrello()) //appena tarmina la post aggiorna il carrello nel frontend
+    ); // chiama private caricaCarrello() per aggiornare il carrello locale
   }
 
   // Aggiungi pacchetto al carrello (chiamata al backend)

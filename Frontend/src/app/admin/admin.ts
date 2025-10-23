@@ -122,8 +122,6 @@ get prodottiFiltrati() {
   return prodotti;
 }
 
-
-
 apriFormProdotto() {
   this.prodottoForm = {
     nome: '',
@@ -217,7 +215,6 @@ onFileSelected(event: any) {
 
   tornaAOrdiniUtente() {
     this.chiudiDettaglioOrdine();
-    
   }
 
   cambiaStatoOrdine(ordine: any, nuovoStato: string) {
@@ -367,8 +364,6 @@ modificaProdotto(prodotto: any) {
 
 }
 
-
-
 bloccaProdotto(prodotto: any) {
   this.http.patch(`${this.baseUrl}/products/${prodotto.id}/blocco`, { bloccato: !prodotto.bloccato }).subscribe({
     next: () => this.loadProdotti(),
@@ -399,10 +394,8 @@ salvaProdotto() {
         alert('Errore durante la verifica del prodotto: ' + (err.error?.message || err.message));
       }
     });
-  } 
-      
-      
-    
+  }
+
   uploadAndInviaProdotto() {
     console.log('uploadAndInviaProdotto chiamato');
   console.log('selectedFile:', this.selectedFile); 
@@ -535,8 +528,6 @@ inviaProdotto() {
     });
   }
 }
-
-
 }
 
 
