@@ -37,8 +37,8 @@
           <div class="prodotto-nome">{{ p.nome }}</div>
           <div class="prodotto-dettagli">
             <span class="prodotto-quantita">Quantità: {{ p.quantita }}</span>
-            <span class="prodotto-prezzo">Prezzo: € {{ getPrezzoUnitario(p) | number:'1.2-2' }}</span>
-            <span class="prodotto-subtotale">Subtotale: € {{ getSubtotaleProdotto(p) | number:'1.2-2' }}</span>
+            <span class="prodotto-prezzo">Prezzo:  {{ getPrezzoUnitario(p) | number:'1.2-2' }}€</span>
+            <span class="prodotto-subtotale">Subtotale:{{ getSubtotaleProdotto(p) | number:'1.2-2' }} € </span>
           </div>
         </div>
       </li>

@@ -101,21 +101,20 @@ router.get('/popular', async (req, res) => {
   try {
     // prende i prodotti più acquistati (somma delle quantità)
     const result = await pool.query(`
-  SELECT 
-    p.id_prodotto, 
-    p.nome, 
-  CASE WHEN p.promo = TRUE AND p.prezzo_scontato IS NOT NULL THEN p.prezzo_scontato ELSE p.prezzo END AS prezzo,
-  p.prezzo_scontato,
-        p.descrizione, 
-        p.immagine, 
-        p.quantita_disponibile,
-        COALESCE(SUM(a.quantita), 0) AS total_purchased
-      FROM prodotto p
-      LEFT JOIN acquisti a ON p.id_prodotto = a.id_prodotto
-      WHERE p.quantita_disponibile > 0 AND p.bloccato = false
-      GROUP BY p.id_prodotto, p.nome, p.prezzo, p.descrizione, p.immagine, p.quantita_disponibile
-      ORDER BY total_purchased DESC, p.nome
-      LIMIT 3
+    SELECT 
+      p.id_prodotto,
+      p.nome,
+      CASE WHEN p.promo = TRUE AND p.prezzo_scontato IS NOT NULL THEN p.prezzo_scontato ELSE p.prezzo END AS prezzo,
+      p.descrizione,
+      p.immagine,
+      p.quantita_disponibile,
+      COALESCE(SUM(op.quantita), 0) AS total_purchased
+    FROM prodotto p
+    LEFT JOIN ordine_prodotti op ON p.id_prodotto = op.prodotto_id
+    WHERE p.quantita_disponibile > 0 AND p.bloccato = false
+    GROUP BY p.id_prodotto, p.nome, p.prezzo, p.prezzo_scontato, p.descrizione, p.immagine, p.quantita_disponibile, p.promo
+    ORDER BY total_purchased DESC, p.nome
+    LIMIT 3;
     `);
 
     const prodottiPopular = result.rows.map(prodotto => ({

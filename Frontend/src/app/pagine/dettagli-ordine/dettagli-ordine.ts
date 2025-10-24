@@ -34,14 +34,9 @@ export class DettagliOrdine implements OnInit {
     this.orderService.getDettaglioOrdine(orderId).subscribe({
       next: (data) => {
         console.log('Dati ricevuti dal backend:', data);
-        
         this.ordine = data.ordine;
         this.prodotti = data.prodotti;
         
-        console.log('Ordine completo:', this.ordine);
-        console.log('Metodo pagamento RAW:', this.ordine?.metodo_pagamento); // <-- debug specifico
-        console.log('Tipo metodo pagamento:', typeof this.ordine?.metodo_pagamento); // <-- debug tipo
-        console.log('Prodotti:', this.prodotti);
         
         this.calcolaRiepilogo();
         this.loading = false;
@@ -74,10 +69,7 @@ export class DettagliOrdine implements OnInit {
       this.scontoApplicato = Math.max(0, this.subtotale - this.totaleFinale);
     }
     
-    console.log('Riepilogo calcolato:');
-    console.log('- Subtotale:', this.subtotale);
-    console.log('- Sconto:', this.scontoApplicato);
-    console.log('- Totale finale:', this.totaleFinale);
+
   }
   
   // Metodo helper per ottenere il prezzo unitario
@@ -91,10 +83,6 @@ export class DettagliOrdine implements OnInit {
   }
 
   getMetodoPagamento(metodo: any): string {
-  console.log('getMetodoPagamento chiamato con:', metodo);
-  console.log('Tipo parametro:', typeof metodo);
-  console.log('Valore === null:', metodo === null);
-  console.log('Valore === undefined:', metodo === undefined);
   
   // Gestione più specifica dei casi null/undefined
   if (metodo === null || metodo === undefined) {

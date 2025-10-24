@@ -9,7 +9,7 @@
     <h3>Riepilogo Ordine</h3>
     <div>
       <div *ngFor="let prodotto of carrello$ | async" class="prodotto-order">
-        <img [src]="prodotto.immagine_url || 'http://localhost:3000/api/images/prodotti/default.jpg'" 
+        <img [src]="prodotto.immagine_url" 
              [alt]="prodotto.nome">
         <div>
           <h4>{{ prodotto.nome }}</h4>

@@ -66,14 +66,14 @@ router.get('/:id/stato', authenticateToken, async (req, res) => {
 router.get('/user/:userId', async (req, res) => {
   const userId = req.params.userId;
   try {
-    const result = await pool.query('SELECT * FROM ordini WHERE user_id = $1', [userId]);
+    const result = await pool.query('SELECT * FROM ordini WHERE user_id = $1 ORDER BY data_ordine DESC', [userId]);
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: 'Errore nel recupero ordini' });
   }
 });
 
-router.get('/:orderId', async (req, res) => {
+router.get('/:orderId', authenticateToken, async (req, res) => {
   const orderId = req.params.orderId;
   try {
     console.log('Recupero dettagli ordine ID:', orderId); // Debug
@@ -92,7 +92,7 @@ router.get('/:orderId', async (req, res) => {
          nome_intestatario,
          numero_carta_mascherato,
          coupon_utilizzato
-       FROM ordini WHERE id = $1`, [orderId]
+         FROM ordini WHERE id = $1`, [orderId]
     );
     
     if (ordineResult.rows.length === 0) {
@@ -100,7 +100,6 @@ router.get('/:orderId', async (req, res) => {
     }
     
     const ordine = ordineResult.rows[0];
-    console.log('Ordine recuperato dal database:', ordine); // Debug
 
     const prodottiResult = await pool.query(
       `SELECT 
@@ -118,8 +117,6 @@ router.get('/:orderId', async (req, res) => {
        JOIN prodotto p ON op.prodotto_id = p.id_prodotto
        WHERE op.ordine_id = $1`, [orderId]
     );
-
-    console.log('Prodotti recuperati:', prodottiResult.rows); // Debug
 
     res.json({ 
       ordine: ordine, 

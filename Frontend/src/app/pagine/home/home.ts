@@ -125,25 +125,7 @@ if (this.isLoggedIn) {
       error: (err) => {
         console.error('Errore nel caricamento prodotti:', err);
         this.error = 'Errore nel caricamento dei prodotti';
-        this.loading = false;
-        // Fallback ai dati fittizi in caso di errore
-        this.prodottiInEvidenza = [
-          {
-            nome: 'periferiche',
-            immagine_url: '/assets/periferiche.png',
-            categoria: 'Hardware'
-          },
-          {
-            nome: 'case',
-            immagine_url: '/assets/case.png',
-            categoria: 'Hardware'
-          },
-          {
-            nome: 'componenti PC',
-            immagine_url: '/assets/pc.png',
-            categoria: 'Hardware'
-          }
-        ];
+        this.loading = false;   
       }
     });
   }
