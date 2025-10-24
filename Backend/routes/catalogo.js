@@ -149,7 +149,7 @@ router.get('/search/suggestions', async (req, res) => {
   try {
     const { q, limit = 5 } = req.query;
     
-    if (!q || q.trim().length < 2) {
+    if (!q || q.trim().length < 1) {
       return res.json([]);
     }
     
