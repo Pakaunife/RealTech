@@ -17,7 +17,7 @@
       <h3>← Torna ai Prodotti</h3>
       <p>Clicca per tornare alla lista</p>
     </div>
-    <div *ngIf="arrivoDaHome" class="categoria-card" (click)="tornaAllaHome()">
+    <div *ngIf="arrivoDaHome" class="back-card-dettaglio" (click)="tornaAllaHome()">
       <h3>← Torna alla Home</h3>
       <p>Clicca per tornare alla pagina principale</p>
     </div>
@@ -34,6 +34,9 @@
               [disabled]="prodottoSelezionato?.quantita_disponibile <= 0">
         {{ prodottoSelezionato?.quantita_disponibile > 0 ? 'Aggiungi al carrello' : 'Non disponibile' }}
       </button>
+      <button class="wishlist-btn" (click)="aggiungiAWishlist(prodottoSelezionato)">
+        <span class="cuore">&#10084;</span>
+        </button>
     </div>
   </div>
   <!-- Vista Prodotti -->

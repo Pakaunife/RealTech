@@ -46,4 +46,19 @@ router.delete('/:user_id/:prodotto_id', async (req, res) => {
   }
 });
 
+
+router.get('/check/:user_id/:prodotto_id', async (req, res) => {
+  const { user_id, prodotto_id } = req.params;
+  try {
+    const result = await pool.query(
+      'SELECT 1 FROM wish_list WHERE user_id = $1 AND prodotto_id = $2',
+      [user_id, prodotto_id]
+    );
+    res.json({ presente: result.rowCount > 0 });
+  } catch (err) {
+    res.status(500).json({ error: 'Errore nel controllo wishlist' });
+  }
+});
+
+
 module.exports = router;
