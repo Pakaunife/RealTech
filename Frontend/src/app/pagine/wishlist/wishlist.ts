@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
 import { NgFor, DecimalPipe, NgIf } from '@angular/common';
-import { WishListService } from '../../services/wishlistService';
+import { WishListService } from '../../services/wishlist.service';
 import { Router } from '@angular/router';
 import { CarrelloService } from '../../services/carrello.service';
 import { FormsModule } from '@angular/forms';
@@ -45,26 +45,6 @@ export class Wishlist implements OnInit {
   } else {
     this.selectedIds.push(id);
   }
-}
-
-aggiungiSelezionatiAlCarrello() {
-  const idsDaAggiungere = [...this.selectedIds];
-  let operazioniCompletate = 0;
-
-  idsDaAggiungere.forEach(id => {
-    this.carrelloService.aggiungiAlCarrello(id, 1).subscribe(() => {
-      this.wishlistService.rimuovi(id).subscribe(() => {
-        this.wishlist = this.wishlist.filter(p => p.id !== id);
-        operazioniCompletate++;
-       
-        if (operazioniCompletate === idsDaAggiungere.length) {
-          this.router.navigate(['/carrello']);
-        }
-      });
-    });
-  });
-
-  this.selectedIds = [];
 }
 
 mostraProdotto(prodottoId: number) {

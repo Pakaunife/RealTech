@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CarrelloService } from '../../services/carrello.service';
 import { CatalogoService } from '../../services/catalogo.service';
+import { SuggestedService } from '../../services/suggested.service';
 
 @Component({
   selector: 'app-catalogo',
@@ -19,7 +20,7 @@ export class Catalogo {
   prodotti: any[] = [];
   prodottoSelezionato: any = null;
   
-  // Gestione stati, variabili booleane per gestire quale sezione mostrare nella pagina.
+  // Gestione stati, ariabili booleane per gestire quale sezione mostrare nella pagina.
   mostraCategorie: boolean = true;
   mostraProdotti: boolean = false;
   mostraDettaglio: boolean = false;
@@ -32,12 +33,20 @@ export class Catalogo {
   searchQuery: string = '';
   isSearchMode: boolean = false;
   
-  constructor(private http: HttpClient, private carrelloService: CarrelloService, private route: ActivatedRoute, private router: Router, private catalogoService: CatalogoService ) {
-    this.route.queryParams.subscribe(params => { //params è un oggetto che contiene i parametri della query string (dopo il "?" es. ?prodottoId=42 diventa params['prodottoId'] = 42)
-      if (params['search']) { //se dentro params cè un parametro chiamato "search" (compare quando usi barra di ricerca)
+  constructor(
+    private http: HttpClient, 
+    private carrelloService: CarrelloService, 
+    private route: ActivatedRoute, 
+    private router: Router, 
+    private catalogoService: CatalogoService, 
+    private suggestedService: SuggestedService )
+     {
+    this.route.queryParams.subscribe(params => {
+      if (params['search']) {
+        // Modalità ricerca
         this.searchQuery = params['search'];
         this.isSearchMode = true;
-        this.eseguiRicerca(params['search']); // fa una richiesta al backend per trovare i prodotti che corrispondono alla ricerca e li mostra nella pagina.
+        this.eseguiRicerca(params['search']);
       } else if (params['prodottoId']) {
         this.arrivoDaHome = true;
         this.caricaProdottoDettaglio(params['prodottoId']);
@@ -45,7 +54,7 @@ export class Catalogo {
         // Reset completo dello stato quando non ci sono parametri
         this.resetStato();
         this.arrivoDaHome = false;
-        this.caricaCategorie(); //carica tutte le categorie di prodotti dal backend
+        this.caricaCategorie();
       }
     });
   }
@@ -54,10 +63,15 @@ export class Catalogo {
     this.http.get<any>(`http://localhost:3000/api/catalogo/prodotto/${id}`).subscribe(
       prodotto => {
         if (prodotto) {
+      
           this.prodottoSelezionato = prodotto;
           this.mostraCategorie = false;
           this.mostraProdotti = false;
           this.mostraDettaglio = true;
+          this.suggestedService.salvaVisualizzazione(id).subscribe({
+          next: () => {},
+          error: (err) => console.error('Errore salvataggio visualizzazione:', err)
+        });
         } else {
           this.caricaCategorie();
         }
@@ -75,12 +89,11 @@ export class Catalogo {
 
 }
 
-//carica le categorie dal backend
   caricaCategorie() {
-    this.caricamento = true;  //footer flash
+    this.caricamento = true; //bug fix per caricamento footer flash
     this.http.get<any[]>('http://localhost:3000/api/catalogo/prodotti').subscribe(
-      dati => { 
-        this.categorie = dati; //quando arrivano i dati li salva in this.categorie
+      dati => {
+        this.categorie = dati;
         this.caricamento = false;
       },
       err => {
@@ -105,7 +118,7 @@ export class Catalogo {
       dati => {
         this.prodotti = dati; //Salva nell’array prodotti tutti i prodotti restituiti dal backend per quella categoria.
         // Estrai marche disponibili dai prodotti
-        this.marcheDisponibili = Array.from(new Set(dati.map(p => p.marchio).filter(m => !!m))); //prende da ogni prodotto solo il marchio rimuovendo eventuali valori nulli o undefined
+        this.marcheDisponibili = Array.from(new Set(dati.map(p => p.marchio).filter(m => !!m)));
         this.marcaSelezionata = ''; // Reset filtro marca
         this.caricamento = false;
       },
@@ -140,14 +153,17 @@ export class Catalogo {
       }
     );
   }
-
-  //non serve rifare una get in questo caso,basta prendere l’oggetto prodotto già presente e mostrarlo.
+  
   selezionaProdotto(prodotto: any) {
-    //in caricaProdottiDettaglio ho messo : this.prodottoSelezionato = prodotto;
     this.prodottoSelezionato = prodotto; //mostra solo il dettaglio del prodotto selezionato
     this.mostraCategorie = false;
     this.mostraProdotti = false;
     this.mostraDettaglio = true;
+    this.suggestedService.salvaVisualizzazione(this.prodottoSelezionato.id_prodotto).subscribe({
+          next: () => {},
+          error: (err) => console.error('Errore salvataggio visualizzazione:', err)
+        });
+    
   }
   
   tornaProdotti() {
@@ -164,14 +180,18 @@ export class Catalogo {
   tornaAlleCategorie() {
     // Se siamo in modalità ricerca, pulisci i parametri URL e torna alle categorie
     if (this.isSearchMode) {
-      this.router.navigate(['/catalogo']).then(() => {
-        this.resetStato();
-        this.caricaCategorie();
-      });
+      this.router.navigate(['/catalogo']);
       return;
     }
-    this.resetStato();
-    this.caricaCategorie();
+    
+    this.mostraCategorie = true;
+    this.mostraProdotti = false;
+    this.mostraDettaglio = false;
+    this.prodotti = [];
+    this.prodottoSelezionato = null;
+    this.categoriaSelezionata = '';
+    this.marcaSelezionata = '';
+    this.marcheDisponibili = [];
   }
 
   resetStato() {

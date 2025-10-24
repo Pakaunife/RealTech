@@ -3,6 +3,11 @@
   padding-bottom: 2rem;
   border-bottom: 2px solid #222;
 }
+.coupon-section {
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: none;
+}
 
 .admin-table-container {
  width: 90%;

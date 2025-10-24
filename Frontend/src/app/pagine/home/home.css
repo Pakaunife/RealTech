@@ -1,6 +1,4 @@
-*{
-  /* outline: red dashed 1px; */
-}
+
 .package-card {
   max-width: 600px;        /* Limita la larghezza massima */
   width: 100%;             /* Occupa tutta la larghezza disponibile */            
@@ -294,3 +292,4 @@ body, .home-page, .package-card, .prodotti-card, h1, h2, h3, p, button {
   width: 80%;
   margin-bottom: 100px;
 }
+

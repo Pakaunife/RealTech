@@ -32,6 +32,28 @@
     </div>
   </div>
 
+   <div *ngIf="prodottiSuggeriti.length > 0" class="package-TitoloParagrafo" style="margin-top:2rem;">
+  PRODOTTI CONSIGLIATI PER TE
+</div>
+
+<!-- Griglia suggeriti -->
+<div class="vetrina-griglia" *ngIf="prodottiSuggeriti.length > 0">
+  <div class="prodotti-card" *ngFor="let prodotto of prodottiSuggeriti" (click)="vaiAlDettaglioProdotto(prodotto)" style="cursor:pointer;">
+    <div class="prodotti-info">
+      <img [src]="prodotto.immagine_url" [alt]="prodotto.nome" class="prodotto-img" />
+      <h2>{{ prodotto.nome }}</h2>
+      <p>{{ prodotto.categoria || 'Categoria' }}</p>
+      <div class="prodotto-meta">
+        <span class="prezzo">{{ prodotto.prezzo }}€</span>
+        <!-- Badge opzionale per suggeriti -->
+        <span *ngIf="prodotto.suggerito" class="badge-vetrina">Suggerito</span>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  
+
   <div class="package-TitoloParagrafo">PRODOTTI PIÙ ACQUISTATI</div>
   
   <!-- Loading indicator -->
@@ -43,6 +65,9 @@
   <div *ngIf="error && !loading" class="error-message">
     <p>{{ error }}</p>
   </div>
+
+
+
 
   <!-- Prodotti dal database più acquistati -->
   <div class="prodotti-row" *ngIf="!loading && !error">
@@ -89,13 +114,13 @@
     <!-- Prima fila: 3 card -->
     <div class="news-row news-row-top">
       <div class="news-card" (click)="vaiANovita('notebook-gaming-2025')">
-        <img src="assets/2.jpg" alt="Miglior notebook per studenti" class="news-img" />
+        <img src="assets/news-notebook.jpg" alt="Miglior notebook per studenti" class="news-img" />
         <h3>Miglior notebook per studenti e gamer del 2025</h3>
         <p>Non importa il percorso di studi, ROG ha il notebook perfetto per...</p>
       </div>
       
       <div class="news-card" (click)="vaiANovita('raffreddamento-smartphone')">
-        <img src="assets/3.jpg" alt="Sistema raffreddamento" class="news-img" />
+        <img src="assets/news-cooling.jpg" alt="Sistema raffreddamento" class="news-img" />
         <h3>Sistema di raffreddamento negli smartphone gaming</h3>
         <p>Come ROG rivoluziona il mobile gaming grazie a soluzioni di raff...</p>
       </div>
@@ -110,13 +135,13 @@
     <!-- Seconda fila: 2 card centrate -->
     <div class="news-row news-row-bottom">
       <div class="news-card" (click)="vaiANovita('command-center-z13')">
-        <img src="assets/6.jpg" alt="Command Center" class="news-img" />
+        <img src="assets/news-command-center.jpg" alt="Command Center" class="news-img" />
         <h3>Come funziona il Command Center del ROG Flow Z13</h3>
         <p>Il ROG Flow Z13 del 2025 è un PC gaming 2-in-1 che offre una vasta gamma di strumenti per personalizza...</p>
       </div>
       
       <div class="news-card" (click)="vaiANovita('vetrina-flow-z13')">
-        <img src="assets/5.jpg" alt="ROG Flow Z13 2025" class="news-img" />
+        <img src="assets/news-flow-z13.jpg" alt="ROG Flow Z13 2025" class="news-img" />
         <h3>Vetrina prodotti | ROG Flow Z13 2025</h3>
       <p>Il tablet da gaming più potente al mondo è tornato, ancora più potente grazie a un nuovissimo processore...</p>
     </div>
