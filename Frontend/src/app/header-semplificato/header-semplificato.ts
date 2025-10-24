@@ -66,7 +66,7 @@ export class HeaderSemplificato {
   toggleSignInMenu(event: MouseEvent) { event.stopPropagation(); this.showSignInMenu = !this.showSignInMenu; }
 
   @HostListener('document:click') onDocumentClick() { this.showSignInMenu = false; this.showSuggestions = false; }
-  @HostListener('document:keydown.escape') onEsc() { this.showSignInMenu = false; this.showSuggestions = false; this.showSearchOverlay = false; }
+  
 
   pulisciParametriCatalogo() { this.router.navigate(['/catalogo']); }
 
@@ -80,7 +80,16 @@ export class HeaderSemplificato {
 
   closeSearchOverlay() { this.showSearchOverlay = false; this.searchQuery = ''; this.showSuggestions = false; this.searchSuggestions = []; }
 
-  onSearchInput(event: any) { const query = event.target.value; this.searchQuery = query; this.searchSubject.next(query); }
+
+    onSearchInput(event: any) {
+      const query = event.target.value;
+      this.searchQuery = query;
+      this.searchSubject.next(query);
+      if (!query || query.trim().length === 0) {
+        this.searchSuggestions = [];
+        this.showSuggestions = false;
+      }
+    }
 
   selectSuggestion(product: any) { this.searchQuery = ''; this.showSuggestions = false; this.showSearchOverlay = false; this.router.navigate(['/catalogo'], { queryParams: { prodottoId: product.id_prodotto } }); }
 
