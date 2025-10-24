@@ -80,43 +80,5 @@ router.put('/password', authenticateToken, async (req, res) => {
   }
 });
 
-// Cambia email
-router.put('/email', authenticateToken, async (req, res) => {
-  const userId = req.user.id;
-  const { nuova_email, password } = req.body;
-  
-  try {
-    // Verifica la password
-    const result = await pool.query('SELECT password FROM utenti WHERE id = $1', [userId]);
-    
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'Utente non trovato' });
-    }
-    
-    const isValidPassword = await bcrypt.compare(password, result.rows[0].password);
-    
-    if (!isValidPassword) {
-      return res.status(400).json({ message: 'Password non corretta' });
-    }
-    
-    // Verifica se l'email è già usata
-    const emailCheck = await pool.query(
-      'SELECT id FROM utenti WHERE email = $1 AND id != $2',
-      [nuova_email, userId]
-    );
-    
-    if (emailCheck.rows.length > 0) {
-      return res.status(400).json({ message: 'Email già in uso' });
-    }
-    
-    // Aggiorna l'email
-    await pool.query('UPDATE utenti SET email = $1 WHERE id = $2', [nuova_email, userId]);
-    
-    res.json({ message: 'Email cambiata con successo' });
-  } catch (err) {
-    console.error('Errore nel cambio email:', err);
-    res.status(500).json({ message: err.message });
-  }
-});
 
 module.exports = router;
