@@ -43,7 +43,7 @@ app.get('/', (_req, res) => {
 app.use('/api/auth', RegisterRoutes);
 app.use('/api/auth', LoginRoutes);
 app.use('/api/products', ProductsRoutes);
-app.use('/api/products', SuggestedRoutes);
+app.use('/api/suggested', SuggestedRoutes);
 app.use('/api/orders', OrdersRoutes);
 app.use('/api/indirizzi', AddressesRoutes);
 app.use('/api/profile', ProfileRoutes);

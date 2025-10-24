@@ -46,7 +46,7 @@
   text-transform: uppercase;
 }
 
-.form-group input,
+
 .form-group select {
   padding: 0.9rem;
   border-radius: 8px;
@@ -55,6 +55,16 @@
   color: #fff;
   font-size: 1rem;
   transition: all 0.3s ease;
+}
+.form-group input {
+  padding: 0.9rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  color-scheme: dark;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {

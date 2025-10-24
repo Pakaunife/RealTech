@@ -23,17 +23,26 @@
         </div>
       </li>
 
-      <li *ngIf="user"><a routerLink="/profilo">Profilo</a></li>
       <li *ngIf="user"><a href="#" (click)="logout()">Logout</a></li>
       <li><a routerLink="/about">About</a></li>
       <li><a routerLink="/catalogo" (click)="pulisciParametriCatalogo()">Catalogo</a></li>
-      <li><a routerLink="/carrello">Carrello</a></li>
       <li *ngIf="user && (user.ruolo === 'admin' || user.ruolo === 'owner')"><a routerLink="/admin">Area Admin</a></li>
     </div>
 
     <div class="search-icon-trigger" (click)="toggleSearchOverlay()" title="Cerca prodotti">
-      <i class="fa-solid fa-search"></i>
-      <span>🔍</span>
+      <i class="fa fa-search"></i>
+    </div>
+      <div class="nav-icons">
+      <a routerLink="/profilo" class="nav-icon" title="Profilo">
+        <i class="fa-solid fa-user"></i>
+      </a>
+      <a routerLink="/carrello" class="nav-icon" title="Carrello">
+        <i class="fa-solid fa-shopping-cart"></i>
+        <span *ngIf="carrelloCount > 0" class="cart-badge">{{ carrelloCount }}</span>
+      </a>
+      <a routerLink="/wishlist" class="nav-icon" title="Wishlist">
+        <i class="fa-solid fa-heart"></i>
+      </a>
     </div>
   </nav>
 </header>
@@ -76,12 +85,11 @@
             [src]="suggestion.immagine_url" 
             [alt]="suggestion.nome"
             class="suggestion-image-expanded"
-            loading="lazy"
-            onerror="this.src='http://localhost:3000/api/images/prodotti/default.jpg'">
+            loading="lazy">
           <div class="suggestion-info-expanded">
             <h4 class="suggestion-name-expanded">{{ suggestion.nome }}</h4>
             <p class="suggestion-brand-expanded">{{ suggestion.marchio }}</p>
-            <div class="suggestion-price-expanded">€{{ suggestion.prezzo_scontato != null ? suggestion.prezzo_scontato : suggestion.prezzo }}</div>
+            <div class="suggestion-price-expanded">{{ suggestion.prezzo_scontato != null ? suggestion.prezzo_scontato : suggestion.prezzo }} €</div>
           </div>
         </div>
       </div>

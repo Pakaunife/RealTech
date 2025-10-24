@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CarrelloService } from '../../services/carrello.service';
 import { CatalogoService } from '../../services/catalogo.service';
+import { SuggestedService } from '../../services/suggested.service';
 
 @Component({
   selector: 'app-catalogo',
@@ -32,9 +33,23 @@ export class Catalogo {
   searchQuery: string = '';
   isSearchMode: boolean = false;
   
+<<<<<<< HEAD
   constructor(private http: HttpClient, private carrelloService: CarrelloService, private route: ActivatedRoute, private router: Router, private catalogoService: CatalogoService ) {
     this.route.queryParams.subscribe(params => { //params è un oggetto che contiene i parametri della query string (dopo il "?" es. ?prodottoId=42 diventa params['prodottoId'] = 42)
       if (params['search']) { //se dentro params cè un parametro chiamato "search" (compare quando usi barra di ricerca)
+=======
+  constructor(
+    private http: HttpClient, 
+    private carrelloService: CarrelloService, 
+    private route: ActivatedRoute, 
+    private router: Router, 
+    private catalogoService: CatalogoService, 
+    private suggestedService: SuggestedService )
+     {
+    this.route.queryParams.subscribe(params => {
+      if (params['search']) {
+        // Modalità ricerca
+>>>>>>> dae55312d23a4c20e8617b89e2a222311640ce88
         this.searchQuery = params['search'];
         this.isSearchMode = true;
         this.eseguiRicerca(params['search']); // fa una richiesta al backend per trovare i prodotti che corrispondono alla ricerca e li mostra nella pagina.
@@ -54,10 +69,15 @@ export class Catalogo {
     this.http.get<any>(`http://localhost:3000/api/catalogo/prodotto/${id}`).subscribe(
       prodotto => {
         if (prodotto) {
+      
           this.prodottoSelezionato = prodotto;
           this.mostraCategorie = false;
           this.mostraProdotti = false;
           this.mostraDettaglio = true;
+          this.suggestedService.salvaVisualizzazione(id).subscribe({
+          next: () => {},
+          error: (err) => console.error('Errore salvataggio visualizzazione:', err)
+        });
         } else {
           this.caricaCategorie();
         }
@@ -148,6 +168,11 @@ export class Catalogo {
     this.mostraCategorie = false;
     this.mostraProdotti = false;
     this.mostraDettaglio = true;
+    this.suggestedService.salvaVisualizzazione(this.prodottoSelezionato.id_prodotto).subscribe({
+          next: () => {},
+          error: (err) => console.error('Errore salvataggio visualizzazione:', err)
+        });
+    
   }
   
   tornaProdotti() {
