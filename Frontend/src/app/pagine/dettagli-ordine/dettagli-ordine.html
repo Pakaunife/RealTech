@@ -32,7 +32,7 @@
     <h3 class="sottotitolo">Prodotti ordinati</h3>
     <ul class="prodotti-lista">
       <li *ngFor="let p of prodotti" class="prodotto-riga">
-        <img *ngIf="p.immagine" [src]="p.immagine" alt="{{ p.nome }}" class="prodotto-img">
+        <img *ngIf="p.immagine_url" [src]="p.immagine_url" alt="{{ p.nome }}" class="prodotto-img">
         <div class="prodotto-info">
           <div class="prodotto-nome">{{ p.nome }}</div>
           <div class="prodotto-dettagli">

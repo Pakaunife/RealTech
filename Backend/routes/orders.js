@@ -111,7 +111,6 @@ router.get('/:orderId', authenticateToken, async (req, res) => {
          CASE 
            WHEN p.immagine IS NOT NULL 
            THEN CONCAT('http://localhost:3000/api/images/prodotti/', p.immagine)
-           ELSE 'http://localhost:3000/api/images/prodotti/default.jpg'
          END as immagine_url
        FROM ordine_prodotti op
        JOIN prodotto p ON op.prodotto_id = p.id_prodotto
