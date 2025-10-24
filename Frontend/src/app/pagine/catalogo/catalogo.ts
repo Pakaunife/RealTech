@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CarrelloService } from '../../services/carrello.service';
 import { CatalogoService } from '../../services/catalogo.service';
 import { SuggestedService } from '../../services/suggested.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-catalogo',
@@ -39,7 +40,8 @@ export class Catalogo {
     private route: ActivatedRoute, 
     private router: Router, 
     private catalogoService: CatalogoService, 
-    private suggestedService: SuggestedService )
+    private suggestedService: SuggestedService,
+    private authService: AuthService)
      {
     this.route.queryParams.subscribe(params => {
       if (params['search']) {
@@ -68,10 +70,11 @@ export class Catalogo {
           this.mostraCategorie = false;
           this.mostraProdotti = false;
           this.mostraDettaglio = true;
+          if (this.authService.isLoggedIn()) {
           this.suggestedService.salvaVisualizzazione(id).subscribe({
           next: () => {},
           error: (err) => console.error('Errore salvataggio visualizzazione:', err)
-        });
+        });}
         } else {
           this.caricaCategorie();
         }
@@ -159,11 +162,13 @@ export class Catalogo {
     this.mostraCategorie = false;
     this.mostraProdotti = false;
     this.mostraDettaglio = true;
-    this.suggestedService.salvaVisualizzazione(this.prodottoSelezionato.id_prodotto).subscribe({
-          next: () => {},
-          error: (err) => console.error('Errore salvataggio visualizzazione:', err)
-        });
-    
+    if (this.authService.isLoggedIn()) {
+      this.suggestedService.salvaVisualizzazione(this.prodottoSelezionato.id_prodotto).subscribe({
+        next: () => {},
+        error: (err) => console.error('Errore salvataggio visualizzazione:', err)
+      });
+    }
+
   }
   
   tornaProdotti() {
