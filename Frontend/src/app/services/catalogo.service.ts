@@ -23,7 +23,7 @@ export class CatalogoService {
     return this.http.get<any[]>(`${this.apiUrl}/prodotti/categoria/${nomeCategoria}`);
   }
 
-  // Ottieni tutti i brand
+  // Ottieni tutti i marchi
   getBrand(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/brand`);
   }
