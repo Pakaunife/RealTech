@@ -22,7 +22,7 @@ export class Carrello implements OnInit {
     // usa id_prodotto o id_pacchetto a seconda del tipo
     return item.tipo === 'pacchetto' ? `pacchetto-${item.id_pacchetto}` : `prodotto-${item.id_prodotto}`;
   }
-
+  //Inizializza carrello$ con this.carrelloService.ottieniCarrello().
   constructor(private carrelloService: CarrelloService, private router: Router, public auth: AuthService) {
     this.carrello$ = this.carrelloService.ottieniCarrello();
   }
@@ -44,14 +44,6 @@ export class Carrello implements OnInit {
   }
 }
 
-  rimuoviProdotto(idProdotto: number): void {
-    if (confirm('Vuoi rimuovere questo prodotto dal carrello?')) {
-      this.carrelloService.rimuoviDalCarrello(idProdotto).subscribe({
-        next: () => console.log('Prodotto rimosso'),
-        error: (err) => console.error('Errore:', err)
-      });
-    }
-  }
 
   // Nuovo: rimuove item (prodotto o pacchetto) in base al tipo
   rimuoviItem(item: any): void {
@@ -117,11 +109,10 @@ aggiornaQuantitaGuest(idProdotto: number, event: any): void {
   }
 }
 
-
   procediAlCheckout(): void {
     if (!this.auth.isLoggedIn()) {
       alert('Devi essere loggato per procedere al checkout.');
-    this.router.navigate(['/login'], { queryParams: { redirect: '/checkout' } });
+      this.router.navigate(['/login'], { queryParams: { redirect: '/checkout' } }); //se non loggato redirizza a /login
   } else {
     this.router.navigate(['/checkout']);
   }

@@ -76,6 +76,4 @@ router.post('/visualizza', authenticateToken, async (req, res) => {
   }
 });
 
-
-
 module.exports = router;

@@ -46,9 +46,9 @@ router.post('/checkout', async (req, res) => {
   try {
     await client.query('BEGIN');
     
-    // 1. Ottieni tutti i prodotti nel carrello dell'utente
+    // 1. Ottieni tutti i prodotti nel carrello dell'utente (includi promo/prezzo_scontato)
     const carrelloResult = await client.query(`
-      SELECT c.*, p.nome, p.prezzo, p.quantita_disponibile
+      SELECT c.*, p.nome, p.prezzo, p.prezzo_scontato, p.promo, p.quantita_disponibile
       FROM carrello c
       JOIN prodotto p ON c.id_prodotto = p.id_prodotto
       WHERE c.id_utente = $1
@@ -60,13 +60,16 @@ router.post('/checkout', async (req, res) => {
     
     const carrello = carrelloResult.rows;
     let totaleCalcolato = 0;
-    
-    // 2. Verifica disponibilità e calcola totale
+
+    // 2. Verifica disponibilità e calcola totale usando prezzo scontato se il prodotto è in promo
     for (const item of carrello) {
       if (item.quantita > item.quantita_disponibile) {
         throw new Error(`Quantità non disponibile per ${item.nome}. Disponibili: ${item.quantita_disponibile}`);
       }
-      totaleCalcolato += item.prezzo * item.quantita;
+      const prezzoUsato = (item.promo && item.prezzo_scontato != null) ? Number(item.prezzo_scontato) : Number(item.prezzo);
+      // salva il prezzo effettivo nell'item così lo puoi riutilizzare quando inserisci ordine/acquisti
+      item.prezzo_eff = Math.round(prezzoUsato * 100) / 100;
+      totaleCalcolato += item.prezzo_eff * item.quantita;
     }
     
     // Usa il totale passato dal frontend (con eventuali sconti applicati)
@@ -122,7 +125,7 @@ router.post('/checkout', async (req, res) => {
         ordineId,
         item.id_prodotto,
         item.quantita,
-        item.prezzo
+        item.prezzo_eff || item.prezzo
       ]);
       
       prodottiOrdine.push(prodottoOrdine.rows[0]);
@@ -147,7 +150,7 @@ router.post('/checkout', async (req, res) => {
         id_utente, 
         item.id_prodotto, 
         item.quantita, 
-        item.prezzo,
+        item.prezzo_eff || item.prezzo,
         metodo_pagamento,
         nome_intestatario,
         mascheraNumeroCarta(numero_carta),
