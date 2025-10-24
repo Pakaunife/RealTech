@@ -34,7 +34,7 @@ export class CatalogoService {
       return new Observable(observer => observer.next([])); //restituisce subito un array vuoto
     }
     return this.http.get<any[]>(`${this.apiUrl}/search/suggestions`, { //altrimenti fa una richiesta GET all'endpoint delle suggerimenti (catalogo.js)
-      params: { q: query.trim(), limit: limit.toString() } //params: serve a passare i parametri alla richiesta HTTP GET. (inviati come stringa senza spazi come un link)
+      params: { q: query.trim(), limit: limit } //params: serve a passare i parametri alla richiesta HTTP GET. (inviati come stringa senza spazi come un link)
     });
   }
 

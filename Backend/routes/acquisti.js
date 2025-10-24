@@ -179,27 +179,4 @@ router.post('/checkout', async (req, res) => {
   }
 });
 
-// Ottieni storico acquisti dell'utente
-router.get('/storico/:id_utente', async (req, res) => {
-  try {
-    const { rows } = await pool.query(`
-      SELECT a.*, p.nome as nome_prodotto, p.immagine,
-             CASE 
-               WHEN p.immagine IS NOT NULL 
-               THEN CONCAT('http://localhost:3000/api/images/prodotti/', p.immagine)
-               ELSE 'http://localhost:3000/api/images/prodotti/default.jpg'
-             END as immagine_url
-      FROM acquisti a
-      JOIN prodotto p ON a.id_prodotto = p.id_prodotto
-      WHERE a.id_utente = $1
-      ORDER BY a.data_acquisto DESC
-    `, [req.params.id_utente]);
-    
-    res.json(rows);
-  } catch (err) {
-    console.error('Errore recupero storico acquisti:', err);
-    res.status(500).json({ error: 'Errore del server' });
-  }
-});
-
 module.exports = router;

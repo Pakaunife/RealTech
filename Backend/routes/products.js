@@ -106,7 +106,7 @@ router.post('/insert', authenticateToken, async (req, res) => {
 
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
-  console.log('PUT /products/' + req.params.id + ' body:', req.body);
+
   // fetch existing product to determine prezzo (original) and prezzo_scontato
   const existingRes = await pool.query('SELECT * FROM prodotto WHERE id_prodotto = $1', [req.params.id]);
     if (existingRes.rowCount === 0) {

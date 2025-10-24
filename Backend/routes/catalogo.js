@@ -150,7 +150,7 @@ router.get('/brand', async (req, res) => {
 // Endpoint per suggerimenti di ricerca
 router.get('/search/suggestions', async (req, res) => {
   try {
-    const { q, limit = 5 } = req.query;
+    const { q, limit } = req.query;
     
     if (!q || q.trim().length < 2) {
       return res.json([]);
@@ -163,7 +163,6 @@ router.get('/search/suggestions', async (req, res) => {
     p.id_prodotto, 
     p.nome, 
   CASE WHEN p.promo = TRUE AND p.prezzo_scontato IS NOT NULL THEN p.prezzo_scontato ELSE p.prezzo END AS prezzo,
-  p.prezzo_scontato,
         p.immagine,
         m.nome AS marchio,
         c.nome AS categoria

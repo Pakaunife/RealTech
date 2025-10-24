@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CarrelloService } from '../../services/carrello.service';
 import { CatalogoService } from '../../services/catalogo.service';
 import { SuggestedService } from '../../services/suggested.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-catalogo',
@@ -39,7 +40,8 @@ export class Catalogo {
     private route: ActivatedRoute, 
     private router: Router, 
     private catalogoService: CatalogoService, 
-    private suggestedService: SuggestedService )
+    private suggestedService: SuggestedService,
+    private authService: AuthService )
      {
     this.route.queryParams.subscribe(params => {
       if (params['search']) {
@@ -58,6 +60,11 @@ export class Catalogo {
       }
     });
   }
+
+  isLoggedIn(): boolean {
+  return this.authService.isLoggedIn();
+}
+
   caricaProdottoDettaglio(id: number) { //da barra di ricerca entra dentro i prodotti
     // Richiedi direttamente il prodotto dal backend per garantire che il dettaglio venga mostrato
     this.http.get<any>(`http://localhost:3000/api/catalogo/prodotto/${id}`).subscribe(
@@ -68,10 +75,12 @@ export class Catalogo {
           this.mostraCategorie = false;
           this.mostraProdotti = false;
           this.mostraDettaglio = true;
-          this.suggestedService.salvaVisualizzazione(id).subscribe({
-          next: () => {},
-          error: (err) => console.error('Errore salvataggio visualizzazione:', err)
-        });
+          if (this.isLoggedIn()) {
+              this.suggestedService.salvaVisualizzazione(id).subscribe({
+                next: () => {},
+                error: (err) => console.error('Errore salvataggio visualizzazione:', err)
+              });
+            }
         } else {
           this.caricaCategorie();
         }
@@ -159,10 +168,12 @@ export class Catalogo {
     this.mostraCategorie = false;
     this.mostraProdotti = false;
     this.mostraDettaglio = true;
-    this.suggestedService.salvaVisualizzazione(this.prodottoSelezionato.id_prodotto).subscribe({
-          next: () => {},
-          error: (err) => console.error('Errore salvataggio visualizzazione:', err)
-        });
+    if (this.isLoggedIn()) {
+      this.suggestedService.salvaVisualizzazione(this.prodottoSelezionato.id_prodotto).subscribe({
+    next: () => {},
+    error: (err) => console.error('Errore salvataggio visualizzazione:', err)
+  });
+}
     
   }
   
@@ -221,7 +232,7 @@ export class Catalogo {
       alert('Prodotto non disponibile!');
       return;
     }
-    if (!this.carrelloService.isLoggedIn()) {
+    if (!this.authService.isLoggedIn()) {
     // Guest: salva nel localStorage
     let carrello = this.carrelloService.getCarrelloGuest();
     const esiste = carrello.find(item => item.id_prodotto === prodotto.id_prodotto);

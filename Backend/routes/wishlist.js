@@ -21,7 +21,6 @@ router.get('/:user_id', async (req, res) => {
 // Aggiungi un prodotto alla wishlist
 router.post('/', async (req, res) => {
   const { user_id, prodotto_id } = req.body;
-  console.log('Ricevuto:', req.body);
   try {
     await pool.query(
       `INSERT INTO wish_list (user_id, prodotto_id) VALUES ($1, $2)`, [user_id, prodotto_id]

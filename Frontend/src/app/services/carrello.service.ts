@@ -10,11 +10,14 @@ import { AuthService } from './auth.service';
 export class CarrelloService {
   private baseUrl = 'http://localhost:3000/api/carrello';
   
-  private carrelloSubject = new BehaviorSubject<any[]>([]);
+  private carrelloSubject = new BehaviorSubject<any[]>(this.getCarrelloGuest());
   public carrello$ = this.carrelloSubject.asObservable();
 
   constructor(private http: HttpClient, private authService: AuthService) {
-    this.caricaCarrello();
+
+    if (this.authService.isLoggedIn()) {
+      this.caricaCarrello();
+    }
   }
 
   //qui prende id utente dal token, Il token è firmato dal backend con una chiave segreta
@@ -60,6 +63,7 @@ export class CarrelloService {
     if (!idUtente) {
       throw new Error('Utente non autenticato. Effettua il login per gestire il carrello.');
     }
+    
     
     return this.http.delete(`${this.baseUrl}/rimuovi/${idUtente}/${idProdotto}`).pipe(
       tap(() => this.caricaCarrello())
@@ -160,6 +164,7 @@ export class CarrelloService {
 
 setCarrelloGuest(carrello: any[]): void {
   localStorage.setItem('carrelloGuest', JSON.stringify(carrello));
+  this.carrelloSubject.next(carrello); 
 }
 
 // Sincronizza il carrello guest con quello utente dopo il login
