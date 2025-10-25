@@ -7,7 +7,6 @@ export class AuthGuard implements CanActivate {
   constructor(private auth: AuthService, private router: Router) {}
 
   canActivate(route: ActivatedRouteSnapshot ): boolean {
-    const token = localStorage.getItem('token');
     const user = this.auth.getUser();
     // Se la rotta richiede admin 
    if (route.data['admin']) {

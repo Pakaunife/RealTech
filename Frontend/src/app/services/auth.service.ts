@@ -28,7 +28,7 @@ export class AuthService {
       try {
         return jwtDecode(token);
       } catch (error) {
-        // Token non valido, rimuovilo
+        // Token non valido
         localStorage.removeItem('token');
         return null;
       }
