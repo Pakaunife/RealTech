@@ -101,7 +101,7 @@
   <span class="price-discount">€{{ pacchetto.prezzo_scontato }}</span>
       </div>
       <div class="package-actions">
-        <button class="btn-primary" (click)="vaiADettaglioPacchetto(pacchetto); $event.stopPropagation()">Aggiungi al carrello</button>
+        <button [disabled]="true" class="btn-primary" style="cursor: not-allowed" (click)="vaiADettaglioPacchetto(pacchetto); $event.stopPropagation()">Coming soon...</button>
       </div>
     </div>
   </div>

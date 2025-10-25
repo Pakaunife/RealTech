@@ -37,7 +37,7 @@
       <button (click)="back()" class="btn-back">← Torna indietro</button>
     </div>
     <div class="add-to-cart">
-      <button class="btn-primary" (click)="aggiungiAlCarrello()">Aggiungi al carrello</button>
+      <button [disabled]="true" class="btn-primary" style="cursor: not-allowed" (click)="aggiungiAlCarrello()">Coming soon...</button>
     </div>
   </div>
 </div>

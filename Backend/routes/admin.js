@@ -4,6 +4,7 @@ const pool = require('../connection/DBconnect');
 const authenticateToken = require('../middleware/auth');
 const fs = require('fs');
 const path = require('path');
+const verifyAdmin = require('../middleware/verifyadmin');
 
 
 router.patch('/users/:id/block', authenticateToken,async (req, res) => {
@@ -15,14 +16,14 @@ router.patch('/users/:id/block', authenticateToken,async (req, res) => {
   res.json({ success: true, is_blocked: newStatus });
 });
 
-router.patch('/users/:id/admin', authenticateToken,async (req, res) => {
+router.patch('/users/:id/admin', authenticateToken, verifyAdmin, async (req, res) => {
   const userId = req.params.id;
   const { ruolo } = req.body;
   await pool.query('UPDATE utenti SET ruolo = $1 WHERE id = $2', [ruolo, userId]);
   res.json({ success: true, ruolo });
 });
 
-router.get('/statistiche-utenti',  authenticateToken,async (req, res) => {
+router.get('/statistiche-utenti',  authenticateToken, verifyAdmin, async (req, res) => {
   const userId = req.user.id;
   try {
     
@@ -54,7 +55,7 @@ router.get('/statistiche-utenti',  authenticateToken,async (req, res) => {
 });
 
 // Endpoint per ordini di un utente specifico (per l'admin)
-router.get('/users/:userId/ordini', authenticateToken, async (req, res) => {
+router.get('/users/:userId/ordini', authenticateToken, verifyAdmin, async (req, res) => {
   const userId = req.params.userId;
   try {
     console.log('Richiesta ordini per utente ID:', userId);
@@ -82,7 +83,7 @@ router.get('/users/:userId/ordini', authenticateToken, async (req, res) => {
   }
 });
 
-router.delete('/prodotti/:id', authenticateToken, async (req, res) => {
+router.delete('/prodotti/:id', authenticateToken, verifyAdmin, async (req, res) => {
   const prodottoId = req.params.id;
   
   try {
@@ -147,7 +148,7 @@ router.delete('/prodotti/:id', authenticateToken, async (req, res) => {
   }
 });
 
-router.get('/ordini/:ordineId/dettaglio', authenticateToken, async (req, res) => {
+router.get('/ordini/:ordineId/dettaglio', authenticateToken, verifyAdmin, async (req, res) => {
   const ordineId = req.params.ordineId;
   try {
     console.log('Richiesta dettaglio ordine ID:', ordineId);
@@ -191,7 +192,7 @@ router.get('/ordini/:ordineId/dettaglio', authenticateToken, async (req, res) =>
 });
 
 // AGGIUNGI endpoint per aggiornare stato ordine
-router.patch('/ordini/:ordineId/stato', authenticateToken, async (req, res) => {
+router.patch('/ordini/:ordineId/stato', authenticateToken, verifyAdmin, async (req, res) => {
   const ordineId = req.params.ordineId;
   const { stato, corriere, codice_spedizione, dettagli_pacco } = req.body;
   
@@ -254,7 +255,7 @@ router.patch('/ordini/:ordineId/stato', authenticateToken, async (req, res) => {
   }
 });
 
-router.delete('/utenti/:id', authenticateToken, async (req, res) => {
+router.delete('/utenti/:id', authenticateToken, verifyAdmin, async (req, res) => {
   try {
     await pool.query('DELETE FROM utenti WHERE id = $1', [req.params.id]);
     res.json({ success: true, message: 'Utente rimosso' });
