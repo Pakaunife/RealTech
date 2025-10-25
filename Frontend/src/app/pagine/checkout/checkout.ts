@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { CarrelloService } from '../../services/carrello.service';
 import { AcquistiService, DatiCheckout } from '../../services/acquisti.service';
 import { UserService } from '../../services/user.service'; // <-- usa UserService
-import { AuthService } from '../../services/auth.service';
 import { Observable } from 'rxjs';
 import { CouponService, CouponResponse } from '../../services/coupon.service';
 
@@ -60,8 +59,7 @@ export class Checkout implements OnInit {
   constructor(
     private carrelloService: CarrelloService,
     private acquistiService: AcquistiService,
-    private userService: UserService, // <-- usa UserService invece di IndirizziService
-    private authService: AuthService,
+    private userService: UserService, 
     private router: Router,
     private couponService: CouponService
   ) {
@@ -75,7 +73,7 @@ export class Checkout implements OnInit {
         return;
       }
       
-      this.totaleOriginale = carrello.reduce((total, prodotto) => {
+        this.totaleOriginale = carrello.reduce((total, prodotto) => {
         const unit = prodotto.prezzo_scontato != null ? prodotto.prezzo_scontato : prodotto.prezzo;
         return total + (unit * prodotto.quantita);
       }, 0);
@@ -122,7 +120,6 @@ export class Checkout implements OnInit {
 
   mostraNuovoIndirizzo(): void {
     this.mostraFormNuovoIndirizzo = true;
-    this.indirizzoSelezionato = null;
   }
 
   annullaNuovoIndirizzo(): void {
@@ -137,8 +134,7 @@ export class Checkout implements OnInit {
       this.nuovoIndirizzo.citta.trim() &&
       this.nuovoIndirizzo.paese.trim() &&
       this.nuovoIndirizzo.cap.trim() &&
-      this.nuovoIndirizzo.provincia.trim() &&
-      this.nuovoIndirizzo.telefono.trim()
+      this.nuovoIndirizzo.provincia.trim()
     );
   }
 
@@ -204,9 +200,18 @@ export class Checkout implements OnInit {
 
 private getIndirizzoCompleto(): string {
   if (this.indirizzoSelezionato) {
-    return `${this.indirizzoSelezionato.destinatario}, ${this.indirizzoSelezionato.indirizzo}, ${this.indirizzoSelezionato.citta} ${this.indirizzoSelezionato.cap}, ${this.indirizzoSelezionato.provincia}`;
+    return `${this.indirizzoSelezionato.destinatario}, 
+            ${this.indirizzoSelezionato.indirizzo}, 
+            ${this.indirizzoSelezionato.citta} 
+            ${this.indirizzoSelezionato.cap}, 
+            ${this.indirizzoSelezionato.provincia}`;
+
   } else if (this.validaNuovoIndirizzo()) {
-    return `${this.nuovoIndirizzo.destinatario}, ${this.nuovoIndirizzo.indirizzo}, ${this.nuovoIndirizzo.citta} ${this.nuovoIndirizzo.cap}, ${this.nuovoIndirizzo.provincia}`;
+    return `${this.nuovoIndirizzo.destinatario}, 
+            ${this.nuovoIndirizzo.indirizzo}, 
+            ${this.nuovoIndirizzo.citta}
+            ${this.nuovoIndirizzo.cap}, 
+            ${this.nuovoIndirizzo.provincia}`;
   }
   return '';
 }
