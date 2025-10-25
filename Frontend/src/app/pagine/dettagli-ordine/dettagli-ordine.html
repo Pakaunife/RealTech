@@ -32,13 +32,13 @@
     <h3 class="sottotitolo">Prodotti ordinati</h3>
     <ul class="prodotti-lista">
       <li *ngFor="let p of prodotti" class="prodotto-riga">
-        <img *ngIf="p.immagine" [src]="p.immagine" alt="{{ p.nome }}" class="prodotto-img">
+        <img *ngIf="p.immagine_url" [src]="p.immagine_url" alt="{{ p.nome }}" class="prodotto-img">
         <div class="prodotto-info">
           <div class="prodotto-nome">{{ p.nome }}</div>
           <div class="prodotto-dettagli">
             <span class="prodotto-quantita">Quantità: {{ p.quantita }}</span>
-            <span class="prodotto-prezzo">Prezzo: € {{ getPrezzoUnitario(p) | number:'1.2-2' }}</span>
-            <span class="prodotto-subtotale">Subtotale: € {{ getSubtotaleProdotto(p) | number:'1.2-2' }}</span>
+            <span class="prodotto-prezzo">Prezzo:  {{ getPrezzoUnitario(p) | number:'1.2-2' }}€</span>
+            <span class="prodotto-subtotale">Subtotale:{{ getSubtotaleProdotto(p) | number:'1.2-2' }} € </span>
           </div>
         </div>
       </li>

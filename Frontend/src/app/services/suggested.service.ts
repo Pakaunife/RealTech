@@ -16,7 +16,6 @@ export class SuggestedService {
   }
 
   salvaVisualizzazione(prodottoId: number): Observable<any> {
-    console.log('Salvataggio visualizzazione per prodotto ID:', prodottoId);
     return this.http.post<any>(`${this.apiUrl}/visualizza`, { prodotto_id: prodottoId });
   }
 }

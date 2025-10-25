@@ -184,64 +184,10 @@ export class Profilo implements OnInit {
   }
 
   // ========================================
-  // GESTIONE SICUREZZA (EMAIL E PASSWORD)
+  // GESTIONE SICUREZZA  PASSWORD
   // ========================================
 
-  abilitaModificaEmail(): void {
-    this.mostraFormEmail = true;
-    this.mostraFormPassword = false;
-    this.messaggio = '';
-    this.errore = '';
-  }
 
-  annullaModificaEmail(): void {
-    this.mostraFormEmail = false;
-    this.emailData = { nuova_email: '', conferma_email: '', password: '' };
-    this.messaggio = '';
-    this.errore = '';
-  }
-
-  cambiaEmail(): void {
-    if (this.emailData.nuova_email !== this.emailData.conferma_email) {
-      this.errore = 'Le email non coincidono';
-      setTimeout(() => {
-        this.errore = '';
-      }, 3000);
-      return;
-    }
-
-    if (!this.emailData.password) {
-      this.errore = 'Inserisci la password per confermare';
-      setTimeout(() => {
-        this.errore = '';
-      }, 3000);
-      return;
-    }
-
-    this.loading = true;
-    this.messaggio = '';
-    this.errore = '';
-    this.userService.changeEmail(this.emailData).subscribe({
-      next: (response) => {
-        this.messaggio = 'Email cambiata con successo';
-        this.utente.email = this.emailData.nuova_email;
-        this.datiProfiloOriginali.email = this.emailData.nuova_email;
-        this.mostraFormEmail = false;
-        this.emailData = { nuova_email: '', conferma_email: '', password: '' };
-        setTimeout(() => {
-          this.messaggio = '';
-        }, 3000);
-        this.loading = false;
-      },
-      error: (err: any) => {
-        this.errore = err.error?.message || 'Errore nel cambio email';
-        setTimeout(() => {
-          this.errore = '';
-        }, 5000);
-        this.loading = false;
-      }
-    });
-  }
 
   abilitaModificaPassword(): void {
     this.mostraFormPassword = true;

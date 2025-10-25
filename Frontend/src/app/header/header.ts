@@ -10,7 +10,7 @@ import { CarrelloService } from '../services/carrello.service';
 
 
 @Component({
-  selector: 'app-header-semplificato',
+  selector: 'app-header',
   standalone: true,
   imports: [RouterModule, CommonModule, FormsModule],
   templateUrl: './header.html',

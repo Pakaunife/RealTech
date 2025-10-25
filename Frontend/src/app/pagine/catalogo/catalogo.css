@@ -236,16 +236,14 @@ button {
   background: none;
   border: none;
   cursor: pointer;
-  margin-left: 8px;
-  font-size: 1.5em;
-  color: #e53935;
-  vertical-align: middle;
+  font-size: 1.7rem;
   transition: transform 0.1s;
+  margin-left: 0.5rem;
 }
-.wishlist-btn:hover .cuore {
-  transform: scale(1.2);
-  color: #ad1457;
+.wishlist-btn:hover{
+  color: #ff3d00;
 }
+
 
 
 

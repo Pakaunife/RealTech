@@ -9,7 +9,6 @@ import { Footer } from './footer/footer';
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, Footer, Header],
-
   templateUrl: './app.html',
   styleUrls: ['./app.css']
 })

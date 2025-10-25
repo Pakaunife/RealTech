@@ -125,7 +125,7 @@ if (this.isLoggedIn) {
       error: (err) => {
         console.error('Errore nel caricamento prodotti:', err);
         this.error = 'Errore nel caricamento dei prodotti';
-        this.loading = false;
+        this.loading = false;   
       }
     });
   }
