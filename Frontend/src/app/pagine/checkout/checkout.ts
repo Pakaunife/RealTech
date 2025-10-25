@@ -253,9 +253,6 @@ private getIndirizzoCompleto(): string {
 
     this.processing = true;
 
-   
-
-
    const datiCompleti = {
     ...this.datiPagamento,
     totale: this.totaleScontato,
