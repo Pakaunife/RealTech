@@ -34,7 +34,7 @@
   <i class="arrow">→</i>
 </a>
 
-    <a (click)="cambiaSezione('wishlist')" class="card-rect" [class.active]="sezioneAttiva === 'wishlist'">
+    <a (click)="vaiAllaWishlist()" class="card-rect">
       <i class="icon">❤️</i>
       <div class="card-content">
         <h3>Wishlist</h3>
@@ -166,6 +166,8 @@
   <div class="indirizzi-lista" *ngIf="indirizzi.length > 0">
     <div *ngFor="let indirizzo of indirizzi" class="indirizzo-card">
       <div class="indirizzo-info">
+        <p><strong>Destinatario:</strong> {{ indirizzo.destinatario }}</p>
+        <p><strong>Telefono:</strong> {{ indirizzo.telefono || 'Non specificato' }}</p>
         <p><strong>{{ indirizzo.indirizzo }}</strong></p>
         <p>{{ indirizzo.cap }} {{ indirizzo.citta }} ({{ indirizzo.provincia }})</p>
         <p>{{ indirizzo.paese }}</p>
@@ -202,6 +204,17 @@
       <button (click)="toggleFormIndirizzo()" class="btn-chiudi">✕</button>
     </div>
     <form (ngSubmit)="aggiungiIndirizzo()" class="form-indirizzo">
+      <div class="form-group">
+    <label>Destinatario</label>
+    <input type="text" [(ngModel)]="nuovoIndirizzo.destinatario" name="destinatario" 
+           placeholder="Nome e Cognome del destinatario" required>
+  </div>
+  <div class="form-group">
+  <label>Numero di telefono (facoltativo)</label>
+  <input type="text" [(ngModel)]="nuovoIndirizzo.telefono" name="telefono"
+         placeholder="Numero di telefono">
+</div>
+
       <div class="form-group">
         <label>Indirizzo completo</label>
         <input type="text" [(ngModel)]="nuovoIndirizzo.indirizzo" name="indirizzo" 
@@ -282,7 +295,8 @@
         <div *ngFor="let prodotto of wishlist" class="wishlist-card">
           <img [src]="prodotto.immagine" [alt]="prodotto.nome">
           <h4>{{ prodotto.nome }}</h4>
-          <p class="prezzo">{{ prodotto.prezzo | currency:'EUR' }}</p>
+          <!-- per prezzo in caso promo fosse true -->
+          <p class="prezzo">{{ (prodotto.prezzo_scontato != null ? prodotto.prezzo_scontato : prodotto.prezzo) | currency:'EUR' }}</p>
           <button (click)="rimuoviDaWishlist(prodotto.id)" class="btn-rimuovi">
             Rimuovi
           </button>

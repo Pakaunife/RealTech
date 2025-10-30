@@ -1,6 +1,60 @@
-
 <div class="home-page">
-  <div class="package-TitoloParagrafo">PRODOTTI PIÙ VISUALIZZATI</div>
+  <div class="package-TitoloParagrafo">PRODOTTI IN VETRINA</div>
+
+  <!-- Loading indicator specifico per i prodotti in vetrina -->
+  <div *ngIf="loadingVetrina" class="loading-message">
+    <p>Caricamento prodotti in vetrina...</p>
+  </div>
+
+  <!-- Error message specifico per i prodotti in vetrina -->
+  <div *ngIf="errorVetrina && !loadingVetrina" class="error-message">
+    <p>{{ errorVetrina }}</p>
+  </div>
+
+  <!-- Prodotti in vetrina dal database -->
+  <div class="vetrina-griglia" *ngIf="!loadingVetrina && !errorVetrina">
+    <!-- Messaggio quando non ci sono prodotti in vetrina -->
+    <div *ngIf="(!prodottiInVetrina || prodottiInVetrina.length === 0)" class="empty-message">
+      <p>Al momento non ci sono prodotti in vetrina. Controlla più tardi o visita il catalogo.</p>
+    </div>
+
+    <div class="prodotti-card" *ngFor="let prodotto of prodottiInVetrina " (click)="vaiAlDettaglioProdotto(prodotto)" style="cursor:pointer;">
+      <div class="prodotti-info">
+        <img [src]="prodotto.immagine_url" [alt]="prodotto.nome" class="prodotto-img" />
+        <h2>{{ prodotto.nome }}</h2>
+        <p>{{ prodotto.categoria || 'Categoria' }}</p>
+        <!-- Prezzo e badge vetrina (opzionale) -->
+        <div class="prodotto-meta">
+          <span class="prezzo">€{{ prodotto.prezzo }}</span>
+          <span *ngIf="prodotto.in_vetrina" class="badge-vetrina">In vetrina</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+   <div *ngIf="prodottiSuggeriti.length > 0" class="package-TitoloParagrafo" style="margin-top:2rem;">
+  PRODOTTI CONSIGLIATI PER TE
+</div>
+
+<!-- Griglia suggeriti -->
+<div class="vetrina-griglia" *ngIf="prodottiSuggeriti.length > 0">
+  <div class="prodotti-card" *ngFor="let prodotto of prodottiSuggeriti" (click)="vaiAlDettaglioProdotto(prodotto)" style="cursor:pointer;">
+    <div class="prodotti-info">
+      <img [src]="prodotto.immagine_url" [alt]="prodotto.nome" class="prodotto-img" />
+      <h2>{{ prodotto.nome }}</h2>
+      <p>{{ prodotto.categoria || 'Categoria' }}</p>
+      <div class="prodotto-meta">
+        <span class="prezzo">{{ prodotto.prezzo }}€</span>
+        <!-- Badge opzionale per suggeriti -->
+        <span *ngIf="prodotto.suggerito" class="badge-vetrina">Suggerito</span>
+      </div>
+    </div>
+  </div>
+</div>
+  
+  
+
+  <div class="package-TitoloParagrafo">PRODOTTI PIÙ ACQUISTATI</div>
   
   <!-- Loading indicator -->
   <div *ngIf="loading" class="loading-message">
@@ -12,20 +66,46 @@
     <p>{{ error }}</p>
   </div>
 
-  <!-- Prodotti dal database -->
-  <div class="films-row" *ngIf="!loading && !error">
-    <div class="film-card" *ngFor="let prodotto of prodottiInEvidenza | slice:0:3" (click)="vaiAlDettaglioProdotto(prodotto)" style="cursor:pointer;">
-      <div class="film-info">
+
+
+
+  <!-- Prodotti dal database più acquistati -->
+  <div class="prodotti-row" *ngIf="!loading && !error">
+    <div class="prodotti-card" *ngFor="let prodotto of prodottiInEvidenza | slice:0:3" (click)="vaiAlDettaglioProdotto(prodotto)" style="cursor:pointer;">
+      <div class="prodotti-info">
         <img [src]="prodotto.immagine_url" [alt]="prodotto.nome" class="prodotto-img" />
         <h2>{{ prodotto.nome }}</h2>
-        <p>{{ prodotto.categoria || 'Categoria' }}</p>
       </div>
     </div>
   </div>
 
-  <div *ngIf="showWelcome;" class="alert alert-success mt-3">
-  Benvenuto/a, {{ user.nome}}!
-  <button class="btn btn-link" (click)="logout()">Logout</button>
+<div class="offerte-container">
+  <div class="package-TitoloParagrafo">OFFERTE SPECIALI</div>
+  
+  <!-- Loading indicator per pacchetti -->
+  <div *ngIf="loadingPacchetti" class="loading-message">
+    <p>Caricamento offerte speciali...</p>
+  </div>
+
+  <!-- Error message per pacchetti -->
+  <div *ngIf="errorPacchetti && !loadingPacchetti" class="error-message">
+    <p>{{ errorPacchetti }}</p>
+  </div>
+
+  <!-- Pacchetti dal database -->
+  <div class="offers-row" *ngIf="!loadingPacchetti && !errorPacchetti">
+    <div class="package-card" *ngFor="let pacchetto of pacchetti" (click)="apriDettaglioPacchetto(pacchetto)" style="cursor: pointer;">
+      <h2>{{ pacchetto.nome }}</h2>
+      <div class="package-paragrafo">{{ pacchetto.descrizione }}</div>
+      <div class="package-price">
+  <span class="price-original">€{{ pacchetto.prezzo_originale }}</span>
+  <span class="price-discount">€{{ pacchetto.prezzo_scontato }}</span>
+      </div>
+      <div class="package-actions">
+        <button class="btn-primary" (click)="vaiADettaglioPacchetto(pacchetto); $event.stopPropagation()">Aggiungi al carrello</button>
+      </div>
+    </div>
+  </div>
 </div>
 
   <!-- Sezione Novità -->
@@ -46,7 +126,7 @@
       </div>
       
       <div class="news-card" (click)="vaiANovita('rog-phone-9-pro')">
-        <img src="assets/1.jpg" alt="ROG Phone 9 Pro" class="news-img" />
+        <img src="assets/AI.jpg" alt="ROG Phone 9 Pro" class="news-img" />
         <h3>AI gaming con ROG Phone 9 Pro</h3>
         <p>Ecco come il ROG Phone 9 Pro rivoluziona il gaming su mobile c...</p>
       </div>
@@ -67,29 +147,4 @@
     </div>
   </div>
 </div>
-<div class="offerte-container">
-  <div class="package-TitoloParagrafo">OFFERTE SPECIALI</div>
-  
-  <!-- Loading indicator per pacchetti -->
-  <div *ngIf="loadingPacchetti" class="loading-message">
-    <p>Caricamento offerte speciali...</p>
-  </div>
 
-  <!-- Error message per pacchetti -->
-  <div *ngIf="errorPacchetti && !loadingPacchetti" class="error-message">
-    <p>{{ errorPacchetti }}</p>
-  </div>
-
-  <!-- Pacchetti dal database -->
-  <div class="offers-row" *ngIf="!loadingPacchetti && !errorPacchetti">
-    <div class="package-card" *ngFor="let pacchetto of pacchetti" (click)="vaiADettaglioPacchetto(pacchetto)" style="cursor:pointer;">
-      <h2>{{ pacchetto.nome }}</h2>
-      <div class="package-paragrafo">{{ pacchetto.descrizione }}</div>
-      <div class="package-price">€{{ pacchetto.prezzo_totale }}</div>
-      <div class="package-info" *ngIf="pacchetto.numero_prodotti > 0">
-        <small>{{ pacchetto.numero_prodotti }} prodott{{ pacchetto.numero_prodotti === 1 ? 'o' : 'i' }} inclus{{ pacchetto.numero_prodotti === 1 ? 'o' : 'i' }}</small>
-      </div>
-      <button class="btn-primary" (click)="vaiADettaglioPacchetto(pacchetto); $event.stopPropagation()">Scopri di più</button>
-    </div>
-  </div>
-</div>

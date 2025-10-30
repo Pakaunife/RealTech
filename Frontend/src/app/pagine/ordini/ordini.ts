@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { OrderService } from '../../services/order.service';
-import { DatePipe, NgIf, NgFor,LowerCasePipe } from '@angular/common';
-import { Router } from '@angular/router';
+import { DatePipe, NgIf, NgFor, LowerCasePipe, CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 
 @Component({
   selector: 'app-ordini',
+  standalone: true,
+  imports: [CommonModule, NgIf, NgFor, DatePipe, LowerCasePipe, RouterModule],
   templateUrl: './ordini.html',
-  styleUrls: ['./ordini.css'],
-  imports: [NgIf, NgFor, DatePipe, LowerCasePipe]
+  styleUrls: ['./ordini.css']
 })
 export class Ordini implements OnInit {
   ordini: any[] = [];
@@ -34,5 +35,8 @@ export class Ordini implements OnInit {
   }
   vaiANuovoOrdine() {
     this.router.navigate(['/catalogo']);
+  }
+  vaiAProfilo() {
+    this.router.navigate(['/profilo']);
   }
 }

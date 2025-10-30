@@ -24,15 +24,31 @@ export class CarrelloService {
   }
 
   // qua permette solo utenti autenticati possono gestire il carrello
-  aggiungiAlCarrello(idProdotto: number, quantita: number): Observable<any> {
+  aggiungiAlCarrello(idProdotto: number, quantita: number): Observable<any> { //prepara la chiamata HTTP con i dati necessari
     const idUtente = this.getIdUtente(); //prende id utente da sopra 
     if (!idUtente) {
       throw new Error('Utente non autenticato. Effettua il login per aggiungere prodotti al carrello.');
     }
     
-    return this.http.post(`${this.baseUrl}/aggiungi`, {
+    return this.http.post(`${this.baseUrl}/aggiungi`, { //fa la chiamata al backend post con i dati necessari
       id_utente: idUtente,
       id_prodotto: idProdotto,
+      quantita: quantita
+    }).pipe(
+      tap(() => this.caricaCarrello()) //appena tarmina la post aggiorna il carrello nel frontend
+    ); // chiama private caricaCarrello() per aggiornare il carrello locale
+  }
+
+  // Aggiungi pacchetto al carrello (chiamata al backend)
+  aggiungiPacchettoAlCarrello(idPacchetto: number, quantita: number): Observable<any> {
+    const idUtente = this.getIdUtente();
+    if (!idUtente) {
+      throw new Error('Utente non autenticato. Effettua il login per aggiungere pacchetti al carrello.');
+    }
+
+    return this.http.post(`${this.baseUrl}/aggiungiPacchetto`, {
+      id_utente: idUtente,
+      id_pacchetto: idPacchetto,
       quantita: quantita
     }).pipe(
       tap(() => this.caricaCarrello())
@@ -46,6 +62,34 @@ export class CarrelloService {
     }
     
     return this.http.delete(`${this.baseUrl}/rimuovi/${idUtente}/${idProdotto}`).pipe(
+      tap(() => this.caricaCarrello())
+    );
+  }
+
+  // Rimuovi un pacchetto dal carrello
+  rimuoviPacchetto(idPacchetto: number): Observable<any> {
+    const idUtente = this.getIdUtente();
+    if (!idUtente) {
+      throw new Error('Utente non autenticato. Effettua il login per gestire il carrello.');
+    }
+
+    return this.http.delete(`${this.baseUrl}/rimuoviPacchetto/${idUtente}/${idPacchetto}`).pipe(
+      tap(() => this.caricaCarrello())
+    );
+  }
+
+  // Aggiorna quantità di un pacchetto
+  aggiornaPacchetto(idPacchetto: number, quantita: number): Observable<any> {
+    const idUtente = this.getIdUtente();
+    if (!idUtente) {
+      throw new Error('Utente non autenticato. Effettua il login per gestire il carrello.');
+    }
+
+    return this.http.put(`${this.baseUrl}/aggiornaPacchetto`, {
+      id_utente: idUtente,
+      id_pacchetto: idPacchetto,
+      quantita: quantita
+    }).pipe(
       tap(() => this.caricaCarrello())
     );
   }
@@ -86,7 +130,11 @@ export class CarrelloService {
 
   calcolaTotale(): Observable<number> {
     return this.carrello$.pipe(
-      map(carrello => carrello.reduce((total, item) => total + (item.prezzo * item.quantita), 0))
+      // per prezzo in caso promo fosse true
+      map(carrello => carrello.reduce((total, item) => {
+        const unit = item.prezzo_scontato != null ? item.prezzo_scontato : item.prezzo;
+        return total + (unit * item.quantita);
+      }, 0))
     );
   }
 
@@ -104,4 +152,31 @@ export class CarrelloService {
   aggiornaDopoAcquisto(): void {
     this.caricaCarrello();
   }
+
+  getCarrelloGuest(): any[] {
+  const dati = localStorage.getItem('carrelloGuest');
+  return dati ? JSON.parse(dati) : [];
+}
+
+setCarrelloGuest(carrello: any[]): void {
+  localStorage.setItem('carrelloGuest', JSON.stringify(carrello));
+}
+
+// Sincronizza il carrello guest con quello utente dopo il login
+sincronizzaCarrelloGuestConUtente(): void {
+  const carrelloGuest = this.getCarrelloGuest();
+  if (carrelloGuest.length > 0 && this.isLoggedIn()) {
+    carrelloGuest.forEach(item => {
+      this.aggiungiAlCarrello(item.id_prodotto, item.quantita).subscribe(); 
+    });
+    
+    localStorage.removeItem('carrelloGuest');
+  }
+}
+
+isLoggedIn(): boolean {
+  return !!this.getIdUtente();
+}
+
+
 }

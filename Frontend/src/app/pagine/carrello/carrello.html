@@ -1,36 +1,63 @@
-
-
 <div class="carrello">
   <h2 class="carrello-text">Il tuo carrello</h2>
-  
-  <div *ngIf="(carrello$ | async)?.length === 0" class="carrello-vuoto">
-    <p class="carrello-text">Il carrello è vuoto</p>
-    <a href="/catalogo">Continua gli acquisti</a>
-  </div>
-  
-  <div *ngFor="let item of carrello$ | async" class="carrello-item">  <!-- item.nome preso da carrello$ che sta in carrello.ts -->
-    <img [src]="item.immagine_url || 'http://localhost:3000/api/images/prodotti/default.jpg'" [alt]="item.nome" width="100">
-    <div class="item-details">
-      <h4 class="carrello-text">{{ item.nome }}</h4>
-      <p class="carrello-text">Prezzo: €{{ item.prezzo }}</p>
-      <div class="quantity-control">
-        <label class="carrello-label">Quantità: </label>
-        <input type="number" 
-               [value]="item.quantita" 
-               min="1" 
-               (change)="aggiornaQuantita(item.id_prodotto, $event)">
-      </div>
-      <p class="carrello-text"><strong>Subtotale: €{{ item.prezzo * item.quantita }}</strong></p>
-      <button (click)="rimuoviProdotto(item.id_prodotto)" class="btn-remove">
-        Rimuovi
-      </button>
+
+  <!-- Carrello guest -->
+  <ng-container *ngIf="!auth.isLoggedIn()">
+    <div *ngIf="carrelloGuest.length === 0" class="carrello-vuoto">
+      <p class="carrello-text">Il carrello è vuoto</p>
+      <a href="/catalogo">Continua gli acquisti</a>
     </div>
-  </div>
-  
-  <div *ngIf="(carrello$ | async) && (carrello$ | async)!.length > 0" class="totale">
-    <h3 class="carrello-text">Totale: €{{ totale }}</h3>
-    <button class="btn-checkout" (click)="procediAlCheckout()">Procedi al checkout</button>
-  </div>
+    <div *ngFor="let item of carrelloGuest; trackBy: trackByItem" class="carrello-item">
+      <img [src]="item.immagine_url || 'http://localhost:3000/api/images/prodotti/default.jpg'" [alt]="item.nome" width="100">
+      <div class="item-details">
+        <h4 class="carrello-text">{{ item.nome }}</h4>
+        <p class="carrello-text">Prezzo: {{ item.prezzo_scontato != null ? item.prezzo_scontato : item.prezzo }}€</p>
+        <div class="quantity-control">
+          <label class="carrello-label">Quantità: </label>
+          <input type="number"
+                 [value]="item.quantita"
+                 min="1"
+                 (change)="aggiornaQuantitaGuest(item.id_prodotto, $event)">
+        </div>
+        <button (click)="rimuoviProdottoGuest(item.id_prodotto)" class="btn-remove">
+          Rimuovi
+        </button>
+      </div>
+    </div>
+    <div *ngIf="carrelloGuest.length > 0" class="totale">
+      <h3 class="carrello-text">Totale: {{ totale }}€</h3>
+      <button class="btn-checkout" (click)="procediAlCheckout()">Procedi al checkout</button>
+    </div>
+  </ng-container>
+
+  <!-- Carrello utente loggato -->
+  <ng-container *ngIf="auth.isLoggedIn()">
+    <ng-container *ngIf="carrello$ | async as carrello">
+      <div *ngIf="carrello.length === 0" class="carrello-vuoto">
+        <p class="carrello-text">Il carrello è vuoto</p>
+        <a href="/catalogo">Continua gli acquisti</a>
+      </div>
+      <div *ngFor="let item of carrello; trackBy: trackByItem" class="carrello-item">
+        <img [src]="item.immagine_url || 'http://localhost:3000/api/images/prodotti/default.jpg'" [alt]="item.nome" width="100">
+        <div class="item-details">
+          <h4 class="carrello-text">{{ item.nome }}</h4>
+          <p class="carrello-text">Prezzo: {{ item.prezzo_scontato != null ? item.prezzo_scontato : item.prezzo }}€</p>
+          <div class="quantity-control">
+            <label class="carrello-label">Quantità: </label>
+            <input type="number"
+                   [value]="item.quantita"
+                   min="1"
+                   (change)="aggiornaQuantitaItem(item, $event)">
+          </div>
+          <button (click)="rimuoviItem(item)" class="btn-remove">
+            Rimuovi
+          </button>
+        </div>
+      </div>
+      <div *ngIf="carrello && carrello.length > 0" class="totale">
+        <h3 class="carrello-text">Totale: {{ totale }}€</h3>
+        <button class="btn-checkout" (click)="procediAlCheckout()">Procedi al checkout</button>
+      </div>
+    </ng-container>
+  </ng-container>
 </div>
-
-

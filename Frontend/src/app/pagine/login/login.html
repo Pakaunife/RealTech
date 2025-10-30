@@ -1,16 +1,29 @@
-<app-header-minimal></app-header-minimal>
 
-<div class="container mt-4">
-  <h2>Login</h2>
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-    <div class="mb-3">
-      <label for="email" class="form-label">Email</label>
-      <input type="email" id="email" class="form-control" formControlName="email" required>
+<div class="login-container">
+  <div class="login-card">
+    <h2 class="login-title">Accedi</h2>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      
+      <div class="form-group">
+        <label for="email">EMAIL:</label>
+        <input type="email" id="email" formControlName="email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="password">PASSWORD:</label>
+        <div class="input-with-icon">
+          <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password" required>
+          <span class="eye-icon" (click)="togglePassword()">
+            <img [src]="showPassword ? 'assets/eye.svg' : 'assets/eyeclosed.svg'" alt="Toggle">
+          </span>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-login" [disabled]="loginForm.invalid">ACCEDI</button>
+    </form>
+
+    <div class="register-link">
+      <p>Non hai un account? <a routerLink="/registrazione">Registrati qui</a></p>
     </div>
-    <div class="mb-3">
-      <label for="password" class="form-label">Password</label>
-      <input type="password" id="password" class="form-control" formControlName="password" required>
-    </div>
-    <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid">Accedi</button>
-  </form>
+  </div>
 </div>

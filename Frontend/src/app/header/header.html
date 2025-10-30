@@ -5,7 +5,7 @@
     </div>
     
     <a class="logo" routerLink="/home">
-      <img src="/assets/LOGO_TECH3.png" alt="Logo Real Tech" class="cinema-logo" /> Real Tech
+  <img src="/assets/LOGO_TECH3.png" alt="Logo Real Tech" class="realtech-logo" /> Real Tech
     </a>
     
     <div class="nav-items">
@@ -26,11 +26,9 @@
       <li *ngIf="user"><a routerLink="/profilo">Profilo</a></li>
       <li *ngIf="user"><a href="#" (click)="logout()">Logout</a></li>
       <li><a routerLink="/about">About</a></li>
-      <li><a routerLink="/storico-acquisti">Storico Acquisti</a></li>
       <li><a routerLink="/catalogo" (click)="pulisciParametriCatalogo()">Catalogo</a></li>
       <li><a routerLink="/carrello">Carrello</a></li>
-      <li *ngIf="auth.isAdmin()"><a routerLink="/admin">Area Admin</a></li>
-      <li><a href="#">Feedback</a></li>
+      <li *ngIf="user && (user.ruolo === 'admin' || user.ruolo === 'owner')"><a routerLink="/admin">Area Admin</a></li>
     </div>
 
     <!-- Icona di ricerca in alto a destra -->
@@ -88,7 +86,7 @@
           <div class="suggestion-info-expanded">
             <h4 class="suggestion-name-expanded">{{ suggestion.nome }}</h4>
             <p class="suggestion-brand-expanded">{{ suggestion.marchio }}</p>
-            <div class="suggestion-price-expanded">€{{ suggestion.prezzo }}</div>
+            <div class="suggestion-price-expanded">€{{ suggestion.prezzo_scontato != null ? suggestion.prezzo_scontato : suggestion.prezzo }}</div>
           </div>
         </div>
       </div>

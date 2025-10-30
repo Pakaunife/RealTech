@@ -3,6 +3,11 @@
   padding-bottom: 2rem;
   border-bottom: 2px solid #222;
 }
+.coupon-section {
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: none;
+}
 
 .admin-table-container {
  width: 90%;
@@ -21,38 +26,105 @@
   color: #fff;
   border-collapse: collapse;
   box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  border-collapse: collapse;
 }
 
 .admin-user-mini-table th, .admin-user-mini-table td {
-  padding: 0.7rem 1.2rem;
+  padding: 0.7rem 1rem;
   text-align: center;
+  border: 1px solid #474444;
 }
 
 .admin-user-mini-table th {
   background: rgba(30, 30, 30, 0.85);
   font-weight: 600;
+   color: #ffffff;
 }
 
 .admin-user-mini-table tr {
   border-bottom: 1px solid rgba(255,255,255,0.08);
+  
 }
 
 .admin-user-mini-table tr:last-child {
   border-bottom: none;
+  
 }
 
 .admin-user-mini-table button {
+   min-width: 120px;
+  padding: 6px 0;
   margin: 0 0.2rem;
   background: #ff6600;
   color: #fff;
   border: none;
   border-radius: 4px;
-  padding: 0.3rem 0.7rem;
   cursor: pointer;
   transition: background 0.2s;
 }
 .admin-user-mini-table button:hover {
   background: #ff3300;
+}
+.btn-sblocca {
+  background: #a1cc06 !important; /* Blu */
+}
+
+.btn-blocca {
+  background: #ff6600 !important; /* Arancione */
+}
+
+.btn-rimuovi-admin {
+  background: #ff2727 !important; /* Rosso */
+}
+.btn-rimuovi-utente {
+  background: #b71c1c !important; /* Rosso scuro */
+  color: #fff;
+}
+.btn-rimuovi-utente:hover {
+  background: #d32f2f !important;
+}
+
+
+.paginazione-pallini {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 18px 0 8px 0;
+  gap: 10px;
+}
+
+.pallino {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #bbb;
+  display: inline-block;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  border: 2px solid transparent;
+}
+
+.pallino.attivo {
+  background: #ff6600;
+  border-color: #ff6600;
+  transform: scale(1.2);
+}
+.freccia-pagina {
+  font-size: 1.3em;
+  color: #ff6600;
+  cursor: pointer;
+  user-select: none;
+  padding: 0 8px;
+  transition: color 0.2s, transform 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.freccia-pagina.disabilitata {
+  color: #bbb;
+  cursor: default;
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 
@@ -173,4 +245,318 @@ select.admin-user-search option {
 }
 .immagine-form:hover {
   background: #ff3300;
+}
+
+/* Aggiungi al tuo admin.css esistente */
+.admin-toggle-btn {
+  background: #1a237e;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+
+
+.stat-totale {
+  text-align: right;
+  font-weight: 600;
+  color: #07cf11;
+}
+
+.status-badge {
+
+  white-space: nowrap;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-weight: 500;
+  background: #e8f5e8;
+  color: #2e7d32;
+}
+
+.status-badge.blocked {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.status-badge.admin {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 80%;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.no-orders {
+  text-align: center;
+  color: #666;
+  padding: 40px 20px;
+}
+
+/* Aggiungi al tuo admin.css */
+
+.azioni-cell {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.btn-toggle {
+  background: #ff5722;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.8em;
+}
+
+.btn-admin {
+  background: #9c27b0;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.8em;
+}
+
+.statistiche-utente {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f5f5f5;
+  border-radius: 5px;
+}
+
+.riepilogo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.riepilogo-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  background: white;
+  border-radius: 3px;
+  border-left: 3px solid #1976d2;
+}
+
+.riepilogo-label {
+  font-weight: 500;
+  color: #555;
+}
+
+.riepilogo-valore {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Aggiungi al tuo admin.css */
+
+.azioni-cell {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.btn-modifica {
+  background: #1976d2;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.8em;
+}
+
+
+
+.modal-conferma {
+  max-width: 500px;
+}
+
+.warning-text {
+  color: #d32f2f;
+  font-weight: 500;
+  font-size: 0.9em;
+}
+
+.prodotto-info {
+  background: #f5f5f5;
+  padding: 15px;
+  border-radius: 5px;
+  margin: 15px 0;
+}
+
+.prodotto-info p {
+  margin: 5px 0;
+  font-size: 0.9em;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 15px 20px;
+  border-top: 1px solid #eee;
+}
+
+.btn-annulla {
+  background: #757575;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-conferma-rimozione {
+  background: #d32f2f;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-conferma-rimozione:hover {
+  background: #b71c1c;
+}
+.admin-user-search
+{
+   width: 20%;
+   margin-left: 6px;
+}
+.filter-font
+{
+   margin-left: 12px;
+   font-weight: 500;
+}
+.filtri-prodotti-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.filtri-prodotti-row .filter-font {
+  margin-left: 0;
+  font-weight: 500;
+}
+
+.filtri-prodotti-row select,
+.filtri-prodotti-row input {
+  margin: 0;
+  min-width: 160px;
+  max-width: 220px;
+}
+.filtri-prodotti-search {
+  margin: 12px 0 18px 0;
+  display: flex;
+  justify-content: flex-start;
+}
+.btn-gestione
+{
+  background: linear-gradient(90deg, #ff3d00 0%, #ff3d00 100%);
+  color: #fff;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 500;
+  padding: 10px 28px;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(26,35,126,0.08);
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+  margin: 18px 0;
+  letter-spacing: 0.5px;
+}
+
+/* Contenitore per label + input inline */
+.label-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.label-container label {
+  white-space: nowrap;
+  min-width: auto;
+}
+
+/* Campi più piccoli */
+.small-field {
+  max-width: 250px;
+}
+
+.input-small {
+  max-width: 150px;
+}
+
+/* Checkbox inline */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+
+
+
+.attivo-si {
+  color: #4caf50;
+  font-weight: 600;
+}
+
+.attivo-no {
+  color: #f44336;
+  font-weight: 600;
 }

@@ -1,0 +1,43 @@
+<div class="offerte-container">
+  <div *ngIf="loading">Caricamento pacchetto...</div>
+  <div *ngIf="error && !loading" class="error-message">{{ error }}</div>
+
+  <div *ngIf="!loading && pacchettoDettaglio">
+    <div class="offerte-header">
+      <h1>{{ pacchettoDettaglio.pacchetto.nome }}</h1>
+      <div class="package-price">
+  <span class="price-original">€{{ pacchettoDettaglio.pacchetto.prezzo_originale }}</span>
+  <span class="price-discount">€{{ pacchettoDettaglio.pacchetto.prezzo_scontato }}</span>
+      </div>
+      <div class="package-paragrafo">{{ pacchettoDettaglio.pacchetto.descrizione }}</div>
+    </div>
+
+    <div class="included-products">
+      <h3>Prodotti inclusi</h3>
+      <div *ngIf="pacchettoDettaglio.prodotti && pacchettoDettaglio.prodotti.length > 0">
+        <ul>
+          <li *ngFor="let p of pacchettoDettaglio.prodotti">
+            <strong>{{ p.nome }}</strong>
+            <span *ngIf="p.prezzo_scontato != null && p.prezzo_scontato < p.prezzo">
+            <span class="price-original">€{{ p.prezzo }}</span>
+            <span class="price-discount">€{{ p.prezzo_scontato }}</span>
+          </span>
+          <span *ngIf="!(p.prezzo_scontato != null && p.prezzo_scontato < p.prezzo)">
+            €{{ p.prezzo }}
+          </span>
+          </li>
+        </ul>
+      </div>
+      <div *ngIf="!pacchettoDettaglio.prodotti || pacchettoDettaglio.prodotti.length === 0">
+        <p>Questo pacchetto non contiene prodotti visibili al pubblico.</p>
+      </div>
+    </div>
+    
+    <div class="back-button">
+      <button (click)="back()" class="btn-back">← Torna indietro</button>
+    </div>
+    <div class="add-to-cart">
+      <button class="btn-primary" (click)="aggiungiAlCarrello()">Aggiungi al carrello</button>
+    </div>
+  </div>
+</div>

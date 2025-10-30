@@ -12,4 +12,9 @@ export class OrderService {
   getDettaglioOrdine(orderId: number) {
     return this.http.get<any>(`http://localhost:3000/api/orders/${orderId}`);
   }
+
+  getTrackingOrdine(idOrdine: string) {
+  return this.http.get<any>(`http://localhost:3000/api/orders/tracking/${idOrdine}`);
 }
+}
+

@@ -2,17 +2,16 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-export interface Pacchetto {
-  id_pacchetto: number;
+export interface Pacchetto { //indica quali "proprietà" ha in questo caso un pacchetto
   nome: string;
+  id_pacchetto: number;
   descrizione: string;
-  prezzo_totale: number;
-  immagine: string;
-  immagine_url: string;
-  numero_prodotti: number;
+  prezzo_originale: number;
+  prezzo_effettivo: number;
+  prezzo_scontato: number;
 }
 
-export interface PacchettoDettaglio {
+export interface PacchettoDettaglio { //ha sia pacchetto come quello sopra più un array di prodotti inclusi
   pacchetto: Pacchetto;
   prodotti: any[];
 }

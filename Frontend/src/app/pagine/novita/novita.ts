@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-novita',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './novita.html',
   styleUrls: ['./novita.css']
@@ -60,7 +61,7 @@ export class Novita implements OnInit {
       },
       'rog-phone-9-pro': {
         titolo: 'AI gaming con ROG Phone 9 Pro',
-        immagine: 'assets/news-rog-phone.jpg',
+        immagine: 'assets/AI.jpg',
         contenuto: `
           <h2>L'AI incontra il mobile gaming</h2>
           <p>ROG Phone 9 Pro integra l'intelligenza artificiale per ottimizzare automaticamente le prestazioni di gioco.</p>

@@ -31,7 +31,7 @@ button .bi-search {
   color: #fff;
   vertical-align: middle;
 }
-.cinema-logo {
+.realtech-logo {
   height: 69px;
   width: auto;
   margin-right: 10px;
@@ -386,12 +386,12 @@ nav .logo.space{
 .suggestion-image {
   width: 35px;
   height: 35px;
-  object-fit: cover;
   border-radius: 4px;
   margin-right: 10px;
   flex-shrink: 0; /* Previene ridimensionamento */
   background-color: #252b34; /* Placeholder colore */
   display: block; /* Evita layout shifts */
+  object-fit: contain; /* Mantiene le proporzioni dell'immagine */
 }
 
 .suggestion-details {
@@ -503,7 +503,7 @@ button .bi-search {
   color: #fff;
   vertical-align: middle;
 }
-.cinema-logo {
+.realtech-logo {
   height: 69px;
   width: auto;
   margin-right: 10px;
@@ -1090,3 +1090,5 @@ nav .search-icon-trigger span {
 header nav {
   position: relative ;
 }
+
+

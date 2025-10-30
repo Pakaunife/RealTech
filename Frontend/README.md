@@ -178,43 +178,38 @@ router.get('/search/suggestions', async (req, res) => {
 
 ---
 
-## �🔥 **Aggiornamenti 9 Ottobre 2025 - Sistema Prodotti Più Visualizzati**
+## �🔥 **Aggiornamenti 9 Ottobre 2025 - Top prodotti acquistati**
 
-### 🏠 **Homepage - Prodotti Trending**
-- **Query Database**: Nuova API `/api/catalogo/popular` per prodotti più visualizzati
-- **Servizio Catalogo**: Creato `CatalogoService` per gestire endpoint catalogo
-- **UI Dinamica**: Homepage mostra i primi 3 prodotti più visti dal database
+### 🏠 **Homepage - Top Acquisti**
+- **Query Database**: L'API `/api/catalogo/popular` ora restituisce i prodotti più acquistati (top N), non i più visualizzati
+- **Servizio Catalogo**: `CatalogoService.getProdottiPopular(limit)` continua a gestire l'endpoint
+- **UI Dinamica**: Homepage mostra i primi 3 prodotti più acquistati (default)
 - **Fallback**: Sistema di prodotti fittizi in caso di errore DB
-- **CSS Ottimizzato**: Immagini ridimensionate (220px altezza) con `object-fit: contain`
+- **CSS**: nessuna modifica richiesta rispetto alla visualizzazione precedente
 
 ### 🎯 **Navigazione Prodotti**
 - **Click-to-Detail**: Prodotti homepage cliccabili per dettaglio
 - **URL Parametrizzato**: Navigazione via `?prodottoId=X` per link diretti
-- **UX Intelligente**: 
-  - Da home → Dettaglio pulito (no pulsante "Torna ai Prodotti")
-  - Da catalogo → Dettaglio completo (con navigazione standard)
 
-### 🔧 **Backend API Enhancement**
+### 🔧 **Backend - Query semplificata per prodotti più acquistati**
 ```sql
--- Nuova query prodotti più visualizzati
-SELECT p.*, c.nome AS categoria, m.nome AS marchio, 
-       COUNT(v.id) as total_views
-FROM prodotto p
-LEFT JOIN visualizzazioni v ON p.id_prodotto = v.prodotto_id
-GROUP BY p.id_prodotto
-ORDER BY total_views DESC NULLS LAST
-LIMIT 3
+-- Top N prodotti più acquistati (somma delle quantità in `acquisti`)
+SELECT p.*, c.nome AS categoria, m.nome AS marchio, a.total_purchased
+FROM (
+  SELECT id_prodotto, SUM(quantita) AS total_purchased
+  FROM acquisti
+  GROUP BY id_prodotto
+  ORDER BY total_purchased DESC
+  LIMIT 3
+) a
+JOIN prodotto p ON p.id_prodotto = a.id_prodotto
+LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
+LEFT JOIN marchio m ON p.id_marchio = m.id_marchio;
 ```
 
-### 🖼️ **Sistema Immagini Migliorato**
+### 🖼️ **Sistema Immagini**
 - **URL Dinamici**: `http://localhost:3000/api/images/prodotti/{immagine}`
 - **Fallback Automatico**: Immagine default se prodotto senza foto
-- **Costruzione Automatica**: URL immagini generati server-side
-
-### 🎨 **UX Dettaglio Prodotto**
-- **Modalità Pulita**: Da home nasconde elementi ridondanti
-- **Informazioni Smart**: Disponibilità e titolo secondario nascosti quando appropriato
-- **Marchio Corretto**: Risolto problema "Non specificato" usando endpoint catalogo
 
 ---
 
@@ -397,6 +392,69 @@ export class Catalogo {
 - **Sincronizzazione automatica**: Il carrello si aggiorna in tempo reale
 
 ## 🔧 Modifiche Tecniche Implementate
+
+---
+
+## 📝 Modifiche recenti (16 Ottobre 2025)
+
+Questa sezione riepiloga le modifiche implementate di recente durante lo sviluppo della feature "pacchetti offerte" e alcune modifiche al comportamento del carrello e al layout della homepage.
+
+Per ogni file indico il percorso e le funzioni/metodi principali toccati; usare questi riferimenti per navigare velocemente il codice.
+
+### Backend (aggiunta route pacchetti)
+- File: `Backend/routes/pacchetti.js`
+  - GET `/api/pacchetti` -> ritorna lista pacchetti tematici con `immagine_url`.
+  - GET `/api/pacchetti/:id` -> ritorna dettaglio del pacchetto e lista prodotti associati.
+
+### Frontend: servizi e componenti
+- File: `Frontend/src/app/services/pacchetti.service.ts`
+  - getPacchetti(): Observable<Pacchetto[]> — chiama `GET /api/pacchetti`.
+  - getPacchettoDettaglio(id): Observable<any> — chiama `GET /api/pacchetti/:id`.
+
+- File: `Frontend/src/app/pagine/home/home.ts`
+  - loadPacchetti(): carica i pacchetti e popola `this.pacchetti`.
+  - vaiADettaglioPacchetto(pacchetto: Pacchetto): ora INVIA i prodotti del pacchetto al carrello chiamando `CarrelloService.aggiungiAlCarrello(...)` per ogni prodotto.
+    - Nota: aggiunta lato UI del pulsante "Aggiungi al carrello" nella sezione OFFERTE SPECIALI (solo il pulsante esegue l'azione; clic sulla card non la attiva).
+
+- File: `Frontend/src/app/services/carrello.service.ts`
+  - getIdUtente(): legge l'utente dal `AuthService` e ritorna `id` oppure `null`.
+  - aggiungiAlCarrello(idProdotto, quantita):
+    - comportamento utenti autenticati: POST al backend `/api/carrello/aggiungi` e poi `caricaCarrello()`.
+    - comportamento guest (semplice, in-memory): mantiene un array temporaneo in memoria e aggiorna `carrelloSubject` (non persistente).
+  - rimuoviDalCarrello(idProdotto): supporta rimozione sia per utenti autenticati (backend) sia per guest (in-memory).
+  - aggiornaQuantita(idProdotto, quantita): supporto sia backend (auth) sia in-memory (guest); se `quantita <= 0` rimuove l'item per guest.
+  - ottieniCarrello(): Observable<any[]> — espone `carrello$` (BehaviorSubject) per la UI.
+  - isLoggedIn(): helper che ritorna boolean (utile per bloccare il checkout se non loggati).
+
+### Frontend: template e CSS
+- File: `Frontend/src/app/pagine/home/home.html`
+  - Sezione OFFERTE SPECIALI: le card `.package-card` non hanno più il `(click)` globale — solo il bottone "Aggiungi al carrello" lancia `vaiADettaglioPacchetto(pacchetto)`.
+
+- File: `Frontend/src/app/pagine/home/home.css`
+  - `.film-card`: ora ha background semi-trasparente (rgba) + `backdrop-filter: blur(4px)` per effetto glass.
+  - `.news-container`: immagine di sfondo spostata in `::before` per permettere opacità controllata (es. `opacity: 0.45`).
+  - `.offers-row`: gap ridotto (da 2rem → 0.8rem) e margin-bottom ridotto per avvicinare le card.
+  - `.package-card` e `.films-row`: margini verticali ridotti per avvicinare le righe.
+
+### Come testare velocemente
+1. Avvia il backend (cartella `Backend`) e assicurati che ascolti su `http://localhost:3000`.
+2. Avvia il frontend (`npm start` o `ng serve`) e apri `http://localhost:4200`.
+3. Homepage:
+   - Controlla la sezione "Prodotti più visualizzati" (prima riga): prodotti dovrebbero essere cliccabili per il dettaglio.
+   - Nella sezione "Offerte speciali" clicca soltanto sul pulsante "Aggiungi al carrello" per aggiungere i prodotti del pacchetto al carrello.
+4. Carrello:
+   - Se sei loggato: le modifiche vengono salvate sul backend e ricaricate.
+   - Se non sei loggato: puoi aggiungere/rimuovere/aggiornare in memoria (non persistente). Usa `CarrelloService.isLoggedIn()` per bloccare il checkout nel UI.
+5. CSS:
+   - Verifica l'effetto semi-trasparente sulle card (`.film-card`) e l'opacità dello sfondo in `.news-container`.
+
+### Note e prossimi miglioramenti consigliati
+- Migliorare il comportamento guest: persistenza (localStorage) o merge guest→user al login.
+- Creare un endpoint backend per batch fetch prodotti per id (es. `/api/products?ids=1,2,3`) per arricchire il carrello guest in modo efficiente.
+- Sostituire gli alert JS con snackbar/toast e disabilitare i bottoni durante le chiamate API.
+
+Se vuoi, posso aprire una PR con queste modifiche o riportare lo stesso riepilogo anche nel `README.md` principale (root) del repository.
+
 
 ### 🛒 CarrelloService (`carrello.service.ts`)
 

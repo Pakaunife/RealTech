@@ -1,8 +1,47 @@
 const express = require('express');
 const pool = require('../connection/DBconnect');
 
-// --- API Catalogo ---
+//  API Catalogo
 const router = express.Router();
+
+// Ricerca prodotti per nome, marchio o categoria
+router.get('/prodotti/ricerca', async (req, res) => {
+  try {
+    const { q } = req.query; // es. asus 
+    if (!q || q.trim().length < 2) { //controlla se esiste e ha almeno 2 caratteri
+      return res.json([]);
+    }
+    //usiamo searchTerm, rende la ricerca flessibile e permette di trovare risultati anche se la stringa cercata è solo una parte del nome.
+    const searchTerm = `%${q.trim().toLowerCase()}%`; //Prende la stringa cercata dall’utente (q), la trasforma in minuscolo e toglie gli spazi all’inizio/fine. Aggiunge i simboli % prima e dopo: questo serve per la ricerca "LIKE" in SQL, cioè trova tutti i valori che contengono la stringa cercata, non solo quelli che la iniziano o finiscono.
+    const result = await pool.query(`
+    SELECT 
+      p.id_prodotto, 
+      p.nome, 
+    CASE WHEN p.promo = TRUE AND p.prezzo_scontato IS NOT NULL THEN p.prezzo_scontato ELSE p.prezzo END AS prezzo,
+        p.prezzo_scontato,
+        p.descrizione,
+        p.immagine,
+        p.quantita_disponibile,
+        m.nome AS marchio,
+        c.nome AS categoria
+      FROM prodotto p
+      LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
+      LEFT JOIN marchio m ON p.id_marchio = m.id_marchio
+      WHERE (LOWER(p.nome) LIKE $1 OR LOWER(m.nome) LIKE $1 OR LOWER(c.nome) LIKE $1)
+        AND p.quantita_disponibile > 0 
+        AND p.bloccato = false
+      ORDER BY p.nome
+    `, [searchTerm]);
+    const prodotti = result.rows.map(prodotto => ({
+      ...prodotto, // serve per creare un nuovo oggetto che contiene tutte le proprietà di prodotto, più eventuali proprietà aggiuntive o modificate.
+      immagine_url: prodotto.immagine ? `http://localhost:3000/api/images/prodotti/${prodotto.immagine}` : 'http://localhost:3000/api/images/prodotti/default.jpg'
+    }));
+    res.json(prodotti);
+  } catch (err) {
+    res.status(500).json({ error: 'Errore DB' });
+  }
+});
+
 
 // Tutti i prodotti
 router.get('/prodotti', async (req, res) => {
@@ -10,7 +49,6 @@ router.get('/prodotti', async (req, res) => {
     const result = await pool.query(`
       SELECT nome, id_categoria, immagine
       FROM categoria;
-
     `);
     
     // Aggiungi URL completo dell'immagine a ogni categoria
@@ -29,10 +67,11 @@ router.get('/prodotti/categoria/:nome', async (req, res) => {   //Riceve il nome
   try {
     const nomeCategoria = req.params.nome;
     const result = await pool.query(`
-      SELECT 
-        p.id_prodotto, 
-        p.nome, 
-        p.prezzo,
+    SELECT 
+      p.id_prodotto, 
+      p.nome, 
+      CASE WHEN p.promo = TRUE AND p.prezzo_scontato IS NOT NULL THEN p.prezzo_scontato ELSE p.prezzo END AS prezzo,
+      p.prezzo_scontato,
         p.descrizione,
         p.immagine,
         p.quantita_disponibile,
@@ -42,6 +81,7 @@ router.get('/prodotti/categoria/:nome', async (req, res) => {   //Riceve il nome
       LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
       LEFT JOIN marchio m ON p.id_marchio = m.id_marchio
       WHERE c.nome = $1
+        AND p.bloccato = false
     `, [nomeCategoria]);
     
     // Aggiungi URL completo dell'immagine a ogni prodotto
@@ -56,51 +96,41 @@ router.get('/prodotti/categoria/:nome', async (req, res) => {   //Riceve il nome
   }
 });
 
-// Versione semplificata per prodotti più visti (solo basata su visualizzazioni)
+// Prodotti più acquistati (top 3) — aggrega la tabella `acquisti`
 router.get('/popular', async (req, res) => {
   try {
-  const { limit = 4 } = req.query; 
-    
+    // prende i prodotti più acquistati (somma delle quantità)
     const result = await pool.query(`
-      SELECT 
-        p.id_prodotto, 
-        p.nome, 
-        p.prezzo,
-        p.descrizione,
-        p.immagine,
+  SELECT 
+    p.id_prodotto, 
+    p.nome, 
+  CASE WHEN p.promo = TRUE AND p.prezzo_scontato IS NOT NULL THEN p.prezzo_scontato ELSE p.prezzo END AS prezzo,
+  p.prezzo_scontato,
+        p.descrizione, 
+        p.immagine, 
         p.quantita_disponibile,
-        m.nome AS marchio,
-        c.nome AS categoria,
-        COALESCE(v.total_views, 0) as total_views
+        COALESCE(SUM(a.quantita), 0) AS total_purchased
       FROM prodotto p
-      LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
-      LEFT JOIN marchio m ON p.id_marchio = m.id_marchio
-      LEFT JOIN (
-        SELECT 
-          prodotto_id, 
-          COUNT(*) as total_views
-        FROM visualizzazioni 
-        GROUP BY prodotto_id
-      ) v ON p.id_prodotto = v.prodotto_id
-      WHERE p.quantita_disponibile > 0 
-      AND p.bloccato = false
-      ORDER BY total_views DESC NULLS LAST, p.nome
-      LIMIT $1
-    `, [limit]);
-    
-    // Aggiungi URL completo dell'immagine a ogni prodotto
+      LEFT JOIN acquisti a ON p.id_prodotto = a.id_prodotto
+      WHERE p.quantita_disponibile > 0 AND p.bloccato = false
+      GROUP BY p.id_prodotto, p.nome, p.prezzo, p.descrizione, p.immagine, p.quantita_disponibile
+      ORDER BY total_purchased DESC, p.nome
+      LIMIT 3
+    `);
+
     const prodottiPopular = result.rows.map(prodotto => ({
       ...prodotto,
       immagine_url: prodotto.immagine ? `http://localhost:3000/api/images/prodotti/${prodotto.immagine}` : 'http://localhost:3000/api/images/prodotti/default.jpg'
     }));
-    
+
     res.json(prodottiPopular);
   } catch (err) {
-    console.error('Errore popular:', err);
+    console.error('Errore popular (acquisti):', err);
     res.status(500).json({ error: 'Errore DB' });
   }
 });
 
+// vetrina endpoint moved to routes/vetrina.js
 router.get('/brand', async (req, res) => {
   try {
     const result = await pool.query(`
@@ -119,17 +149,18 @@ router.get('/search/suggestions', async (req, res) => {
   try {
     const { q, limit = 5 } = req.query;
     
-    if (!q || q.trim().length < 2) {
+    if (!q || q.trim().length < 1) {
       return res.json([]);
     }
     
     const searchTerm = `%${q.trim().toLowerCase()}%`;
     
     const result = await pool.query(`
-      SELECT 
-        p.id_prodotto, 
-        p.nome, 
-        p.prezzo,
+  SELECT 
+    p.id_prodotto, 
+    p.nome, 
+  CASE WHEN p.promo = TRUE AND p.prezzo_scontato IS NOT NULL THEN p.prezzo_scontato ELSE p.prezzo END AS prezzo,
+  p.prezzo_scontato,
         p.immagine,
         m.nome AS marchio,
         c.nome AS categoria
@@ -159,6 +190,80 @@ router.get('/search/suggestions', async (req, res) => {
     res.json(suggestions);
   } catch (err) {
     console.error('Errore suggestions:', err);
+    res.status(500).json({ error: 'Errore DB' });
+  }
+});
+// Ricerca prodotti per nome, marchio o categoria
+router.get('/prodotti/ricerca', async (req, res) => {
+  try {
+    const { q } = req.query;
+    if (!q || q.trim().length < 2) {
+      return res.json([]);
+    }
+    const searchTerm = `%${q.trim().toLowerCase()}%`;
+    const result = await pool.query(`
+      SELECT 
+        p.id_prodotto, 
+        p.nome, 
+        p.prezzo,
+        p.descrizione,
+        p.immagine,
+        p.quantita_disponibile,
+        m.nome AS marchio,
+        c.nome AS categoria
+      FROM prodotto p
+      LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
+      LEFT JOIN marchio m ON p.id_marchio = m.id_marchio
+      WHERE (LOWER(p.nome) LIKE $1 OR LOWER(m.nome) LIKE $1 OR LOWER(c.nome) LIKE $1)
+        AND p.quantita_disponibile > 0 
+        AND p.bloccato = false
+      ORDER BY p.nome
+    `, [searchTerm]);
+    const prodotti = result.rows.map(prodotto => ({
+      ...prodotto,
+      immagine_url: prodotto.immagine ? `http://localhost:3000/api/images/prodotti/${prodotto.immagine}` : 'http://localhost:3000/api/images/prodotti/default.jpg'
+    }));
+    res.json(prodotti);
+  } catch (err) {
+    res.status(500).json({ error: 'Errore DB' });
+  }
+});
+// Endpoint per ottenere un singolo prodotto tramite id, usato per aprire il dettaglio prodotto. parte di prodotti piu acquistati
+router.get('/prodotto/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const result = await pool.query(`
+      SELECT 
+        p.id_prodotto,
+        p.nome,
+        CASE WHEN p.promo = TRUE AND p.prezzo_scontato IS NOT NULL THEN p.prezzo_scontato ELSE p.prezzo END AS prezzo,
+        p.prezzo_scontato,
+        p.descrizione,
+        p.immagine,
+        p.quantita_disponibile,
+        m.nome AS marchio,
+        c.nome AS categoria
+      FROM prodotto p
+      LEFT JOIN categoria c ON p.id_categoria = c.id_categoria
+      LEFT JOIN marchio m ON p.id_marchio = m.id_marchio
+  WHERE p.id_prodotto = $1
+  AND p.bloccato = false
+      LIMIT 1
+    `, [id]);
+
+    if (!result.rows || result.rows.length === 0) {
+      return res.status(404).json({ error: 'Prodotto non trovato' });
+    }
+
+    const prodotto = result.rows[0];
+    const prodottoConUrl = {
+      ...prodotto,
+      immagine_url: prodotto.immagine ? `http://localhost:3000/api/images/prodotti/${prodotto.immagine}` : 'http://localhost:3000/api/images/prodotti/default.jpg'
+    };
+
+    res.json(prodottoConUrl);
+  } catch (err) {
+    console.error('Errore get prodotto by id:', err);
     res.status(500).json({ error: 'Errore DB' });
   }
 });

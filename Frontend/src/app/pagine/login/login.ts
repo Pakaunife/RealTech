@@ -1,18 +1,21 @@
 import { Component } from '@angular/core';
-import { HeaderMinimal} from '../../header-minimal/header-minimal';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CarrelloService } from '../../services/carrello.service';
 import { AuthService } from '../../services/auth.service';
+import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-login',
-  imports: [HeaderMinimal, ReactiveFormsModule],
+  standalone: true,
+  imports: [ CommonModule,ReactiveFormsModule, RouterModule ],
   templateUrl: './login.html',
-  styleUrl: './login.css'
+  styleUrls: ['./login.css']
 })
-export class Login {
+export class Login 
+{
   loginForm: FormGroup;
+  showPassword = false;
   
  // Dopo il login, ricarica il carrello con i dati dell'utente loggato
   constructor(
@@ -28,19 +31,26 @@ export class Login {
     });
   }
 
+  
+  togglePassword() {
+  this.showPassword = !this.showPassword;
+}
+
+
   onSubmit() {
     if (this.loginForm.valid) {
       this.http.post<any>('http://localhost:3000/api/auth/login', this.loginForm.value)
         .subscribe({
           next: (res: any) => {
            this.auth.login(res.token);
+           this.carrelloService.sincronizzaCarrelloGuestConUtente();
             
             // Ricarica il carrello con i dati dell'utente loggato
             this.carrelloService.ricaricaCarrello();
             
             this.router.navigate(['/home']);
           },
-          error: err => alert('Errore nel login: ' + (err.error?.message || ''))
+          error: err => alert('Errore nel login: ' + (err.error?.message || err.error?.error || 'Errore sconosciuto'))
         });
     }
   }

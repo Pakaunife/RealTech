@@ -51,12 +51,14 @@ export class Profilo implements OnInit {
   // Indirizzi
   indirizzi: any[] = [];
   nuovoIndirizzo = {
+    destinatario: '',
     indirizzo: '',
     citta: '',
     cap: '',
     provincia: '',
     paese: 'Italia',
-    predefinito: false
+    predefinito: false,
+    telefono: ''
   };
 
   // Wishlist
@@ -312,12 +314,14 @@ export class Profilo implements OnInit {
 
   resetFormIndirizzo(): void {
     this.nuovoIndirizzo = { 
+      destinatario: '',
       indirizzo: '', 
       citta: '', 
       cap: '', 
       provincia: '', 
       paese: 'Italia',
-      predefinito: false 
+      predefinito: false,
+      telefono: ''
     };
   }
 
@@ -325,12 +329,14 @@ export class Profilo implements OnInit {
     this.modalitaModifica = true;
     this.indirizzoInModifica = indirizzo;
     this.nuovoIndirizzo = {
+      destinatario: indirizzo.destinatario,
       indirizzo: indirizzo.indirizzo,
       citta: indirizzo.citta,
       cap: indirizzo.cap,
       provincia: indirizzo.provincia,
       paese: indirizzo.paese,
-      predefinito: indirizzo.predefinito
+      predefinito: indirizzo.predefinito,
+      telefono: indirizzo.telefono || ''
     };
     this.mostraFormIndirizzo = true;
     this.messaggio = '';
@@ -511,5 +517,8 @@ export class Profilo implements OnInit {
 
   vaiAgliOrdini() {
     this.router.navigate(['/ordini']);
+  }
+  vaiAllaWishlist() {
+    this.router.navigate(['/wishlist']);
   }
 }

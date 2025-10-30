@@ -8,21 +8,25 @@ export const TokenInterceptor: HttpInterceptorFn = (req, next) => {
   const token = localStorage.getItem('token');
   
    const publicRoutes = [
-    '/api/auth/login',
-    '/api/auth/register',
-    '/api/catalogo',           
-    '/api/products',           
-    '/api/images'              
-  ];
+  '/api/auth/login',
+  '/api/auth/register',
+  '/api/catalogo',
+  '/api/catalogo/vetrina',
+  '/api/products',
+  '/api/images',
+  '/assets',
+  '/uploads',
+  '/public'
+];
     const isPublicRoute = publicRoutes.some(route => req.url.includes(route));
 
-  if (!token && !isPublicRoute) {
-    console.log('Token mancante, redirect...');
-    localStorage.clear();
-    sessionStorage.clear();
-    router.navigate(['/login']);
-    return throwError(() => new Error('No token'));
-  }
+  if (!token && !isPublicRoute && req.method !== 'GET') {
+  // Solo le richieste NON GET e NON pubbliche richiedono login
+  localStorage.clear();
+  sessionStorage.clear();
+  router.navigate(['/login']);
+  return throwError(() => new Error('No token'));
+}
   
   let clonedReq = req;
   if (token) {
@@ -33,13 +37,14 @@ export const TokenInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(clonedReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401) {
-        console.log('401 intercettato, logout...');
-        localStorage.clear();
-        sessionStorage.clear();
-        router.navigate(['/login']);
-      }
-      return throwError(() => error);
-    })
+  const isPublicRoute = publicRoutes.some(route => req.url.includes(route));
+  if (error.status === 401 && !isPublicRoute) {
+    console.log('401 intercettato, logout...');
+    localStorage.clear();
+    sessionStorage.clear();
+    router.navigate(['/login']);
+  }
+  return throwError(() => error);
+})
   );
 };

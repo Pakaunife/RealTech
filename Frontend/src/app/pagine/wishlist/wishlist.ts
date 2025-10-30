@@ -1,11 +1,68 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { UserService } from '../../services/user.service';
+import { AuthService } from '../../services/auth.service';
+import { NgFor, DecimalPipe, NgIf } from '@angular/common';
+import { WishListService } from '../../services/wishlist.service';
+import { Router } from '@angular/router';
+import { CarrelloService } from '../../services/carrello.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-wishlist',
-  imports: [],
   templateUrl: './wishlist.html',
-  styleUrl: './wishlist.css'
+  styleUrls: ['./wishlist.css'],
+  imports: [NgFor, NgIf,FormsModule, DecimalPipe]
 })
-export class Wishlist {
+export class Wishlist implements OnInit {
+  wishlist: any[] = [];
+  loading = true;
+  selectedIds: number[] = [];
 
+  constructor(private wishlistService: WishListService, private auth: AuthService,  private router: Router, private carrelloService: CarrelloService) {}
+
+   ngOnInit() {
+    this.loading = true;
+    const userId = this.auth.getUserId(); // Assumes getUserId() returns the current user's ID
+    if (userId !== null && userId !== undefined) {
+      this.wishlistService.getWishlist(userId).subscribe({
+       next: (prodotti) => {
+  
+            this.wishlist = prodotti.map(p => ({ ...p, selezionato: false }));
+            this.loading = false;
+          },
+        error: () => {
+          this.loading = false;
+        }
+      });
+    } else {
+      this.loading = false;
+    }
+  }
+
+  toggleSelection(id: number) {
+  if (this.selectedIds.includes(id)) {
+    this.selectedIds = this.selectedIds.filter(selId => selId !== id);
+  } else {
+    this.selectedIds.push(id);
+  }
+}
+
+mostraProdotto(prodottoId: number) {
+  this.router.navigate(['/catalogo'], { queryParams: { prodottoId } });
+}
+
+aggiungiAlCarrello(prodottoId: number) {
+  this.carrelloService.aggiungiAlCarrello(prodottoId, 1).subscribe(() => {
+    this.wishlistService.rimuovi(prodottoId).subscribe(() => {
+      this.wishlist = this.wishlist.filter(p => p.id !== prodottoId);
+    });
+  });
+}
+
+
+  remove(prodottoId: number) {
+    this.wishlistService.rimuovi(prodottoId).subscribe(() => {
+      this.wishlist = this.wishlist.filter(w => w.id !== prodottoId);
+    });
+  }
 }
